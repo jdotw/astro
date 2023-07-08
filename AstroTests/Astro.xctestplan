@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "ABABA5B2-F7A1-4C33-A632-6EA2630C5C86",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Astro.xcodeproj",
+      "identifier" : "10C432202A50F80F00E620DF",
+      "name" : "Astro"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Astro.xcodeproj",
+        "identifier" : "10C432362A50F81000E620DF",
+        "name" : "AstroTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Astro.xcodeproj",
+        "identifier" : "10C432402A50F81000E620DF",
+        "name" : "AstroUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,5 +1,6 @@
 //
 //  Persistence.swift
+
 //  Astro
 //
 //  Created by James Wilson on 2/7/2023.
@@ -16,6 +17,15 @@ struct PersistenceController {
         for _ in 0..<10 {
             let newItem = Item(context: viewContext)
             newItem.timestamp = Date()
+        }
+        for _ in 0..<10 {
+            
+            let newFile = File(context: viewContext)
+            newFile.timestamp = Date()
+            newFile.name = "file-\(Int.random(in: 0..<100)).fits"
+            newFile.contentHash = "md5"
+            newFile.type = "light"
+            
         }
         do {
             try viewContext.save()
@@ -36,6 +46,7 @@ struct PersistenceController {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            print("store: \(storeDescription.url!)")
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
