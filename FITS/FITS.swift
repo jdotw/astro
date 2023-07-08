@@ -5,6 +5,7 @@
 //  Created by James Wilson on 5/7/2023.
 //
 
+import CryptoKit
 import Foundation
 
 enum FITSHeaderError: Error {
@@ -38,6 +39,16 @@ class FITSFile {
             print("Error reading block: \(error)")
         }
         return headers
+    }
+
+    var fileHash: String? {
+        let file = try! FileHandle(forReadingFrom: url)
+        do {
+            let digest = try SHA512.hash(data: file.readToEnd()!)
+            return digest.map { String(format: "%02x", $0) }.joined()
+        } catch {
+            return nil
+        }
     }
 }
 
@@ -157,5 +168,17 @@ extension FileHandle {
         } else {
             return nil
         }
+    }
+}
+
+extension Date {
+    init?(fitsDate: String) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        guard let date = formatter.date(from: fitsDate) else {
+            return nil
+        }
+        self = date
     }
 }

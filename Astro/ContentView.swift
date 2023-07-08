@@ -42,12 +42,13 @@ struct ContentView: View {
     private func importFITSFile(fileURL: URL) {
         print(fileURL)
         let fits = FITSFile(url: fileURL)
+        let headers = fits.headers
         print(fits.headers)
         let newItem = File(context: viewContext)
-        newItem.timestamp = Date()
-        newItem.contentHash = "md5"
+        newItem.timestamp = Date(fitsDate: headers["DATE-OBS"]!.value!)
+        newItem.contentHash = fits.fileHash!
         newItem.name = fileURL.lastPathComponent
-        newItem.type = "light"
+        newItem.type = headers["FRAME"]?.value?.lowercased()
     }
 
     private func importFile(fileURL: URL) {

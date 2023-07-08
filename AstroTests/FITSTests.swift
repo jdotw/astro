@@ -79,4 +79,18 @@ final class TestFITS: XCTestCase {
         XCTAssertEqual(parsed.value!, "69.75344848633")
         XCTAssertEqual(parsed.comment!, "altitude of the sun above Earth's limb (deg)")
     }
+
+    func testTimestampWithDecimalAndNoTimeZone() throws {
+        let value = "2023-07-07T13:05:23.204"
+        let date = Date(fitsDate: value)
+        XCTAssertNotNil(date)
+        let components = Calendar.current.dateComponents(in: TimeZone(secondsFromGMT: 0)!, from: date!)
+        XCTAssertEqual(components.year, 2023)
+        XCTAssertEqual(components.month, 7)
+        XCTAssertEqual(components.day, 7)
+        XCTAssertEqual(components.hour, 13)
+        XCTAssertEqual(components.minute, 5)
+        XCTAssertEqual(components.second, 23)
+        XCTAssertEqual(Double(components.nanosecond!), 204000000.0, accuracy: 10.0)
+    }
 }
