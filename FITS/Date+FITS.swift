@@ -6,3 +6,19 @@
 //
 
 import Foundation
+
+extension Date {
+    init?(fitsDate: String) {
+        let formatter = DateFormatter()
+        if fitsDate.firstMatch(of: /^[0-9]+\/[0-9]+\/[0-9]+$/) != nil {
+            formatter.dateFormat = "d/MM/yy"
+        } else {
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        }
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        guard let date = formatter.date(from: fitsDate) else {
+            return nil
+        }
+        self = date
+    }
+}
