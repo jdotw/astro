@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10B5CC722A55801E00A36387 /* FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B5CC712A55801E00A36387 /* FITS.swift */; };
+		108DD7EA2A5AA57B002A7549 /* FITSCGImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7E92A5AA57B002A7549 /* FITSCGImageInfo.swift */; };
+		108DD7EC2A5AA59A002A7549 /* FITSCGImageInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7EB2A5AA59A002A7549 /* FITSCGImageInfoTests.swift */; };
+		108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */; };
+		108DD7F02A5AA907002A7549 /* Date+FITSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */; };
+		109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC52A5AC47D0024BBBD /* FITSFile.swift */; };
+		109D2DC82A5AC5430024BBBD /* FITSHeaderKeywordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */; };
+		109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */; };
+		10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B5CC712A55801E00A36387 /* FITSHeaderKeyword.swift */; };
 		10C164BA2A590B2C002BBCCD /* AstroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C164B92A590B2C002BBCCD /* AstroTests.swift */; };
 		10C432252A50F80F00E620DF /* AstroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C432242A50F80F00E620DF /* AstroApp.swift */; };
 		10C432272A50F80F00E620DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C432262A50F80F00E620DF /* ContentView.swift */; };
@@ -17,7 +24,7 @@
 		10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 10C4322F2A50F81000E620DF /* Astro.xcdatamodeld */; };
 		10C432462A50F81000E620DF /* AstroUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C432452A50F81000E620DF /* AstroUITests.swift */; };
 		10C432482A50F81000E620DF /* AstroUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C432472A50F81000E620DF /* AstroUITestsLaunchTests.swift */; };
-		10CC0D702A58EDB1006B7A62 /* FITSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CC0D6F2A58EDB1006B7A62 /* FITSTests.swift */; };
+		10CC0D702A58EDB1006B7A62 /* FITSFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CC0D6F2A58EDB1006B7A62 /* FITSFileTests.swift */; };
 		10E81F472A5104C300846852 /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F462A5104C300846852 /* FileView.swift */; };
 		10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F492A5108A000846852 /* File+PreviewProvider.swift */; };
 /* End PBXBuildFile section */
@@ -41,7 +48,14 @@
 
 /* Begin PBXFileReference section */
 		101B308E2A5912430094DDCF /* Astro.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Astro.xctestplan; sourceTree = "<group>"; };
-		10B5CC712A55801E00A36387 /* FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITS.swift; sourceTree = "<group>"; };
+		108DD7E92A5AA57B002A7549 /* FITSCGImageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSCGImageInfo.swift; sourceTree = "<group>"; };
+		108DD7EB2A5AA59A002A7549 /* FITSCGImageInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSCGImageInfoTests.swift; sourceTree = "<group>"; };
+		108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITS.swift"; sourceTree = "<group>"; };
+		108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITSTests.swift"; sourceTree = "<group>"; };
+		109D2DC52A5AC47D0024BBBD /* FITSFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSFile.swift; sourceTree = "<group>"; };
+		109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSHeaderKeywordTests.swift; sourceTree = "<group>"; };
+		109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileHandle+FITS.swift"; sourceTree = "<group>"; };
+		10B5CC712A55801E00A36387 /* FITSHeaderKeyword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSHeaderKeyword.swift; sourceTree = "<group>"; };
 		10C164B92A590B2C002BBCCD /* AstroTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AstroTests.swift; sourceTree = "<group>"; };
 		10C432212A50F80F00E620DF /* Astro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Astro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10C432242A50F80F00E620DF /* AstroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstroApp.swift; sourceTree = "<group>"; };
@@ -55,7 +69,7 @@
 		10C432412A50F81000E620DF /* AstroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AstroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		10C432452A50F81000E620DF /* AstroUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstroUITests.swift; sourceTree = "<group>"; };
 		10C432472A50F81000E620DF /* AstroUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstroUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		10CC0D6F2A58EDB1006B7A62 /* FITSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSTests.swift; sourceTree = "<group>"; };
+		10CC0D6F2A58EDB1006B7A62 /* FITSFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSFileTests.swift; sourceTree = "<group>"; };
 		10E81F462A5104C300846852 /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
 		10E81F492A5108A000846852 /* File+PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+PreviewProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -88,7 +102,11 @@
 		10B5CC702A55801100A36387 /* FITS */ = {
 			isa = PBXGroup;
 			children = (
-				10B5CC712A55801E00A36387 /* FITS.swift */,
+				10B5CC712A55801E00A36387 /* FITSHeaderKeyword.swift */,
+				108DD7E92A5AA57B002A7549 /* FITSCGImageInfo.swift */,
+				108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */,
+				109D2DC52A5AC47D0024BBBD /* FITSFile.swift */,
+				109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */,
 			);
 			path = FITS;
 			sourceTree = "<group>";
@@ -143,7 +161,10 @@
 			children = (
 				101B308E2A5912430094DDCF /* Astro.xctestplan */,
 				10C164B92A590B2C002BBCCD /* AstroTests.swift */,
-				10CC0D6F2A58EDB1006B7A62 /* FITSTests.swift */,
+				10CC0D6F2A58EDB1006B7A62 /* FITSFileTests.swift */,
+				109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */,
+				108DD7EB2A5AA59A002A7549 /* FITSCGImageInfoTests.swift */,
+				108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */,
 			);
 			path = AstroTests;
 			sourceTree = "<group>";
@@ -298,10 +319,14 @@
 				10C4322E2A50F81000E620DF /* Persistence.swift in Sources */,
 				10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
+				109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */,
 				10C432252A50F80F00E620DF /* AstroApp.swift in Sources */,
-				10B5CC722A55801E00A36387 /* FITS.swift in Sources */,
+				10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */,
 				10E81F472A5104C300846852 /* FileView.swift in Sources */,
 				10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */,
+				109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */,
+				108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */,
+				108DD7EA2A5AA57B002A7549 /* FITSCGImageInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,7 +334,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				10CC0D702A58EDB1006B7A62 /* FITSTests.swift in Sources */,
+				108DD7EC2A5AA59A002A7549 /* FITSCGImageInfoTests.swift in Sources */,
+				108DD7F02A5AA907002A7549 /* Date+FITSTests.swift in Sources */,
+				10CC0D702A58EDB1006B7A62 /* FITSFileTests.swift in Sources */,
+				109D2DC82A5AC5430024BBBD /* FITSHeaderKeywordTests.swift in Sources */,
 				10C164BA2A590B2C002BBCCD /* AstroTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
