@@ -14,13 +14,19 @@ struct FileView: View {
     var file: File
 
     var body: some View {
+        var stale = false
+        let securityURL = try! URL(resolvingBookmarkData: file.bookmark!, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale)
+        let fits = FITSFile(url: securityURL)!
+        let nsImage = NSImage(cgImage: fits.image()!, size: NSSize.zero)
         Text(file.name ?? "unnamed")
-        Image("image-example")
+            .padding(10.0)
+        Image(nsImage: nsImage)
             .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 250.0, height: 250.0, alignment: .center)
-            .clipShape(Circle())
-            .background(Circle().foregroundColor(.white))
+            .aspectRatio(contentMode: .fit)
+//            .frame(width: 250.0, height: 250.0, alignment: .center)
+
+//            .clipShape(Circle())
+//            .background(Circle().foregroundColor(.white))
     }
 }
 
