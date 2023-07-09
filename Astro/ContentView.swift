@@ -41,14 +41,15 @@ struct ContentView: View {
 
     private func importFITSFile(fileURL: URL) {
         print(fileURL)
-        let fits = FITSFile(url: fileURL)
-        let headers = fits.headers
-        print(fits.headers)
+        guard let fits = FITSFile(url: fileURL), let headers = fits.headers else { return }
+        print(headers)
         let newItem = File(context: viewContext)
-        newItem.timestamp = Date(fitsDate: headers["DATE-OBS"]!.value!)
+        newItem.timestamp = Date(fitsDate: headers["DATE-OBS"]!.value!)!
         newItem.contentHash = fits.fileHash!
         newItem.name = fileURL.lastPathComponent
-        newItem.type = headers["FRAME"]?.value?.lowercased()
+        newItem.type = fits.type
+        newItem.url = fileURL
+        newItem.bookmark = try! fileURL.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
     }
 
     private func importFile(fileURL: URL) {
