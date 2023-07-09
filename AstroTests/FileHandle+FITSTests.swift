@@ -8,7 +8,7 @@
 @testable import Astro
 import XCTest
 
-final class FITSFileTests: XCTestCase {
+final class FileHandle_FITSTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
