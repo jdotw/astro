@@ -5,58 +5,15 @@
 //  Created by James Wilson on 5/7/2023.
 //
 
+import AppKit
 import CryptoKit
 import Foundation
 
-enum FITSHeaderError: Error {
-    case unterminatedStringLiteral
-}
-
-class FITSFile {
-    var url: URL
-
-    init(url: URL) {
-        self.url = url
-    }
-
-    var headers: [String: FITSFileHeaderKeyword] {
-        var headers = [String: FITSFileHeaderKeyword]()
-        let file = try! FileHandle(forReadingFrom: url)
-        do {
-            while let block = try file.readBlock() {
-                let recordSize = 80
-                for i in 0..<36 {
-                    let record = block[i*recordSize..<(i + 1)*recordSize]
-                    if let keyword = FITSFileHeaderKeyword(record: record) {
-                        headers[keyword.name] = keyword
-                    }
-                }
-                if headers["END"] != nil {
-                    break
-                }
-            }
-        } catch {
-            print("Error reading block: \(error)")
-        }
-        return headers
-    }
-
-    var fileHash: String? {
-        let file = try! FileHandle(forReadingFrom: url)
-        do {
-            let digest = try SHA512.hash(data: file.readToEnd()!)
-            return digest.map { String(format: "%02x", $0) }.joined()
-        } catch {
-            return nil
-        }
-    }
-}
-
-enum FITSFileHeaderKeywordError: Error {
+enum FITSHeaderKeywordError: Error {
     case recordTooBig
 }
 
-class FITSFileHeaderKeyword: CustomDebugStringConvertible {
+class FITSHeaderKeyword: CustomDebugStringConvertible {
     var name: String
     var value: String?
     var comment: String?
@@ -110,11 +67,11 @@ class FITSFileHeaderKeyword: CustomDebugStringConvertible {
                 default: break
                 }
             }
-            value = String(bytes: valueAndComment[valueStartIndex..<valueEndIndex], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
-            comment = String(bytes: valueAndComment[commentStartIndex..<valueAndComment.endIndex], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
+            self.value = String(bytes: valueAndComment[valueStartIndex..<valueEndIndex], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
+            self.comment = String(bytes: valueAndComment[commentStartIndex..<valueAndComment.endIndex], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
         } else {
             // No value indicator, just parse comment
-            comment = String(bytes: record[(record.startIndex + 10)...], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
+            self.comment = String(bytes: record[(record.startIndex + 10)...], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
         }
     }
 
@@ -147,38 +104,8 @@ class FITSFileHeaderKeyword: CustomDebugStringConvertible {
             let delta = 80 - bytes.count
             bytes.append(Array("".padding(toLength: delta, withPad: " ", startingAt: 0).utf8), count: delta)
         } else if bytes.count > 80 {
-            throw FITSFileHeaderKeywordError.recordTooBig
+            throw FITSHeaderKeywordError.recordTooBig
         }
         return bytes
-    }
-}
-
-enum FITSFileError: Error {
-    case blockTooSmall(_: Int)
-}
-
-extension FileHandle {
-    func readBlock() throws -> Data? {
-        let blockSize = 2880
-        if let block = try read(upToCount: blockSize) {
-            if block.count < blockSize {
-                throw FITSFileError.blockTooSmall(block.count)
-            }
-            return block
-        } else {
-            return nil
-        }
-    }
-}
-
-extension Date {
-    init?(fitsDate: String) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        guard let date = formatter.date(from: fitsDate) else {
-            return nil
-        }
-        self = date
     }
 }

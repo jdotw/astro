@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F66" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="File" representedClassName="File" syncable="YES" codeGenerationType="class">
+        <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" attributeType="String"/>
+        <attribute name="url" attributeType="URI"/>
         <relationship name="sessionFileSet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionFileSet" inverseName="files" inverseEntity="SessionFileSet"/>
         <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="files" inverseEntity="Target"/>
     </entity>
