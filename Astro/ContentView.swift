@@ -115,6 +115,3 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-extension URL {
-    var isFITS: Bool { pathExtension == "fit" || pathExtension == "fits" }
-}

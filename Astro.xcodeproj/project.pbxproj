@@ -14,6 +14,8 @@
 		109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC52A5AC47D0024BBBD /* FITSFile.swift */; };
 		109D2DC82A5AC5430024BBBD /* FITSHeaderKeywordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */; };
 		109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */; };
+		109D2DCE2A5ACA370024BBBD /* URL+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DCD2A5ACA370024BBBD /* URL+FITS.swift */; };
+		109D2DD02A5ACAD00024BBBD /* URL+FITSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DCF2A5ACAD00024BBBD /* URL+FITSTests.swift */; };
 		10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B5CC712A55801E00A36387 /* FITSHeaderKeyword.swift */; };
 		10C164BA2A590B2C002BBCCD /* AstroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C164B92A590B2C002BBCCD /* AstroTests.swift */; };
 		10C432252A50F80F00E620DF /* AstroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C432242A50F80F00E620DF /* AstroApp.swift */; };
@@ -55,6 +57,8 @@
 		109D2DC52A5AC47D0024BBBD /* FITSFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSFile.swift; sourceTree = "<group>"; };
 		109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSHeaderKeywordTests.swift; sourceTree = "<group>"; };
 		109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileHandle+FITS.swift"; sourceTree = "<group>"; };
+		109D2DCD2A5ACA370024BBBD /* URL+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+FITS.swift"; sourceTree = "<group>"; };
+		109D2DCF2A5ACAD00024BBBD /* URL+FITSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+FITSTests.swift"; sourceTree = "<group>"; };
 		10B5CC712A55801E00A36387 /* FITSHeaderKeyword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSHeaderKeyword.swift; sourceTree = "<group>"; };
 		10C164B92A590B2C002BBCCD /* AstroTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AstroTests.swift; sourceTree = "<group>"; };
 		10C432212A50F80F00E620DF /* Astro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Astro.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -107,6 +111,7 @@
 				108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */,
 				109D2DC52A5AC47D0024BBBD /* FITSFile.swift */,
 				109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */,
+				109D2DCD2A5ACA370024BBBD /* URL+FITS.swift */,
 			);
 			path = FITS;
 			sourceTree = "<group>";
@@ -165,6 +170,7 @@
 				109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */,
 				108DD7EB2A5AA59A002A7549 /* FITSCGImageInfoTests.swift */,
 				108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */,
+				109D2DCF2A5ACAD00024BBBD /* URL+FITSTests.swift */,
 			);
 			path = AstroTests;
 			sourceTree = "<group>";
@@ -317,6 +323,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10C4322E2A50F81000E620DF /* Persistence.swift in Sources */,
+				109D2DCE2A5ACA370024BBBD /* URL+FITS.swift in Sources */,
 				10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
 				109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */,
@@ -337,6 +344,7 @@
 				108DD7EC2A5AA59A002A7549 /* FITSCGImageInfoTests.swift in Sources */,
 				108DD7F02A5AA907002A7549 /* Date+FITSTests.swift in Sources */,
 				10CC0D702A58EDB1006B7A62 /* FITSFileTests.swift in Sources */,
+				109D2DD02A5ACAD00024BBBD /* URL+FITSTests.swift in Sources */,
 				109D2DC82A5AC5430024BBBD /* FITSHeaderKeywordTests.swift in Sources */,
 				10C164BA2A590B2C002BBCCD /* AstroTests.swift in Sources */,
 			);
