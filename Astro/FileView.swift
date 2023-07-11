@@ -10,23 +10,40 @@ import SwiftUI
 
 struct FileView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @State private var exposureValue: Double = 0
 
     var file: File
 
+    init(file: File) {
+        self.file = file
+    }
+
+    func willAppear() {
+        print("willAppear")
+    }
+
     var body: some View {
         var stale = false
-        let securityURL = try! URL(resolvingBookmarkData: file.bookmark!, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale)
-        let fits = FITSFile(url: securityURL)!
-        let nsImage = NSImage(cgImage: fits.image()!, size: NSSize.zero)
-        Text(file.name ?? "unnamed")
-            .padding(10.0)
-        Image(nsImage: nsImage)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-//            .frame(width: 250.0, height: 250.0, alignment: .center)
 
-//            .clipShape(Circle())
-//            .background(Circle().foregroundColor(.white))
+        let securityURL = try! URL(resolvingBookmarkData: self.file.bookmark!, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale)
+        let fits = FITSFile(url: securityURL)!
+        let image = fits.image()!
+        let exposedImage = fits.adjustExposure(inputImage: image, ev: Float(self.exposureValue))!
+        Text(self.file.name ?? "unnamed")
+            .padding(10.0)
+        HStack {
+            Image(nsImage: NSImage(cgImage: exposedImage, size: NSSize.zero))
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            Image(nsImage: NSImage(cgImage: fits.createHistogram(inputImage: exposedImage)!, size: NSSize.zero))
+                .aspectRatio(contentMode: .fit)
+        }
+        Slider(value: self.$exposureValue, in: -10 ... 10, step: 0.1) {
+            Text("Exposure")
+        }
+        .padding()
+
+        Text("Exposure Value: \(self.exposureValue)")
     }
 }
 
