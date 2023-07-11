@@ -16,7 +16,7 @@ struct FITSCGImageInfo {
     var bytesPerRow: Int
     var colorSpace: CGColorSpace
     var bitmapInfo: CGBitmapInfo
-    var decode: UnsafePointer<CGFloat>?
+    var decode: [CGFloat]?
     var shouldInterpolate: Bool
     var intent: CGColorRenderingIntent
 
@@ -34,6 +34,7 @@ struct FITSCGImageInfo {
         self.bitsPerPixel = abs(bitsPerPixel)
         self.bytesPerRow = width * (self.bitsPerPixel / 8)
         self.colorSpace = CGColorSpaceCreateDeviceGray()
+        
         switch bitsPerPixel {
         case 16:
             self.bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder16Big.rawValue)
