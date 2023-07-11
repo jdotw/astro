@@ -23,7 +23,10 @@ struct ContentView: View {
                     NavigationLink {
                         FileView(file: item)
                     } label: {
-                        Text(item.name ?? "unnamed")
+                        VStack {
+                            Text(item.name ?? "unnamed")
+                            Text(item.target?.name ?? "unknown target")
+                        }
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -114,4 +117,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
-
