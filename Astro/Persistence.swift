@@ -15,17 +15,13 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-        }
-        for _ in 0..<10 {
-            
             let newFile = File(context: viewContext)
             newFile.timestamp = Date()
             newFile.name = "file-\(Int.random(in: 0..<100)).fits"
             newFile.contentHash = "md5"
             newFile.type = "light"
-            
+            newFile.bookmark = Data()
+            newFile.url = URL(fileURLWithPath: "/Users/jwilson/Downloads/IMG_0001.fits")
         }
         do {
             try viewContext.save()
@@ -45,7 +41,7 @@ struct PersistenceController {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+        container.loadPersistentStores(completionHandler: { storeDescription, error in
             print("store: \(storeDescription.url!)")
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
