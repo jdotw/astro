@@ -13,16 +13,26 @@ import Foundation
 
 class FITSFile {
     var url: URL?
+    var isAccessingScopedResource = false
 
     init?(url: URL) {
-        guard url.startAccessingSecurityScopedResource() else {
+        self.url = url
+    }
+
+    init?(file: File) {
+        guard let bookmarkData = file.bookmark else {
             return nil
         }
+        var stale = false
+        guard let url = try? URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale) else {
+            return nil
+        }
+        self.isAccessingScopedResource = url.startAccessingSecurityScopedResource()
         self.url = url
     }
 
     deinit {
-        if let url = url {
+        if let url = url, isAccessingScopedResource {
             url.stopAccessingSecurityScopedResource()
         }
     }
@@ -98,6 +108,13 @@ class FITSFile {
         } catch {
             return nil
         }
+    }
+
+    var observationDate: Date? {
+        guard let value = headers?["DATE-OBS"]?.value else {
+            return nil
+        }
+        return Date(fitsDate: value)
     }
 
     func convertToUnsigned(data: Data, offset: Int32) -> Data {
@@ -204,6 +221,7 @@ class FITSFile {
         else {
             return nil
         }
+        print("HEADERS: ", headers)
         let convertedData = convertToUnsigned(data: data, offset: 32768)
         let image = CGImage(
             width: info.width,
@@ -219,6 +237,102 @@ class FITSFile {
             intent: info.intent
         )
         return image
+    }
+
+    // Core Data
+
+    enum FITSFileImportError: Error {
+        case hashFailed
+        case alreadyExists(File)
+        case noHeaders
+        case noObservationDate
+        case noURL
+        case noType
+        case noBookmark
+        case noTarget
+        case noFilter
+    }
+
+    func importFile(context: NSManagedObjectContext) throws -> File {
+        guard let fileHash = fileHash else {
+            throw FITSFileImportError.hashFailed
+        }
+        guard let headers = headers else {
+            throw FITSFileImportError.noHeaders
+        }
+        guard let observationDate = observationDate
+        else {
+            throw FITSFileImportError.noObservationDate
+        }
+        guard let url = url else {
+            throw FITSFileImportError.noURL
+        }
+        guard let type = type else {
+            throw FITSFileImportError.noType
+        }
+        guard let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) else {
+            throw FITSFileImportError.noBookmark
+        }
+        guard let targetName = headers["OBJECT"]?.value else {
+            throw FITSFileImportError.noTarget
+        }
+        guard let filterName = headers["FILTER"]?.value?.lowercased() else {
+            throw FITSFileImportError.noFilter
+        }
+
+        // Look up File by fileHash
+        let fileReq = NSFetchRequest<File>(entityName: "File")
+        fileReq.predicate = NSPredicate(format: "contentHash == %@", fileHash)
+        fileReq.fetchLimit = 1
+        if let file = try? context.fetch(fileReq).first {
+            throw FITSFileImportError.alreadyExists(file)
+        }
+
+        // Create new file
+        let file = File(context: context)
+        file.timestamp = observationDate
+        file.contentHash = fileHash
+        file.name = url.lastPathComponent
+        file.type = type
+        file.url = url
+        file.bookmark = bookmarkData
+
+        // Find/Create Target
+        let targetReq = NSFetchRequest<Target>(entityName: "Target")
+        targetReq.predicate = NSPredicate(format: "name == %@", targetName)
+        targetReq.fetchLimit = 1
+        if let target = try? context.fetch(targetReq).first {
+            file.target = target
+        } else {
+            let newTarget = Target(context: context)
+            newTarget.name = targetName
+            file.target = newTarget
+        }
+
+        // Find Session by dateString
+        let dateString = observationDate.sessionDateString()
+        let sessionReq = NSFetchRequest<Session>(entityName: "Session")
+        sessionReq.predicate = NSPredicate(format: "dateString == %@", dateString)
+        sessionReq.fetchLimit = 1
+        var session = try? context.fetch(sessionReq).first
+        if session == nil {
+            session = Session(context: context)
+            session?.dateString = dateString
+        }
+
+        // Find the SessionFileSet by filter
+        let filterReq = NSFetchRequest<SessionFileSet>(entityName: "SessionFileSet")
+        filterReq.predicate = NSPredicate(format: "session == %@ AND filter == %@", session!, filterName)
+        filterReq.fetchLimit = 1
+        var sessionFileSet = try? context.fetch(filterReq).first
+        if sessionFileSet == nil {
+            sessionFileSet = SessionFileSet(context: context)
+            sessionFileSet?.filter = filterName
+            sessionFileSet?.session = session
+        }
+        file.sessionFileSet = sessionFileSet
+
+        return file
     }
 }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F66" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="File" representedClassName="File" syncable="YES" codeGenerationType="class">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
@@ -10,20 +10,17 @@
         <relationship name="sessionFileSet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionFileSet" inverseName="files" inverseEntity="SessionFileSet"/>
         <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="files" inverseEntity="Target"/>
     </entity>
-    <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-    </entity>
     <entity name="Session" representedClassName="Session" syncable="YES" codeGenerationType="class">
-        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="fileSets" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionFileSet" inverseName="session" inverseEntity="SessionFileSet"/>
+        <attribute name="dateString" attributeType="String"/>
+        <relationship name="fileSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SessionFileSet" inverseName="session" inverseEntity="SessionFileSet"/>
     </entity>
     <entity name="SessionFileSet" representedClassName="SessionFileSet" syncable="YES" codeGenerationType="class">
         <attribute name="filter" optional="YES" attributeType="String"/>
-        <relationship name="files" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="sessionFileSet" inverseEntity="File"/>
+        <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="sessionFileSet" inverseEntity="File"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="fileSets" inverseEntity="Session"/>
     </entity>
     <entity name="Target" representedClassName="Target" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="files" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="target" inverseEntity="File"/>
+        <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="target" inverseEntity="File"/>
     </entity>
 </model>

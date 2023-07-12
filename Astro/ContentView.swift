@@ -14,22 +14,34 @@ struct ContentView: View {
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \File.timestamp, ascending: true)],
         animation: .default)
-    private var items: FetchedResults<File>
+    private var files: FetchedResults<File>
+
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
+        animation: .default)
+    private var sessions: FetchedResults<Session>
 
     var body: some View {
         NavigationView {
             List {
-                ForEach(items) { item in
+                ForEach(files) { file in
                     NavigationLink {
-                        FileView(file: item)
+                        FileView(file: file)
                     } label: {
                         VStack {
-                            Text(item.name ?? "unnamed")
-                            Text(item.target?.name ?? "unknown target")
+                            Text(file.name ?? "unnamed")
+                            Text(file.target?.name ?? "unknown target")
                         }
                     }
                 }
                 .onDelete(perform: deleteItems)
+                ForEach(sessions) { session in
+                    NavigationLink {} label: {
+                        VStack {
+                            Text(session.dateString ?? "unknown")
+                        }
+                    }
+                }
             }
             .toolbar {
                 ToolbarItem {
@@ -43,16 +55,15 @@ struct ContentView: View {
     }
 
     private func importFITSFile(fileURL: URL) {
-        print(fileURL)
-        guard let fits = FITSFile(url: fileURL), let headers = fits.headers else { return }
+        print("URL: \(fileURL)")
+        guard let fits = FITSFile(url: fileURL),
+              let headers = fits.headers else { return }
         print(headers)
-        let newItem = File(context: viewContext)
-        newItem.timestamp = Date(fitsDate: headers["DATE-OBS"]!.value!)!
-        newItem.contentHash = fits.fileHash!
-        newItem.name = fileURL.lastPathComponent
-        newItem.type = fits.type
-        newItem.url = fileURL
-        newItem.bookmark = try! fileURL.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+        do {
+            _ = try fits.importFile(context: viewContext)
+        } catch {
+            print(error)
+        }
     }
 
     private func importFile(fileURL: URL) {
@@ -61,23 +72,27 @@ struct ContentView: View {
 
     private func addItem() {
         let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
+        panel.allowsMultipleSelection = true
         panel.canChooseDirectories = true
         if panel.runModal() == .OK {
             for fileURL in panel.urls {
-                guard let resourceValues = try? fileURL.resourceValues(forKeys: Set<URLResourceKey>([.isDirectoryKey])),
-                      let isDirectory = resourceValues.isDirectory
-                else {
-                    continue
-                }
-                if isDirectory {
-                    let enumerator = FileManager.default.enumerator(at: panel.url!, includingPropertiesForKeys: nil)
-                    while let file = enumerator?.nextObject() as? URL {
-                        importFile(fileURL: file)
-                    }
+                if fileURL.startAccessingSecurityScopedResource() {
+                    defer { fileURL.stopAccessingSecurityScopedResource() }
 
-                } else {
-                    importFile(fileURL: fileURL)
+                    guard let resourceValues = try? fileURL.resourceValues(forKeys: Set<URLResourceKey>([.isDirectoryKey])),
+                          let isDirectory = resourceValues.isDirectory
+                    else {
+                        continue
+                    }
+                    if isDirectory {
+                        let enumerator = FileManager.default.enumerator(at: panel.url!, includingPropertiesForKeys: nil)
+                        while let file = enumerator?.nextObject() as? URL {
+                            importFile(fileURL: file)
+                        }
+
+                    } else {
+                        importFile(fileURL: fileURL)
+                    }
                 }
             }
             do {
@@ -91,7 +106,7 @@ struct ContentView: View {
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
+            offsets.map { files[$0] }.forEach(viewContext.delete)
 
             do {
                 try viewContext.save()

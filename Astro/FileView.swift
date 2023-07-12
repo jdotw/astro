@@ -25,8 +25,8 @@ struct FileView: View {
     var body: some View {
         var stale = false
 
-        let securityURL = try! URL(resolvingBookmarkData: self.file.bookmark!, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale)
-        let fits = FITSFile(url: securityURL)!
+        let fits = FITSFile(file: file)!
+
         let image = fits.image()!
         let exposedImage = fits.adjustExposure(inputImage: image, ev: Float(self.exposureValue))!
         Text(self.file.name ?? "unnamed")
