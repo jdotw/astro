@@ -23,6 +23,10 @@ struct PersistenceController {
             newFile.bookmark = Data()
             newFile.url = URL(fileURLWithPath: "/Users/jwilson/Downloads/IMG_0001.fits")
         }
+        for i in 1..<4 {
+            let session = Session(context: viewContext)
+            session.dateString = "2023070\(i)"
+        }
         do {
             try viewContext.save()
         } catch {

@@ -7,14 +7,25 @@
 
 import SwiftUI
 
-struct CategoryList: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
+enum CategoryItem: String, Identifiable, CaseIterable {
+    var id: String { rawValue }
+
+    case sessions
+    case targets
+    case files
 }
 
-struct CategoryList_Previews: PreviewProvider {
-    static var previews: some View {
-        CategoryList()
+struct CategoryList: View {
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @Binding var selection: CategoryItem
+
+    var body: some View {
+        List(CategoryItem.allCases, selection: $selection) { item in
+            NavigationLink(
+                item.rawValue.localizedCapitalized,
+                value: item
+            )
+        }
     }
 }

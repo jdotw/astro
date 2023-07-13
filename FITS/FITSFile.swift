@@ -290,6 +290,7 @@ class FITSFile {
 
         // Create new file
         let file = File(context: context)
+        file.id = UUID().uuidString
         file.timestamp = observationDate
         file.contentHash = fileHash
         file.name = url.lastPathComponent
@@ -305,6 +306,7 @@ class FITSFile {
             file.target = target
         } else {
             let newTarget = Target(context: context)
+            newTarget.id = UUID().uuidString
             newTarget.name = targetName
             file.target = newTarget
         }
@@ -317,7 +319,8 @@ class FITSFile {
         var session = try? context.fetch(sessionReq).first
         if session == nil {
             session = Session(context: context)
-            session?.dateString = dateString
+            session!.id = UUID().uuidString
+            session!.dateString = dateString
         }
 
         // Find the SessionFileSet by filter

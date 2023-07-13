@@ -3,6 +3,7 @@
     <entity name="File" representedClassName="File" syncable="YES" codeGenerationType="class">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" attributeType="String"/>
@@ -12,6 +13,7 @@
     </entity>
     <entity name="Session" representedClassName="Session" syncable="YES" codeGenerationType="class">
         <attribute name="dateString" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
         <relationship name="fileSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SessionFileSet" inverseName="session" inverseEntity="SessionFileSet"/>
     </entity>
     <entity name="SessionFileSet" representedClassName="SessionFileSet" syncable="YES" codeGenerationType="class">
@@ -20,6 +22,7 @@
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="fileSets" inverseEntity="Session"/>
     </entity>
     <entity name="Target" representedClassName="Target" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="target" inverseEntity="File"/>
     </entity>

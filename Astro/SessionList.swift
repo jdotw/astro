@@ -8,13 +8,19 @@
 import SwiftUI
 
 struct SessionList: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    @Environment(\.managedObjectContext) private var viewContext
+    @Binding var selection: Session.ID
 
-struct SessionList_Previews: PreviewProvider {
-    static var previews: some View {
-        SessionList()
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
+        animation: .default)
+    private var sessions: FetchedResults<Session>
+
+    var body: some View {
+        List(selection: $selection) {
+            ForEach(sessions, id: \.self.id!) { session in
+                Label(session.dateString!, systemImage: "leaf")
+            }
+        }
     }
 }

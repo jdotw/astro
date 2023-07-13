@@ -6,3 +6,15 @@
 //
 
 import Foundation
+
+import CoreData
+
+extension Session {
+    static var example: Session {
+        let context = PersistenceController.preview.container.viewContext
+        let fetchRequest: NSFetchRequest<Session> = Session.fetchRequest()
+        fetchRequest.fetchLimit = 1
+        let results = try? context.fetch(fetchRequest)
+        return (results?.first!)!
+    }
+}

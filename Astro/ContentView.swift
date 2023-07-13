@@ -10,53 +10,39 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \File.timestamp, ascending: true)],
-        animation: .default)
-    private var files: FetchedResults<File>
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
-        animation: .default)
-    private var sessions: FetchedResults<Session>
+    @AppStorage("selectedSessionID") private var selectedSessionID: Session.ID
+    @AppStorage("selectedTargetID") private var selectedTargetID: Target.ID
+    @AppStorage("selectedFileID") private var selectedFileID: File.ID
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(files) { file in
-                    NavigationLink {
-                        FileView(file: file)
-                    } label: {
-                        VStack {
-                            Text(file.name ?? "unnamed")
-                            Text(file.target?.name ?? "unknown target")
-                        }
-                    }
-                }
-                .onDelete(perform: deleteItems)
-                ForEach(sessions) { session in
-                    NavigationLink {} label: {
-                        VStack {
-                            Text(session.dateString ?? "unknown")
-                        }
-                    }
+        NavigationSplitView {
+            CategoryList(selection: $selectedCategory)
+        } content: {
+            switch selectedCategory {
+            case .sessions:
+                SessionList(selection: $selectedSessionID)
+            case .targets:
+                TargetList(selection: $selectedTargetID)
+            case .files:
+                FileList(selection: $selectedFileID)
+            }
+        } detail: {
+            FileView(fileID: $selectedFileID)
+        }
+        .toolbar {
+            ToolbarItem {
+                Button(action: importFiles) {
+                    Label("Import Files", systemImage: "plus")
                 }
             }
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-            Text("Select an item")
         }
     }
 
-    private func importFITSFile(fileURL: URL) {
-        print("URL: \(fileURL)")
-        guard let fits = FITSFile(url: fileURL),
+    private func importFITSFileFromURL(_ url: URL) {
+        print("URL: \(url)")
+        guard let fits = FITSFile(url: url),
               let headers = fits.headers else { return }
         print(headers)
         do {
@@ -66,32 +52,34 @@ struct ContentView: View {
         }
     }
 
-    private func importFile(fileURL: URL) {
-        if fileURL.isFITS { importFITSFile(fileURL: fileURL) }
+    private func importFileFromURL(_ url: URL) {
+        if url.isFITS {
+            importFITSFileFromURL(url)
+        }
     }
 
-    private func addItem() {
+    private func importFiles() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = true
         if panel.runModal() == .OK {
-            for fileURL in panel.urls {
-                if fileURL.startAccessingSecurityScopedResource() {
-                    defer { fileURL.stopAccessingSecurityScopedResource() }
+            for url in panel.urls {
+                if url.startAccessingSecurityScopedResource() {
+                    defer { url.stopAccessingSecurityScopedResource() }
 
-                    guard let resourceValues = try? fileURL.resourceValues(forKeys: Set<URLResourceKey>([.isDirectoryKey])),
+                    guard let resourceValues = try? url.resourceValues(forKeys: Set<URLResourceKey>([.isDirectoryKey])),
                           let isDirectory = resourceValues.isDirectory
                     else {
                         continue
                     }
                     if isDirectory {
                         let enumerator = FileManager.default.enumerator(at: panel.url!, includingPropertiesForKeys: nil)
-                        while let file = enumerator?.nextObject() as? URL {
-                            importFile(fileURL: file)
+                        while let url = enumerator?.nextObject() as? URL {
+                            importFileFromURL(url)
                         }
 
                     } else {
-                        importFile(fileURL: fileURL)
+                        importFileFromURL(url)
                     }
                 }
             }
@@ -102,33 +90,5 @@ struct ContentView: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { files[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-}
-
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

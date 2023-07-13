@@ -7,27 +7,20 @@
 
 import SwiftUI
 
-struct SessionList: View {
+struct FileList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @State private var selectedSession: Session.ID?
+    @Binding var selection: File.ID
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \File.timestamp, ascending: false)],
         animation: .default)
-    private var sessions: FetchedResults<Session>
+    private var files: FetchedResults<File>
 
     var body: some View {
-        List(selection: $selectedSession) {
-            ForEach(sessions) { session in
-                Label(session.dateString!, systemImage: "leaf")
+        List(selection: $selection) {
+            ForEach(files, id: \.self.id!) { file in
+                Label(file.name!, systemImage: "leaf")
             }
         }
-        .frame(minWidth: 250)
-    }
-}
-
-struct SessionList_Previews: PreviewProvider {
-    static var previews: some View {
-        SessionList()
     }
 }
