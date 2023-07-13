@@ -35,9 +35,9 @@
 		10D833152A5F75AC00C63083 /* SessionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833142A5F75AC00C63083 /* SessionList.swift */; };
 		10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833182A5F7C6F00C63083 /* TargetList.swift */; };
 		10D8331B2A5F7D1600C63083 /* FileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D8331A2A5F7D1600C63083 /* FileList.swift */; };
-		10D8331D2A5FA34000C63083 /* Session+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D8331C2A5FA34000C63083 /* Session+CoreData.swift */; };
-		10D833232A5FA46400C63083 /* File+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833212A5FA46400C63083 /* File+CoreData.swift */; };
-		10D833262A5FA46A00C63083 /* Target+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833242A5FA46A00C63083 /* Target+CoreData.swift */; };
+		10D8331D2A5FA34000C63083 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D8331C2A5FA34000C63083 /* Session.swift */; };
+		10D833232A5FA46400C63083 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833212A5FA46400C63083 /* File.swift */; };
+		10D833262A5FA46A00C63083 /* Target.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833242A5FA46A00C63083 /* Target.swift */; };
 		10E81F472A5104C300846852 /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F462A5104C300846852 /* FileView.swift */; };
 		10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F492A5108A000846852 /* File+PreviewProvider.swift */; };
 /* End PBXBuildFile section */
@@ -93,9 +93,9 @@
 		10D833142A5F75AC00C63083 /* SessionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionList.swift; sourceTree = "<group>"; };
 		10D833182A5F7C6F00C63083 /* TargetList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetList.swift; sourceTree = "<group>"; };
 		10D8331A2A5F7D1600C63083 /* FileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileList.swift; sourceTree = "<group>"; };
-		10D8331C2A5FA34000C63083 /* Session+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Session+CoreData.swift"; sourceTree = "<group>"; };
-		10D833212A5FA46400C63083 /* File+CoreData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "File+CoreData.swift"; sourceTree = "<group>"; };
-		10D833242A5FA46A00C63083 /* Target+CoreData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Target+CoreData.swift"; sourceTree = "<group>"; };
+		10D8331C2A5FA34000C63083 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		10D833212A5FA46400C63083 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		10D833242A5FA46A00C63083 /* Target.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Target.swift; sourceTree = "<group>"; };
 		10E81F462A5104C300846852 /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
 		10E81F492A5108A000846852 /* File+PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+PreviewProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -142,6 +142,7 @@
 		10C432182A50F80F00E620DF = {
 			isa = PBXGroup;
 			children = (
+				10D833282A6000B300C63083 /* Views */,
 				10B5CC702A55801100A36387 /* FITS */,
 				10E81F482A51088800846852 /* Model */,
 				10C432232A50F80F00E620DF /* Astro */,
@@ -167,16 +168,10 @@
 				10C432242A50F80F00E620DF /* AstroApp.swift */,
 				10C432282A50F81000E620DF /* Assets.xcassets */,
 				10C4322D2A50F81000E620DF /* Persistence.swift */,
+				10C432262A50F80F00E620DF /* ContentView.swift */,
 				10C432322A50F81000E620DF /* Astro.entitlements */,
 				10C4322F2A50F81000E620DF /* Astro.xcdatamodeld */,
 				10C4322A2A50F81000E620DF /* Preview Content */,
-				10E81F462A5104C300846852 /* FileView.swift */,
-				1038709C2A5E4F4100064EF1 /* SessionView.swift */,
-				10C432262A50F80F00E620DF /* ContentView.swift */,
-				10D833182A5F7C6F00C63083 /* TargetList.swift */,
-				10D833122A5F758000C63083 /* CategoryList.swift */,
-				10D8331A2A5F7D1600C63083 /* FileList.swift */,
-				10D833142A5F75AC00C63083 /* SessionList.swift */,
 			);
 			path = Astro;
 			sourceTree = "<group>";
@@ -213,14 +208,67 @@
 			path = AstroUITests;
 			sourceTree = "<group>";
 		};
+		10D833282A6000B300C63083 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				10D8332C2A6000F700C63083 /* Sidebar */,
+				10D8332B2A6000DE00C63083 /* Files */,
+				10D8332A2A6000C700C63083 /* Targets */,
+				10D833292A6000BC00C63083 /* Sessions */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		10D833292A6000BC00C63083 /* Sessions */ = {
+			isa = PBXGroup;
+			children = (
+				10D833142A5F75AC00C63083 /* SessionList.swift */,
+				1038709C2A5E4F4100064EF1 /* SessionView.swift */,
+			);
+			path = Sessions;
+			sourceTree = "<group>";
+		};
+		10D8332A2A6000C700C63083 /* Targets */ = {
+			isa = PBXGroup;
+			children = (
+				10D833182A5F7C6F00C63083 /* TargetList.swift */,
+			);
+			path = Targets;
+			sourceTree = "<group>";
+		};
+		10D8332B2A6000DE00C63083 /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				10D8331A2A5F7D1600C63083 /* FileList.swift */,
+				10E81F462A5104C300846852 /* FileView.swift */,
+			);
+			path = Files;
+			sourceTree = "<group>";
+		};
+		10D8332C2A6000F700C63083 /* Sidebar */ = {
+			isa = PBXGroup;
+			children = (
+				10D833122A5F758000C63083 /* CategoryList.swift */,
+			);
+			path = Sidebar;
+			sourceTree = "<group>";
+		};
+		10D8332D2A60011E00C63083 /* Previews */ = {
+			isa = PBXGroup;
+			children = (
+				10E81F492A5108A000846852 /* File+PreviewProvider.swift */,
+				1038709E2A5E4F8000064EF1 /* Session+PreviewProvider.swift */,
+			);
+			path = Previews;
+			sourceTree = "<group>";
+		};
 		10E81F482A51088800846852 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				10D833212A5FA46400C63083 /* File+CoreData.swift */,
-				10D833242A5FA46A00C63083 /* Target+CoreData.swift */,
-				10D8331C2A5FA34000C63083 /* Session+CoreData.swift */,
-				10E81F492A5108A000846852 /* File+PreviewProvider.swift */,
-				1038709E2A5E4F8000064EF1 /* Session+PreviewProvider.swift */,
+				10D833212A5FA46400C63083 /* File.swift */,
+				10D833242A5FA46A00C63083 /* Target.swift */,
+				10D8331C2A5FA34000C63083 /* Session.swift */,
+				10D8332D2A60011E00C63083 /* Previews */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -360,16 +408,16 @@
 				10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
 				109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */,
-				10D833232A5FA46400C63083 /* File+CoreData.swift in Sources */,
+				10D833232A5FA46400C63083 /* File.swift in Sources */,
 				10C432252A50F80F00E620DF /* AstroApp.swift in Sources */,
 				10D833152A5F75AC00C63083 /* SessionList.swift in Sources */,
 				1038709F2A5E4F8000064EF1 /* Session+PreviewProvider.swift in Sources */,
-				10D8331D2A5FA34000C63083 /* Session+CoreData.swift in Sources */,
+				10D8331D2A5FA34000C63083 /* Session.swift in Sources */,
 				10D833132A5F758000C63083 /* CategoryList.swift in Sources */,
 				10D8331B2A5F7D1600C63083 /* FileList.swift in Sources */,
 				10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */,
 				1038709D2A5E4F4100064EF1 /* SessionView.swift in Sources */,
-				10D833262A5FA46A00C63083 /* Target+CoreData.swift in Sources */,
+				10D833262A5FA46A00C63083 /* Target.swift in Sources */,
 				10E81F472A5104C300846852 /* FileView.swift in Sources */,
 				10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */,
 				109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */,
