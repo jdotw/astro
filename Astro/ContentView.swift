@@ -12,9 +12,9 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
 
-    @AppStorage("selectedSessionID") private var selectedSessionID: Session.ID
-    @AppStorage("selectedTargetID") private var selectedTargetID: Target.ID
-    @AppStorage("selectedFileID") private var selectedFileID: File.ID
+    @AppStorage("selectedSessionID") private var selectedSessionID: Session.ID?
+    @AppStorage("selectedTargetID") private var selectedTargetID: Target.ID?
+    @AppStorage("selectedFileID") private var selectedFileID: File.ID?
 
     var body: some View {
         NavigationSplitView {
@@ -29,7 +29,16 @@ struct ContentView: View {
                 FileList(selection: $selectedFileID)
             }
         } detail: {
-            FileView(fileID: $selectedFileID)
+            switch selectedCategory {
+            case .sessions:
+                SessionView(sessionID: $selectedSessionID)
+            case .targets:
+                SessionView(sessionID: $selectedSessionID)
+//                FileView(fileID: $selectedFileID)
+            case .files:
+                SessionView(sessionID: $selectedSessionID)
+//                FileView(fileID: $selectedFileID)
+            }
         }
         .toolbar {
             ToolbarItem {

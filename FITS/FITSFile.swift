@@ -20,11 +20,8 @@ class FITSFile {
     }
 
     init?(file: File) {
-        guard let bookmarkData = file.bookmark else {
-            return nil
-        }
         var stale = false
-        guard let url = try? URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale) else {
+        guard let url = try? URL(resolvingBookmarkData: file.bookmark, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale) else {
             return nil
         }
         self.isAccessingScopedResource = url.startAccessingSecurityScopedResource()
@@ -250,7 +247,6 @@ class FITSFile {
         case noType
         case noBookmark
         case noTarget
-        case noFilter
     }
 
     func importFile(context: NSManagedObjectContext) throws -> File {
@@ -276,9 +272,6 @@ class FITSFile {
         guard let targetName = headers["OBJECT"]?.value else {
             throw FITSFileImportError.noTarget
         }
-        guard let filterName = headers["FILTER"]?.value?.lowercased() else {
-            throw FITSFileImportError.noFilter
-        }
 
         // Look up File by fileHash
         let fileReq = NSFetchRequest<File>(entityName: "File")
@@ -297,6 +290,7 @@ class FITSFile {
         file.type = type
         file.url = url
         file.bookmark = bookmarkData
+        file.filter = headers["FILTER"]?.value?.lowercased()
 
         // Find/Create Target
         let targetReq = NSFetchRequest<Target>(entityName: "Target")
@@ -316,24 +310,14 @@ class FITSFile {
         let sessionReq = NSFetchRequest<Session>(entityName: "Session")
         sessionReq.predicate = NSPredicate(format: "dateString == %@", dateString)
         sessionReq.fetchLimit = 1
-        var session = try? context.fetch(sessionReq).first
-        if session == nil {
-            session = Session(context: context)
-            session!.id = UUID().uuidString
-            session!.dateString = dateString
+        if let session = try? context.fetch(sessionReq).first {
+            file.session = session
+        } else {
+            let newSession = Session(context: context)
+            newSession.id = UUID().uuidString
+            newSession.dateString = dateString
+            file.session = newSession
         }
-
-        // Find the SessionFileSet by filter
-        let filterReq = NSFetchRequest<SessionFileSet>(entityName: "SessionFileSet")
-        filterReq.predicate = NSPredicate(format: "session == %@ AND filter == %@", session!, filterName)
-        filterReq.fetchLimit = 1
-        var sessionFileSet = try? context.fetch(filterReq).first
-        if sessionFileSet == nil {
-            sessionFileSet = SessionFileSet(context: context)
-            sessionFileSet?.filter = filterName
-            sessionFileSet?.session = session
-        }
-        file.sessionFileSet = sessionFileSet
 
         return file
     }

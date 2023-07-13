@@ -5,11 +5,8 @@
 //  Created by James Wilson on 2/7/2023.
 //
 
-import Foundation
-
 import CoreData
-
-import SwiftUI
+import Foundation
 
 extension File {
     static var example: File {

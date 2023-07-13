@@ -8,26 +8,37 @@
 import SwiftUI
 
 struct SessionView: View {
-    @Binding var session: Session?
+    @Environment(\.managedObjectContext) var viewContext
+    @Binding var sessionID: Session.ID?
+    @FetchRequest(entity: Session.entity(),
+                  sortDescriptors: [])
+    var results: FetchedResults<Session>
 
-    @State var sortOrder: [KeyPathComparator<File>] = [
+    @State private var selectedFileIDs: Set<File.ID> = []
+    @State private var sortOrder: [KeyPathComparator<File>] = [
         .init(\.timestamp, order: SortOrder.reverse)
     ]
-    @State private var selection = Set<File.ID>()
 
     var table: some View {
-        let fileSets = session?.fileSets?.allObjects as? [SessionFileSet] ?? []
-        let files = fileSets.flatMap { $0.files?.allObjects as? [File] ?? [] }
-
-        return Table(files, selection: $selection, sortOrder: $sortOrder) {
-            TableColumn("Date", value: \.timestamp!) { file in
-                Text(file.timestamp!.formatted(date: .abbreviated, time: .omitted))
+        Table(files!, selection: $selectedFileIDs, sortOrder: $sortOrder) {
+            TableColumn("Timestamp", value: \.timestamp) {
+                Text($0.timestamp.formatted(date: .omitted, time: .shortened))
             }
+            .width(100)
 
-//            TableColumn("Days to Maturity", value: \.daysToMaturity) { plant in
-//                Text(plant.daysToMaturity.formatted())
-//            }
-//
+            TableColumn("Target", value: \.target!.name)
+                .width(100)
+
+            TableColumn("Type", value: \.type) { file in
+                Text(file.type.localizedCapitalized)
+            }
+            .width(50)
+
+            TableColumn("Filter", value: \.filter!) { file in
+                Text(file.filter?.localizedCapitalized ?? "N/A")
+            }
+            .width(50)
+
 //            TableColumn("Date Planted", value: \.datePlanted) { plant in
 //                Text(plant.datePlanted.formatted(date: .abbreviated, time: .omitted))
 //            }
@@ -39,23 +50,47 @@ struct SessionView: View {
 //            TableColumn("Last Watered", value: \.lastWateredOn) { plant in
 //                Text(plant.lastWateredOn.formatted(date: .abbreviated, time: .omitted))
 //            }
+//
+//            TableColumn("Favorite", value: \.favorite, comparator: BoolComparator()) { plant in
+//                Toggle("Favorite", isOn: gardenBinding[plant.id].favorite)
+//                    .labelsHidden()
+//            }
+//            .width(50)
         }
     }
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-        table
-//            .focusedSceneValue(\.garden, gardenBinding)
-//            .focusedSceneValue(\.selection, $selection)
-//            .searchable(text: $searchText)
-//            .toolbar {
-//                DisplayModePicker(mode: $mode)
-//                Button(action: addPlant) {
-//                    Label("Add Plant", systemImage: "plus")
-//                }
-//            }
-//            .navigationTitle(garden.name)
-//            .navigationSubtitle("\(garden.displayYear)")
+//        if let session = session {
+        // yer item's here, do what ye want with it
+        HStack {
+            table
+            VStack {
+                FileView(fileIDs: $selectedFileIDs)
+            }
+            .frame(width: 250.0)
+        }
+//        } else {
+//            // no item? handle it, mate
+//            Text("No session")
+//        }
+    }
+}
+
+extension SessionView {
+    var session: Session? {
+        if let sessionID = sessionID {
+            results.nsPredicate = NSPredicate(format: "id == %@", sessionID)
+            return results.first!
+        } else {
+            return nil
+        }
+    }
+
+    var files: [File]? {
+        guard let session = session else {
+            return nil
+        }
+        return session.files?.sortedArray(using: [NSSortDescriptor(keyPath: \File.timestamp, ascending: true)]) as? [File]
     }
 }
 

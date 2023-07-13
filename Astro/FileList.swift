@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FileList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var selection: File.ID
+    @Binding var selection: File.ID?
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \File.timestamp, ascending: false)],
@@ -18,8 +18,8 @@ struct FileList: View {
 
     var body: some View {
         List(selection: $selection) {
-            ForEach(files, id: \.self.id!) { file in
-                Label(file.name!, systemImage: "leaf")
+            ForEach(files) { file in
+                Label(file.name, systemImage: "leaf")
             }
         }
     }
