@@ -25,9 +25,9 @@ struct MultiFileView: View {
     var body: some View {
         if fileIDs.count > 1 {
             VStack { Text("Multiple files selected") }
-        } else {
+        } else if let fileID = fileIDs.first {
             VStack {
-                SingleFileView(fileID: fileIDs.first)
+                SingleFileView(fileID: fileID)
             }
         }
     }

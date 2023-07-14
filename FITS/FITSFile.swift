@@ -11,9 +11,11 @@ import CoreImage.CIFilterBuiltins
 import CryptoKit
 import Foundation
 
-class FITSFile {
+class FITSFile: ObservableObject {
     var url: URL?
     var isAccessingScopedResource = false
+    @Published var cgImage: CGImage?
+    @Published var isLoading = false
 
     init?(url: URL) {
         self.url = url
@@ -269,29 +271,46 @@ class FITSFile {
         return outputCGImage
     }
 
-    func image() -> CGImage? {
-        guard let headers = headers,
-              let data = data,
-              let info = FITSCGImageInfo(headers: headers)
-        else {
-            return nil
+    func image(completion: @escaping (CGImage?) -> Void) {
+        DispatchQueue.global().async {
+            guard let headers = self.headers,
+                  let data = self.data,
+                  let info = FITSCGImageInfo(headers: headers)
+            else {
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+                return
+            }
+            let convertedData = self.convertToUnsigned(data: data, offset: 32768)
+            let image = CGImage(
+                width: info.width,
+                height: info.height,
+                bitsPerComponent: info.bitsPerComponent,
+                bitsPerPixel: info.bitsPerPixel,
+                bytesPerRow: info.bytesPerRow,
+                space: info.colorSpace,
+                bitmapInfo: info.bitmapInfo,
+                provider: CGDataProvider(data: convertedData as CFData)!,
+                decode: info.decode,
+                shouldInterpolate: info.shouldInterpolate,
+                intent: info.intent
+            )
+            DispatchQueue.main.async {
+                completion(image)
+            }
         }
-        print("HEADERS: ", headers)
-        let convertedData = convertToUnsigned(data: data, offset: 32768)
-        let image = CGImage(
-            width: info.width,
-            height: info.height,
-            bitsPerComponent: info.bitsPerComponent,
-            bitsPerPixel: info.bitsPerPixel,
-            bytesPerRow: info.bytesPerRow,
-            space: info.colorSpace,
-            bitmapInfo: info.bitmapInfo,
-            provider: CGDataProvider(data: convertedData as CFData)!,
-            decode: info.decode,
-            shouldInterpolate: info.shouldInterpolate,
-            intent: info.intent
-        )
-        return image
+    }
+
+    func loadImage() {
+        if isLoading {
+            return
+        }
+        isLoading = true
+        image { image in
+            self.cgImage = image
+            self.isLoading = false
+        }
     }
 
     // Core Data
