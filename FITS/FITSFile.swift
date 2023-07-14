@@ -38,25 +38,24 @@ class FITSFile {
         self.cachedHeaders = headers
     }
 
-    private var cachedHeaders: [String: FITSHeaderKeyword]?
-    var headers: [String: FITSHeaderKeyword]? {
-        if let headers = cachedHeaders {
-            return headers
+    func parseHeadersUsingFileHandle() -> [String: FITSHeaderKeyword]? {
+        guard let url = url,
+              let file = try? FileHandle(forReadingFrom: url)
+        else {
+            return nil
         }
-        guard let url = url else { return nil }
         var headers = [String: FITSHeaderKeyword]()
-        let file = try! FileHandle(forReadingFrom: url)
         do {
             while let block = try file.readBlock() {
                 let recordSize = 80
-                for i in 0..<36 {
-                    let record = block[i*recordSize..<(i + 1)*recordSize]
+                for i in 0 ..< 36 {
+                    let record = block[i * recordSize ..< (i + 1) * recordSize]
                     if let keyword = FITSHeaderKeyword(record: record) {
                         headers[keyword.name] = keyword
                     }
                 }
                 if headers["END"] != nil {
-                    cachedDataStartOffset = try file.offset()
+                    cachedDataStartOffset = try Int(file.offset())
                     break
                 }
             }
@@ -67,8 +66,50 @@ class FITSFile {
         return headers
     }
 
-    private var cachedDataStartOffset: UInt64?
-    var dataStartOffset: UInt64 {
+    func parseHeadersUsingMemMappedData() -> [String: FITSHeaderKeyword]? {
+        if let headers = cachedHeaders {
+            return headers
+        }
+        guard let url = url else { return nil }
+        var headers = [String: FITSHeaderKeyword]()
+
+        let data = try! Data(contentsOf: url, options: .alwaysMapped)
+        let chunkSize = 2880
+        var stop = false
+        for start in stride(from: 0, to: data.count, by: chunkSize) {
+            let end = min(start + chunkSize, data.count)
+            let recordSize = 80
+            for start in stride(from: start, to: end, by: recordSize) {
+                let end = min(start + recordSize, data.count)
+                let range = start ..< end
+                let record = data[range]
+                if let keyword = FITSHeaderKeyword(record: record) {
+                    headers[keyword.name] = keyword
+                }
+                if headers["END"] != nil {
+                    cachedDataStartOffset = start
+                    stop = true
+                    break
+                }
+            }
+            if stop {
+                break
+            }
+        }
+        return headers
+    }
+
+    private var cachedHeaders: [String: FITSHeaderKeyword]?
+    var headers: [String: FITSHeaderKeyword]? {
+        if let headers = cachedHeaders {
+            return headers
+        }
+        cachedHeaders = parseHeadersUsingFileHandle()
+        return cachedHeaders
+    }
+
+    private var cachedDataStartOffset: Int?
+    var dataStartOffset: Int {
         if let cachedDataStartOffset = cachedDataStartOffset {
             return cachedDataStartOffset
         }
@@ -77,16 +118,33 @@ class FITSFile {
     }
 
     var data: Data? {
-        guard let url = url else { return nil }
-        var data = Data()
-        let file = try! FileHandle(forReadingFrom: url)
+        guard let url = url,
+              let file = try? FileHandle(forReadingFrom: url),
+              let headers = headers,
+              let bitpixString = headers["BITPIX"]?.value,
+              let bitpix = Int(bitpixString),
+              let nAxis1String = headers["NAXIS1"]?.value,
+              let nAxis1 = Int(nAxis1String),
+              let nAxis2String = headers["NAXIS2"]?.value,
+              let nAxis2 = Int(nAxis2String)
+        else {
+            return nil
+        }
+
+        let dataSize = nAxis1 * nAxis2 * (Int(bitpix) / 8)
+
+        var data = Data(capacity: dataSize)
         do {
-            try file.seek(toOffset: dataStartOffset)
-            while let block = try file.readBlock() {
+            try file.seek(toOffset: UInt64(dataStartOffset))
+            let blockSize = 2880
+            while data.count < dataSize,
+                  let block = try file.readBlock(size: min(blockSize, dataSize - data.count))
+            {
                 data.append(block)
             }
         } catch {
             print("Error reading block: \(error)")
+            return nil
         }
         return data
     }
