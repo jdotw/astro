@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct SessionView: View {
+struct TargetView: View {
     @Environment(\.managedObjectContext) var viewContext
-    @Binding var sessionID: Session.ID?
-    @FetchRequest(entity: Session.entity(),
+    @Binding var targetID: Target.ID?
+    @FetchRequest(entity: Target.entity(),
                   sortDescriptors: [])
-    var results: FetchedResults<Session>
+    var results: FetchedResults<Target>
 
     @State private var selectedFileIDs: Set<File.ID> = []
     @State private var sortOrder: [KeyPathComparator<File>] = [
@@ -20,6 +20,7 @@ struct SessionView: View {
     ]
 
     var body: some View {
+        // yer item's here, do what ye want with it
         HStack {
             Table(files, selection: $selectedFileIDs, sortOrder: $sortOrder) {
                 TableColumn("Timestamp", value: \.timestamp) {
@@ -48,10 +49,10 @@ struct SessionView: View {
     }
 }
 
-extension SessionView {
-    var session: Session? {
-        if let sessionID = sessionID {
-            results.nsPredicate = NSPredicate(format: "id == %@", sessionID)
+extension TargetView {
+    var target: Target? {
+        if let targetID = targetID {
+            results.nsPredicate = NSPredicate(format: "id == %@", targetID)
             return results.first!
         } else {
             return nil
@@ -59,8 +60,8 @@ extension SessionView {
     }
 
     var files: [File] {
-        guard let session = session,
-              let files = session.files
+        guard let target = target,
+              let files = target.files
         else {
             return []
         }

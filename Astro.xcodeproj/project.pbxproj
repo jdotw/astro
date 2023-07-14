@@ -15,6 +15,8 @@
 		108DD7EC2A5AA59A002A7549 /* FITSCGImageInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7EB2A5AA59A002A7549 /* FITSCGImageInfoTests.swift */; };
 		108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */; };
 		108DD7F02A5AA907002A7549 /* Date+FITSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */; };
+		108F82242A60DB5E00061511 /* TargetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82232A60DB5E00061511 /* TargetView.swift */; };
+		108F82262A60DE0000061511 /* SingleFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82252A60DE0000061511 /* SingleFileView.swift */; };
 		109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC52A5AC47D0024BBBD /* FITSFile.swift */; };
 		109D2DC82A5AC5430024BBBD /* FITSHeaderKeywordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */; };
 		109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */; };
@@ -42,7 +44,7 @@
 		10D833322A60017C00C63083 /* Ekos.fits in Resources */ = {isa = PBXBuildFile; fileRef = 10D833312A60017C00C63083 /* Ekos.fits */; };
 		10D833332A6001AA00C63083 /* Ekos.fits in Resources */ = {isa = PBXBuildFile; fileRef = 10D833312A60017C00C63083 /* Ekos.fits */; };
 		10D833342A6001AA00C63083 /* SGPro.fit in Resources */ = {isa = PBXBuildFile; fileRef = 10D8332F2A60016800C63083 /* SGPro.fit */; };
-		10E81F472A5104C300846852 /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F462A5104C300846852 /* FileView.swift */; };
+		10E81F472A5104C300846852 /* MultiFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F462A5104C300846852 /* MultiFileView.swift */; };
 		10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F492A5108A000846852 /* File+PreviewProvider.swift */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +75,8 @@
 		108DD7EB2A5AA59A002A7549 /* FITSCGImageInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSCGImageInfoTests.swift; sourceTree = "<group>"; };
 		108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITS.swift"; sourceTree = "<group>"; };
 		108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITSTests.swift"; sourceTree = "<group>"; };
+		108F82232A60DB5E00061511 /* TargetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetView.swift; sourceTree = "<group>"; };
+		108F82252A60DE0000061511 /* SingleFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleFileView.swift; sourceTree = "<group>"; };
 		109D2DC52A5AC47D0024BBBD /* FITSFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSFile.swift; sourceTree = "<group>"; };
 		109D2DC72A5AC5430024BBBD /* FITSHeaderKeywordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSHeaderKeywordTests.swift; sourceTree = "<group>"; };
 		109D2DC92A5AC5ED0024BBBD /* FileHandle+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileHandle+FITS.swift"; sourceTree = "<group>"; };
@@ -102,7 +106,7 @@
 		10D833242A5FA46A00C63083 /* Target.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Target.swift; sourceTree = "<group>"; };
 		10D8332F2A60016800C63083 /* SGPro.fit */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SGPro.fit; sourceTree = "<group>"; };
 		10D833312A60017C00C63083 /* Ekos.fits */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Ekos.fits; sourceTree = "<group>"; };
-		10E81F462A5104C300846852 /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
+		10E81F462A5104C300846852 /* MultiFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiFileView.swift; sourceTree = "<group>"; };
 		10E81F492A5108A000846852 /* File+PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+PreviewProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -239,6 +243,7 @@
 			isa = PBXGroup;
 			children = (
 				10D833182A5F7C6F00C63083 /* TargetList.swift */,
+				108F82232A60DB5E00061511 /* TargetView.swift */,
 			);
 			path = Targets;
 			sourceTree = "<group>";
@@ -247,7 +252,8 @@
 			isa = PBXGroup;
 			children = (
 				10D8331A2A5F7D1600C63083 /* FileList.swift */,
-				10E81F462A5104C300846852 /* FileView.swift */,
+				10E81F462A5104C300846852 /* MultiFileView.swift */,
+				108F82252A60DE0000061511 /* SingleFileView.swift */,
 			);
 			path = Files;
 			sourceTree = "<group>";
@@ -424,6 +430,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10C4322E2A50F81000E620DF /* Persistence.swift in Sources */,
+				108F82242A60DB5E00061511 /* TargetView.swift in Sources */,
 				109D2DCE2A5ACA370024BBBD /* URL+FITS.swift in Sources */,
 				10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
@@ -438,10 +445,11 @@
 				10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */,
 				1038709D2A5E4F4100064EF1 /* SessionView.swift in Sources */,
 				10D833262A5FA46A00C63083 /* Target.swift in Sources */,
-				10E81F472A5104C300846852 /* FileView.swift in Sources */,
+				10E81F472A5104C300846852 /* MultiFileView.swift in Sources */,
 				10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */,
 				109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */,
 				108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */,
+				108F82262A60DE0000061511 /* SingleFileView.swift in Sources */,
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,
 				10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */,
 				108DD7EA2A5AA57B002A7549 /* FITSCGImageInfo.swift in Sources */,

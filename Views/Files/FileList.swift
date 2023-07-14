@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FileList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var selection: File.ID?
+    @Binding var selection: Set<File.ID>
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \File.timestamp, ascending: false)],

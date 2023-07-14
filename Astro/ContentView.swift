@@ -14,7 +14,9 @@ struct ContentView: View {
 
     @AppStorage("selectedSessionID") private var selectedSessionID: Session.ID?
     @AppStorage("selectedTargetID") private var selectedTargetID: Target.ID?
-    @AppStorage("selectedFileID") private var selectedFileID: File.ID?
+//    @AppStorage("selectedFileID") private var selectedFileID: File.ID?
+
+    @State private var selectedFileIDs: Set<File.ID> = []
 
     var body: some View {
         NavigationSplitView {
@@ -26,18 +28,16 @@ struct ContentView: View {
             case .targets:
                 TargetList(selection: $selectedTargetID)
             case .files:
-                FileList(selection: $selectedFileID)
+                FileList(selection: $selectedFileIDs)
             }
         } detail: {
             switch selectedCategory {
             case .sessions:
                 SessionView(sessionID: $selectedSessionID)
             case .targets:
-                SessionView(sessionID: $selectedSessionID)
-//                FileView(fileID: $selectedFileID)
+                TargetView(targetID: $selectedTargetID)
             case .files:
-                SessionView(sessionID: $selectedSessionID)
-//                FileView(fileID: $selectedFileID)
+                MultiFileView(fileIDs: selectedFileIDs)
             }
         }
         .toolbar {
