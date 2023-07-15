@@ -398,6 +398,11 @@ class FITSFile: ObservableObject {
         let rawDataURL = docsURL.appendingPathComponent("\(fileID).u16")
         try! convertedData.write(to: rawDataURL, options: [.atomic])
 
+        // Save a TIFF
+        let tiffData = NSBitmapImageRep(cgImage: cgImage).representation(using: .tiff, properties: [:])!
+        let tiffURL = docsURL.appendingPathComponent("\(fileID).tiff")
+        try! tiffData.write(to: tiffURL, options: [.atomic])
+
         // Save a PNG
         let pngData = NSBitmapImageRep(cgImage: cgImage).representation(using: .png, properties: [:])!
         let previewURL = docsURL.appendingPathComponent("\(fileID).png")
@@ -420,7 +425,7 @@ class FITSFile: ObservableObject {
             file.url = url
             file.bookmark = bookmarkData
             file.filter = headers["FILTER"]?.value?.lowercased()
-            file.rawDataURL = rawDataURL
+            file.rawDataURL = tiffURL
             file.previewURL = previewURL
 
             // Find/Create Target

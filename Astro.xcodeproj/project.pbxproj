@@ -50,6 +50,9 @@
 		10D833342A6001AA00C63083 /* SGPro.fit in Resources */ = {isa = PBXBuildFile; fileRef = 10D8332F2A60016800C63083 /* SGPro.fit */; };
 		10E81F472A5104C300846852 /* MultiFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F462A5104C300846852 /* MultiFileView.swift */; };
 		10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E81F492A5108A000846852 /* File+PreviewProvider.swift */; };
+		10F646832A623D5900DE27FE /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F646822A623D5900DE27FE /* ImageProcessor.swift */; };
+		10F646852A629FCA00DE27FE /* AverageStacking.metal in Sources */ = {isa = PBXBuildFile; fileRef = 10F646842A629FCA00DE27FE /* AverageStacking.metal */; };
+		10F646872A629FED00DE27FE /* AverageStackingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F646862A629FED00DE27FE /* AverageStackingFilter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +119,9 @@
 		10D833312A60017C00C63083 /* Ekos.fits */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Ekos.fits; sourceTree = "<group>"; };
 		10E81F462A5104C300846852 /* MultiFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiFileView.swift; sourceTree = "<group>"; };
 		10E81F492A5108A000846852 /* File+PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+PreviewProvider.swift"; sourceTree = "<group>"; };
+		10F646822A623D5900DE27FE /* ImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProcessor.swift; sourceTree = "<group>"; };
+		10F646842A629FCA00DE27FE /* AverageStacking.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = AverageStacking.metal; sourceTree = "<group>"; };
+		10F646862A629FED00DE27FE /* AverageStackingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AverageStackingFilter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +175,7 @@
 		10C432182A50F80F00E620DF = {
 			isa = PBXGroup;
 			children = (
+				10F646812A623D4C00DE27FE /* Processor */,
 				10D833282A6000B300C63083 /* Views */,
 				10B5CC702A55801100A36387 /* FITS */,
 				10E81F482A51088800846852 /* Model */,
@@ -313,6 +320,16 @@
 				10D8332D2A60011E00C63083 /* Previews */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		10F646812A623D4C00DE27FE /* Processor */ = {
+			isa = PBXGroup;
+			children = (
+				10F646822A623D5900DE27FE /* ImageProcessor.swift */,
+				10F646842A629FCA00DE27FE /* AverageStacking.metal */,
+				10F646862A629FED00DE27FE /* AverageStackingFilter.swift */,
+			);
+			path = Processor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -468,9 +485,12 @@
 				10D8331B2A5F7D1600C63083 /* FileList.swift in Sources */,
 				10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */,
 				1038709D2A5E4F4100064EF1 /* SessionView.swift in Sources */,
+				10F646852A629FCA00DE27FE /* AverageStacking.metal in Sources */,
+				10F646832A623D5900DE27FE /* ImageProcessor.swift in Sources */,
 				10D833262A5FA46A00C63083 /* Target.swift in Sources */,
 				10E81F472A5104C300846852 /* MultiFileView.swift in Sources */,
 				10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */,
+				10F646872A629FED00DE27FE /* AverageStackingFilter.swift in Sources */,
 				109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */,
 				108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */,
 				108F82262A60DE0000061511 /* SingleFileView.swift in Sources */,
@@ -652,6 +672,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MTLLINKER_FLAGS = "-fcikernel";
+				MTL_COMPILER_FLAGS = "-fcikernel";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jdotw.Astro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -679,6 +701,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MTLLINKER_FLAGS = "-fcikernel";
+				MTL_COMPILER_FLAGS = "-fcikernel";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jdotw.Astro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
