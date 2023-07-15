@@ -10,12 +10,13 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.openWindow) private var openWindow
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
 
     @AppStorage("selectedSessionID") private var selectedSessionID: Session.ID?
     @AppStorage("selectedTargetID") private var selectedTargetID: Target.ID?
-//    @AppStorage("selectedFileID") private var selectedFileID: File.ID?
 
+    // selectedFileIDs isn't @AppStorage because it can't handle Sets
     @State private var selectedFileIDs: Set<File.ID> = []
 
     var body: some View {
@@ -49,48 +50,21 @@ struct ContentView: View {
         }
     }
 
-    private func importFITSFileFromURL(_ url: URL) {
-        print("URL: \(url)")
-        guard let fits = FITSFile(url: url),
-              let headers = fits.headers else { return }
-        print(headers)
-        do {
-            _ = try fits.importFile(context: viewContext)
-        } catch {
-            print(error)
-        }
-    }
-
-    private func importFileFromURL(_ url: URL) {
-        if url.isFITS {
-            importFITSFileFromURL(url)
-        }
-    }
 
     private func importFiles() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = true
         if panel.runModal() == .OK {
+            // Open a new window with ImportContentView
+            let importRequest = ImportRequest(context: viewContext)
+            importRequest.id = UUID().uuidString
+            importRequest.timestamp = Date()
             for url in panel.urls {
-                if url.startAccessingSecurityScopedResource() {
-                    defer { url.stopAccessingSecurityScopedResource() }
-
-                    guard let resourceValues = try? url.resourceValues(forKeys: Set<URLResourceKey>([.isDirectoryKey])),
-                          let isDirectory = resourceValues.isDirectory
-                    else {
-                        continue
-                    }
-                    if isDirectory {
-                        let enumerator = FileManager.default.enumerator(at: panel.url!, includingPropertiesForKeys: nil)
-                        while let url = enumerator?.nextObject() as? URL {
-                            importFileFromURL(url)
-                        }
-
-                    } else {
-                        importFileFromURL(url)
-                    }
-                }
+                let importURL = ImportURL(context: viewContext)
+                importURL.url = url
+                importURL.bookmark = try! url.bookmarkData(options: .withSecurityScope)
+                importURL.importRequest = importRequest
             }
             do {
                 try viewContext.save()
@@ -98,6 +72,7 @@ struct ContentView: View {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+            openWindow(value: importRequest.id)
         }
     }
 }

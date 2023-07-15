@@ -18,7 +18,7 @@ public extension File {
     @nonobjc class func fetchRequest() -> NSFetchRequest<File> {
         return NSFetchRequest<File>(entityName: "File")
     }
-    
+
     @NSManaged var bookmark: Data
     @NSManaged var contentHash: String
     @NSManaged var filter: String?
@@ -27,6 +27,8 @@ public extension File {
     @NSManaged var timestamp: Date
     @NSManaged var type: String
     @NSManaged var url: URL
+    @NSManaged var rawDataURL: URL
+    @NSManaged var previewURL: URL
     @NSManaged var session: Session?
     @NSManaged var target: Target?
 }

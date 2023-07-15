@@ -53,7 +53,7 @@ extension TargetView {
     var target: Target? {
         if let targetID = targetID {
             results.nsPredicate = NSPredicate(format: "id == %@", targetID)
-            return results.first!
+            return results.first
         } else {
             return nil
         }

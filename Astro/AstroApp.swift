@@ -16,5 +16,9 @@ struct AstroApp: App {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
+        WindowGroup(for: ImportRequest.ID.self) { $importRequestID in
+            ImportContentView(importRequestID: $importRequestID)
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        }
     }
 }

@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22189.1" systemVersion="23A5286i" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="File" representedClassName="File" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
         <attribute name="filter" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="previewURL" attributeType="URI"/>
+        <attribute name="rawDataURL" attributeType="URI"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
+        <relationship name="import" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="files" inverseEntity="ImportRequest"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="files" inverseEntity="Session"/>
         <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="files" inverseEntity="Target"/>
+    </entity>
+    <entity name="ImportRequest" representedClassName="ImportRequest" syncable="YES">
+        <attribute name="id" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="import" inverseEntity="File"/>
+        <relationship name="urls" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ImportURL" inverseName="importRequest" inverseEntity="ImportURL"/>
+    </entity>
+    <entity name="ImportURL" representedClassName="ImportURL" syncable="YES">
+        <attribute name="bookmark" optional="YES" attributeType="Binary"/>
+        <attribute name="url" optional="YES" attributeType="URI"/>
+        <relationship name="importRequest" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="urls" inverseEntity="ImportRequest"/>
     </entity>
     <entity name="Session" representedClassName="Session" syncable="YES">
         <attribute name="dateString" attributeType="String"/>

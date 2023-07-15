@@ -12,29 +12,21 @@ struct SingleFileView: View {
     @State private var exposureValue: Double = 0
     var fileID: File.ID
 
-    @State private var file: File?
-    @State private var fits: FITSFile?
-
-    func handleChangeInFileID(fileID: String) {
+    var file: File? {
         let fileReq = NSFetchRequest<File>(entityName: "File")
-        fileReq.predicate = NSPredicate(format: "id == %@", fileID)
+        fileReq.predicate = NSPredicate(format: "id == %@", self.fileID)
         fileReq.fetchLimit = 1
-        self.file = try? self.viewContext.fetch(fileReq).first
-        if let file = self.file {
-            self.fits = FITSFile(file: file)
-            self.fits?.loadImage()
-        } else {
-            self.fits = nil
-        }
+        return try? self.viewContext.fetch(fileReq).first
     }
 
     var body: some View {
         VStack {
-            if let file = file,
-               let fits = fits
-            {
+            if let file = file {
                 Text(file.name)
-                FITSFileImageView(fits: fits, exposure: self.exposureValue)
+                Image(nsImage: NSImage(contentsOf: file.previewURL)!)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+//                FITSFileImageView(fits: fits, exposure: self.exposureValue)
                 Slider(value: self.$exposureValue, in: -10 ... 10, step: 0.1) {
                     Text("Exposure")
                 }
@@ -44,12 +36,6 @@ struct SingleFileView: View {
                 Text("No file selected")
                     .task {}
             }
-        }
-        .onChange(of: self.fileID) { fileID in
-            self.handleChangeInFileID(fileID: fileID)
-        }
-        .task {
-            self.handleChangeInFileID(fileID: self.fileID)
         }
     }
 }

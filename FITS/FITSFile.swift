@@ -271,31 +271,44 @@ class FITSFile: ObservableObject {
         return outputCGImage
     }
 
+    var convertedData: Data? {
+        guard let headers = headers,
+              let bZeroString = headers["BZERO"]?.value,
+              let bZero = Int32(bZeroString),
+              let data = data
+        else {
+            return nil
+        }
+        let convertedData = convertToUnsigned(data: data, offset: bZero)
+        return convertedData
+    }
+
+    var syncCGImage: CGImage? {
+        guard let headers = headers,
+              let info = FITSCGImageInfo(headers: headers),
+              let convertedData = convertedData
+        else {
+            return nil
+        }
+        let image = CGImage(
+            width: info.width,
+            height: info.height,
+            bitsPerComponent: info.bitsPerComponent,
+            bitsPerPixel: info.bitsPerPixel,
+            bytesPerRow: info.bytesPerRow,
+            space: info.colorSpace,
+            bitmapInfo: info.bitmapInfo,
+            provider: CGDataProvider(data: convertedData as CFData)!,
+            decode: info.decode,
+            shouldInterpolate: info.shouldInterpolate,
+            intent: info.intent
+        )
+        return image
+    }
+
     func image(completion: @escaping (CGImage?) -> Void) {
         DispatchQueue.global().async {
-            guard let headers = self.headers,
-                  let data = self.data,
-                  let info = FITSCGImageInfo(headers: headers)
-            else {
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
-                return
-            }
-            let convertedData = self.convertToUnsigned(data: data, offset: 32768)
-            let image = CGImage(
-                width: info.width,
-                height: info.height,
-                bitsPerComponent: info.bitsPerComponent,
-                bitsPerPixel: info.bitsPerPixel,
-                bytesPerRow: info.bytesPerRow,
-                space: info.colorSpace,
-                bitmapInfo: info.bitmapInfo,
-                provider: CGDataProvider(data: convertedData as CFData)!,
-                decode: info.decode,
-                shouldInterpolate: info.shouldInterpolate,
-                intent: info.intent
-            )
+            let image = self.syncCGImage
             DispatchQueue.main.async {
                 completion(image)
             }
@@ -317,19 +330,41 @@ class FITSFile: ObservableObject {
 
     enum FITSFileImportError: Error {
         case hashFailed
-        case alreadyExists(File)
+        case alreadyExists
         case noHeaders
         case noObservationDate
         case noURL
         case noType
         case noBookmark
         case noTarget
+        case dataConversionFailed
+        case cgImageCreationFailed
     }
 
     func importFile(context: NSManagedObjectContext) throws -> File {
         guard let fileHash = fileHash else {
             throw FITSFileImportError.hashFailed
         }
+
+        let sema = DispatchSemaphore(value: 0)
+        var alreadyExists = false
+        DispatchQueue.main.async {
+            // Look up File by fileHash
+            let fileReq = NSFetchRequest<File>(entityName: "File")
+            fileReq.predicate = NSPredicate(format: "contentHash == %@", fileHash)
+            fileReq.fetchLimit = 1
+            if let _ = try? context.fetch(fileReq).first {
+                alreadyExists = true
+            }
+            sema.signal()
+        }
+        sema.wait()
+        guard !alreadyExists else {
+            print("ALREADY EXISTS: \(fileHash)")
+            throw FITSFileImportError.alreadyExists
+        }
+        print("DOES NOT EXIST: \(fileHash)")
+
         guard let headers = headers else {
             throw FITSFileImportError.noHeaders
         }
@@ -349,54 +384,80 @@ class FITSFile: ObservableObject {
         guard let targetName = headers["OBJECT"]?.value else {
             throw FITSFileImportError.noTarget
         }
-
-        // Look up File by fileHash
-        let fileReq = NSFetchRequest<File>(entityName: "File")
-        fileReq.predicate = NSPredicate(format: "contentHash == %@", fileHash)
-        fileReq.fetchLimit = 1
-        if let file = try? context.fetch(fileReq).first {
-            throw FITSFileImportError.alreadyExists(file)
+        guard let convertedData = convertedData else {
+            throw FITSFileImportError.dataConversionFailed
+        }
+        guard let cgImage = syncCGImage else {
+            throw FITSFileImportError.cgImageCreationFailed
         }
 
-        // Create new file
-        let file = File(context: context)
-        file.id = UUID().uuidString
-        file.timestamp = observationDate
-        file.contentHash = fileHash
-        file.name = url.lastPathComponent
-        file.type = type
-        file.url = url
-        file.bookmark = bookmarkData
-        file.filter = headers["FILTER"]?.value?.lowercased()
+        let fileID = UUID().uuidString
 
-        // Find/Create Target
-        let targetReq = NSFetchRequest<Target>(entityName: "Target")
-        targetReq.predicate = NSPredicate(format: "name == %@", targetName)
-        targetReq.fetchLimit = 1
-        if let target = try? context.fetch(targetReq).first {
-            file.target = target
-        } else {
-            let newTarget = Target(context: context)
-            newTarget.id = UUID().uuidString
-            newTarget.name = targetName
-            file.target = newTarget
+        // Write converted (raw pixel) data to disk
+        let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
+        let rawDataURL = docsURL.appendingPathComponent("\(fileID).u16")
+        try! convertedData.write(to: rawDataURL, options: [.atomic])
+
+        // Save a PNG
+        let pngData = NSBitmapImageRep(cgImage: cgImage).representation(using: .png, properties: [:])!
+        let previewURL = docsURL.appendingPathComponent("\(fileID).png")
+        try! pngData.write(to: previewURL, options: [.atomic])
+
+        var file: File?
+        let coreDataSema = DispatchSemaphore(value: 0)
+        DispatchQueue.main.async {
+            // Look up File by fileHash
+            // Create new file
+            file = File(context: context)
+            guard let file = file else {
+                return
+            }
+            file.id = fileID
+            file.timestamp = observationDate
+            file.contentHash = fileHash
+            file.name = url.lastPathComponent
+            file.type = type
+            file.url = url
+            file.bookmark = bookmarkData
+            file.filter = headers["FILTER"]?.value?.lowercased()
+            file.rawDataURL = rawDataURL
+            file.previewURL = previewURL
+
+            // Find/Create Target
+            let targetReq = NSFetchRequest<Target>(entityName: "Target")
+            targetReq.predicate = NSPredicate(format: "name == %@", targetName)
+            targetReq.fetchLimit = 1
+            if let target = try? context.fetch(targetReq).first {
+                file.target = target
+            } else {
+                let newTarget = Target(context: context)
+                newTarget.id = UUID().uuidString
+                newTarget.name = targetName
+                file.target = newTarget
+            }
+
+            // Find Session by dateString
+            let dateString = observationDate.sessionDateString()
+            let sessionReq = NSFetchRequest<Session>(entityName: "Session")
+            sessionReq.predicate = NSPredicate(format: "dateString == %@", dateString)
+            sessionReq.fetchLimit = 1
+            if let session = try? context.fetch(sessionReq).first {
+                file.session = session
+            } else {
+                let newSession = Session(context: context)
+                newSession.id = UUID().uuidString
+                newSession.dateString = dateString
+                file.session = newSession
+            }
+
+            try! context.save()
+
+            coreDataSema.signal()
         }
 
-        // Find Session by dateString
-        let dateString = observationDate.sessionDateString()
-        let sessionReq = NSFetchRequest<Session>(entityName: "Session")
-        sessionReq.predicate = NSPredicate(format: "dateString == %@", dateString)
-        sessionReq.fetchLimit = 1
-        if let session = try? context.fetch(sessionReq).first {
-            file.session = session
-        } else {
-            let newSession = Session(context: context)
-            newSession.id = UUID().uuidString
-            newSession.dateString = dateString
-            file.session = newSession
-        }
+        coreDataSema.wait()
 
-        return file
+        return file!
     }
 }
 

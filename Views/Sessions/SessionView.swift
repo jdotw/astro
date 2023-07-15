@@ -52,7 +52,7 @@ extension SessionView {
     var session: Session? {
         if let sessionID = sessionID {
             results.nsPredicate = NSPredicate(format: "id == %@", sessionID)
-            return results.first!
+            return results.first
         } else {
             return nil
         }
