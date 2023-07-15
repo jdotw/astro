@@ -19,7 +19,7 @@ struct SessionList: View {
     var body: some View {
         List(selection: $selection) {
             ForEach(sessions, id: \.self.id) { session in
-                Label(session.dateString, systemImage: "leaf")
+                Label(session.dateString, systemImage: "moon")
             }
         }
     }

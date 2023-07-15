@@ -19,7 +19,7 @@ struct TargetList: View {
     var body: some View {
         List(selection: $selection) {
             ForEach(targets) { target in
-                Label(target.name, systemImage: "leaf")
+                Label(target.name, systemImage: "scope")
             }
         }
     }

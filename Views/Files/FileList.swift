@@ -19,7 +19,7 @@ struct FileList: View {
     var body: some View {
         List(selection: $selection) {
             ForEach(files) { file in
-                Label(file.name, systemImage: "leaf")
+                Label(file.name, systemImage: "doc")
             }
         }
     }
