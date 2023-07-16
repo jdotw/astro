@@ -341,6 +341,19 @@ class FITSFile: ObservableObject {
         case cgImageCreationFailed
     }
 
+    func resizedImage(_ image: CGImage, for size: CGSize) -> CGImage? {
+        let context = CGContext(data: nil,
+                                width: Int(size.width),
+                                height: Int(size.height),
+                                bitsPerComponent: image.bitsPerComponent,
+                                bytesPerRow: 0,
+                                space: image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB)!,
+                                bitmapInfo: image.bitmapInfo.rawValue)
+        context?.interpolationQuality = .high
+        context?.draw(image, in: CGRect(origin: .zero, size: size))
+        return context?.makeImage()
+    }
+
     func importFile(context: NSManagedObjectContext) throws -> File {
         guard let fileHash = fileHash else {
             throw FITSFileImportError.hashFailed
@@ -404,7 +417,8 @@ class FITSFile: ObservableObject {
         try! tiffData.write(to: tiffURL, options: [.atomic])
 
         // Save a PNG
-        let pngData = NSBitmapImageRep(cgImage: cgImage).representation(using: .png, properties: [:])!
+        let resizedImage = self.resizedImage(cgImage, for: CGSize(width: 256, height: 256))!
+        let pngData = NSBitmapImageRep(cgImage: resizedImage).representation(using: .png, properties: [:])!
         let previewURL = docsURL.appendingPathComponent("\(fileID).png")
         try! pngData.write(to: previewURL, options: [.atomic])
 

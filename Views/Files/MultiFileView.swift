@@ -77,7 +77,7 @@ struct MultiFileView: View {
                 Image(systemName: "moon.stars")
                     .symbolVariant(.fill)
                     .font(.system(size: 40))
-                    .foregroundColor(Color.green)
+                    .foregroundColor(Color.accentColor)
                     .background(background)
                     .frame(width: size, height: size)
             }

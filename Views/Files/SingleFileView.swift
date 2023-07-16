@@ -14,7 +14,7 @@ struct SingleFileView: View {
     var body: some View {
         VStack {
             Text(file.name)
-            Image(nsImage: NSImage(contentsOf: file.previewURL)!)
+            Image(nsImage: NSImage(contentsOf: file.rawDataURL)!)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
             Slider(value: self.$exposureValue, in: -10 ... 10, step: 0.1) {

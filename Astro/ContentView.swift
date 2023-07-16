@@ -49,7 +49,7 @@ struct ContentView: View {
                 case 0:
                     Text("No files selected")
                 default:
-                    MultiFileView(files: selectedFiles)
+                    FileView(files: selectedFiles)
                 }
             }
         }
