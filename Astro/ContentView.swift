@@ -11,13 +11,12 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.openWindow) private var openWindow
+
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
 
-    @AppStorage("selectedSessionID") private var selectedSessionID: Session.ID?
-    @AppStorage("selectedTargetID") private var selectedTargetID: Target.ID?
-
-    // selectedFileIDs isn't @AppStorage because it can't handle Sets
-    @State private var selectedFileIDs: Set<File.ID> = []
+    @State private var selectedSession: Session?
+    @State private var selectedTarget: Target?
+    @State private var selectedFiles: Set<File> = []
 
     var body: some View {
         NavigationSplitView {
@@ -25,20 +24,33 @@ struct ContentView: View {
         } content: {
             switch selectedCategory {
             case .sessions:
-                SessionList(selection: $selectedSessionID)
+                SessionList(selection: $selectedSession)
             case .targets:
-                TargetList(selection: $selectedTargetID)
+                TargetList(selection: $selectedTarget)
             case .files:
-                FileList(selection: $selectedFileIDs)
+                FileList(selection: $selectedFiles)
             }
         } detail: {
             switch selectedCategory {
             case .sessions:
-                SessionView(sessionID: $selectedSessionID)
+                if let selectedSession = selectedSession {
+                    SessionView(session: selectedSession)
+                } else {
+                    Text("No session selected")
+                }
             case .targets:
-                TargetView(targetID: $selectedTargetID)
+                if let selectedTarget = selectedTarget {
+                    TargetView(target: selectedTarget)
+                } else {
+                    Text("No target selected")
+                }
             case .files:
-                MultiFileView(fileIDs: selectedFileIDs)
+                switch selectedFiles.count {
+                case 0:
+                    Text("No files selected")
+                default:
+                    MultiFileView(files: selectedFiles)
+                }
             }
         }
         .toolbar {
@@ -49,7 +61,6 @@ struct ContentView: View {
             }
         }
     }
-
 
     private func importFiles() {
         let panel = NSOpenPanel()

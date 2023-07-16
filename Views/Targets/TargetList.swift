@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TargetList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var selection: Target.ID?
+    @Binding var selection: Target?
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Target.name, ascending: true)],
@@ -18,7 +18,7 @@ struct TargetList: View {
 
     var body: some View {
         List(selection: $selection) {
-            ForEach(targets) { target in
+            ForEach(targets, id: \.self) { target in
                 Label(target.name, systemImage: "scope")
             }
         }
