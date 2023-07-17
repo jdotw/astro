@@ -8,12 +8,12 @@
 import Foundation
 
 class FileImport: ObservableObject {
-    class func importer(forURL url: URL) -> FileImport {
+    class func importer(forURL url: URL) -> FileImport? {
         switch url.pathExtension {
-        case "fits":
+        case "fits", "fit":
             return FITSFileImport()
         default:
-            return FileImport()
+            return nil
         }
     }
 }

@@ -36,11 +36,7 @@ class FITSFile: ObservableObject {
         }
     }
 
-    init(headers: [String: FITSHeaderKeyword]) {
-        self.cachedHeaders = headers
-    }
-
-    func parseHeadersUsingFileHandle() -> [String: FITSHeaderKeyword]? {
+    private func parseHeadersUsingFileHandle() -> [String: FITSHeaderKeyword]? {
         guard let url = url,
               let file = try? FileHandle(forReadingFrom: url)
         else {
@@ -65,39 +61,6 @@ class FITSFile: ObservableObject {
             print("Error reading block: \(error)")
         }
         cachedHeaders = headers
-        return headers
-    }
-
-    func parseHeadersUsingMemMappedData() -> [String: FITSHeaderKeyword]? {
-        if let headers = cachedHeaders {
-            return headers
-        }
-        guard let url = url else { return nil }
-        var headers = [String: FITSHeaderKeyword]()
-
-        let data = try! Data(contentsOf: url, options: .alwaysMapped)
-        let chunkSize = 2880
-        var stop = false
-        for start in stride(from: 0, to: data.count, by: chunkSize) {
-            let end = min(start + chunkSize, data.count)
-            let recordSize = 80
-            for start in stride(from: start, to: end, by: recordSize) {
-                let end = min(start + recordSize, data.count)
-                let range = start ..< end
-                let record = data[range]
-                if let keyword = FITSHeaderKeyword(record: record) {
-                    headers[keyword.name] = keyword
-                }
-                if headers["END"] != nil {
-                    cachedDataStartOffset = start
-                    stop = true
-                    break
-                }
-            }
-            if stop {
-                break
-            }
-        }
         return headers
     }
 
