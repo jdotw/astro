@@ -7,13 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		100AC9872A6B671F009E6CBA /* ImportFileListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100AC9862A6B671F009E6CBA /* ImportFileListTests.swift */; };
 		100AC9892A6B6F60009E6CBA /* FileImportControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100AC9882A6B6F60009E6CBA /* FileImportControllerTests.swift */; };
 		100AC98B2A6BEEF0009E6CBA /* 20230629 in Resources */ = {isa = PBXBuildFile; fileRef = 100AC98A2A6BEEE5009E6CBA /* 20230629 */; };
 		100AC98D2A6BEF57009E6CBA /* ImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100AC98C2A6BEF57009E6CBA /* ImportTests.swift */; };
 		100AC9902A6BF388009E6CBA /* Date+FITSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */; };
 		100AC9922A6BF399009E6CBA /* Date+SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038709A2A5E24F200064EF1 /* Date+SessionTests.swift */; };
-		102BD9132A6A9C9600CE9C59 /* ImportFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102BD9122A6A9C9600CE9C59 /* ImportFileList.swift */; };
 		102D542E2A63FAF300389791 /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102D542D2A63FAF300389791 /* FileView.swift */; };
 		103870992A5E246800064EF1 /* Date+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103870982A5E246800064EF1 /* Date+Session.swift */; };
 		1038709D2A5E4F4100064EF1 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038709C2A5E4F4100064EF1 /* SessionView.swift */; };
@@ -81,12 +79,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		100AC9862A6B671F009E6CBA /* ImportFileListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportFileListTests.swift; sourceTree = "<group>"; };
 		100AC9882A6B6F60009E6CBA /* FileImportControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImportControllerTests.swift; sourceTree = "<group>"; };
 		100AC98A2A6BEEE5009E6CBA /* 20230629 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = 20230629; sourceTree = "<group>"; };
 		100AC98C2A6BEF57009E6CBA /* ImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportTests.swift; sourceTree = "<group>"; };
 		101B308E2A5912430094DDCF /* Astro.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Astro.xctestplan; sourceTree = "<group>"; };
-		102BD9122A6A9C9600CE9C59 /* ImportFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportFileList.swift; sourceTree = "<group>"; };
 		102D542D2A63FAF300389791 /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
 		103870982A5E246800064EF1 /* Date+Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Session.swift"; sourceTree = "<group>"; };
 		1038709A2A5E24F200064EF1 /* Date+SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+SessionTests.swift"; sourceTree = "<group>"; };
@@ -363,8 +359,6 @@
 		10F646882A62B8A800DE27FE /* FileImport */ = {
 			isa = PBXGroup;
 			children = (
-				102BD9122A6A9C9600CE9C59 /* ImportFileList.swift */,
-				100AC9862A6B671F009E6CBA /* ImportFileListTests.swift */,
 				10AABE892A67FB37000443B8 /* FileImportController.swift */,
 				100AC9882A6B6F60009E6CBA /* FileImportControllerTests.swift */,
 				10F646892A62B8D200DE27FE /* FileImporter.swift */,
@@ -558,7 +552,6 @@
 				108F82262A60DE0000061511 /* SingleFileView.swift in Sources */,
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,
 				10F6468C2A62B8EB00DE27FE /* FITSFileImporter.swift in Sources */,
-				102BD9132A6A9C9600CE9C59 /* ImportFileList.swift in Sources */,
 				10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -567,7 +560,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				100AC9872A6B671F009E6CBA /* ImportFileListTests.swift in Sources */,
 				10AABE8E2A6A99B5000443B8 /* URL+FileTypeTests.swift in Sources */,
 				100AC9902A6BF388009E6CBA /* Date+FITSTests.swift in Sources */,
 				100AC9892A6B6F60009E6CBA /* FileImportControllerTests.swift in Sources */,

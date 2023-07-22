@@ -19,9 +19,13 @@ struct MultiFileView: View {
             LazyVGrid(columns: columns) {
                 ForEach(files.map { $0 }) { file in
                     GalleryItem(file: file, size: itemSize, isSelected: selection.contains(file))
-                        .onTapGesture {
+                        .gesture(TapGesture(count: 2).onEnded {
+                            print("double clicked")
+                        })
+                        .simultaneousGesture(TapGesture().onEnded {
+                            print("Single.. bruh")
                             selection = [file]
-                        }
+                        })
                 }
             }
         }
