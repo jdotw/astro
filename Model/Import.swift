@@ -19,6 +19,14 @@ public extension ImportRequest {
         return NSFetchRequest<ImportRequest>(entityName: "ImportRequest")
     }
 
+    convenience init(url: URL) {
+        let context = PersistenceController.shared.container.viewContext
+        self.init(entity: ImportRequest.entity(), insertInto: context)
+        self.id = UUID().uuidString
+        self.timestamp = Date()
+        self.urls = NSSet(array: [ImportURL(url: url, importRequest: self)])
+    }
+
     @NSManaged var id: String
     @NSManaged var timestamp: Date
     @NSManaged var urls: NSSet?
@@ -49,7 +57,7 @@ extension ImportRequest {
         }
     }
 
-    private func buildFileList(from urls: [URL]) throws -> [URL] {
+    func buildFileList(from urls: [URL]) throws -> [URL] {
         var files = [URL]()
         for url in urls {
             let fileManager = FileManager.default
@@ -90,6 +98,14 @@ public class ImportURL: NSManagedObject {}
 public extension ImportURL {
     @nonobjc class func fetchRequest() -> NSFetchRequest<ImportURL> {
         return NSFetchRequest<ImportURL>(entityName: "ImportURL")
+    }
+
+    convenience init(url: URL, importRequest: ImportRequest) {
+        let context = PersistenceController.shared.container.viewContext
+        self.init(entity: ImportURL.entity(), insertInto: context)
+        self.url = url
+        self.importRequest = importRequest
+        self.bookmark = try! url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
     }
 
     @NSManaged var url: URL
