@@ -12,78 +12,57 @@ class FileImportController: ObservableObject {
     @Published var imported = 0
     @Published var total = 0
     @Published var importing = false
+    @Published var errors = [Error]()
 
     func performImport(request: ImportRequest, completion: @escaping () -> Void) throws {
         imported = 0
         total = 0
         importing = true
-
-        // Resolve security-scoped URLs from bookmarks
-        let resolvedURLs = try request.resolvedURLs
-        try resolvedURLs.forEach { url in
-            guard url.startAccessingSecurityScopedResource() else {
-                throw FileImportControllerError.failedToAccessSecurityScopedURL(url)
-            }
-        }
-
-        // Build file list
-        let fileLists = try buildFileLists(fromURLs: resolvedURLs)
-        fileLists.forEach { list in
-            self.total += list.files.count
-        }
-
-        // Start background import
-        importFrom(fileLists: fileLists) {
-            self.importing = false
-            resolvedURLs.forEach { url in
-                url.stopAccessingSecurityScopedResource()
-            }
-            completion()
-        }
-    }
-
-    func buildFileLists(fromURLs urls: [URL]) throws -> [ImportFileList] {
-        var fileLists = [ImportFileList]()
-        for url in urls {
-            let fileList = try ImportFileList(at: url)
-            fileLists.append(fileList)
-        }
-        return fileLists
-    }
-
-    func importFrom(fileLists: [ImportFileList], completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            let importDispatchGroup = DispatchGroup()
-            let importSemaphore = DispatchSemaphore(value: ProcessInfo.processInfo.processorCount)
-            for fileList in fileLists {
-                importDispatchGroup.enter()
-                let fileListGroup = DispatchGroup()
-                for fileURL in fileList.files {
-                    fileListGroup.enter()
-                    importSemaphore.wait()
-                    PersistenceController.shared.container.performBackgroundTask { context in
-                        guard let importer = FileImporter.importer(forURL: fileURL, context: context) else {
-                            importSemaphore.signal()
-                            fileListGroup.leave()
-                            return
-                        }
-                        importer.importFile { _, _ in
-                            DispatchQueue.main.async {
-                                self.imported += 1
-                            }
-                            importSemaphore.signal()
-                            fileListGroup.leave()
-                        }
-                    }
+        errors = []
+        request.performBackgroundTask { result in
+            switch result {
+            case .success(let urls):
+                DispatchQueue.main.async {
+                    self.total = urls.count
                 }
-                fileListGroup.notify(queue: .main) {
-                    importDispatchGroup.leave()
-                }
+                self.importFilesFrom(fileURLs: urls)
+            case .failure(let error):
+                print("Failed to import: ", error)
+                self.errors.append(error)
             }
-            importDispatchGroup.notify(queue: .main) {
+            DispatchQueue.main.async {
+                self.importing = false
                 completion()
             }
         }
+    }
+
+    private func importFilesFrom(fileURLs: [URL]) {
+        print("IMPORTING FROM:\n\(fileURLs)")
+        let waitSema = DispatchSemaphore(value: 0)
+        let rateSema = DispatchSemaphore(value: ProcessInfo.processInfo.processorCount)
+        let group = DispatchGroup()
+        for fileURL in fileURLs {
+            rateSema.wait()
+            group.enter()
+            PersistenceController.shared.container.performBackgroundTask { context in
+                guard let importer = FileImporter.importer(forURL: fileURL, context: context) else {
+                    rateSema.signal()
+                    return
+                }
+                importer.importFile { _, _ in
+                    DispatchQueue.main.async {
+                        self.imported += 1
+                    }
+                    rateSema.signal()
+                    group.leave()
+                }
+            }
+        }
+        group.notify(queue: .global()) {
+            waitSema.signal()
+        }
+        waitSema.wait()
     }
 }
 

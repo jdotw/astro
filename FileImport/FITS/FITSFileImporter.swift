@@ -23,13 +23,9 @@ class FITSFileImporter: FileImporter {
     override func importFile(completion: @escaping (File?, Error?) -> Void) {
         do {
             let file = try importFileSync()
-            DispatchQueue.main.async {
-                completion(file, nil)
-            }
+            completion(file, nil)
         } catch {
-            DispatchQueue.main.async {
-                completion(nil, error)
-            }
+            completion(nil, error)
         }
     }
 

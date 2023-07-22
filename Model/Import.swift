@@ -27,10 +27,10 @@ public extension ImportRequest {
 extension ImportRequest: Identifiable {}
 
 extension ImportRequest {
-    var resolvedURLs: [URL] {
+    private var resolvedURLs: [URL] {
         get throws {
             guard let urls = urls as? Set<ImportURL> else {
-                return []
+                throw ImportRequestError.noURLs
             }
             var resolvedURLs = [URL]()
             for importURL in urls {
@@ -48,10 +48,40 @@ extension ImportRequest {
             return resolvedURLs
         }
     }
+
+    private func buildFileList(from urls: [URL]) throws -> [URL] {
+        var files = [URL]()
+        for url in urls {
+            let fileManager = FileManager.default
+            let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])!
+            for case let fileURL as URL in enumerator {
+                let resourceValues = try fileURL.resourceValues(forKeys: [.isDirectoryKey])
+                if !resourceValues.isDirectory! {
+                    files.append(fileURL)
+                }
+            }
+        }
+        return files
+    }
+
+    func performBackgroundTask(_ completion: @escaping (Result<[URL], Error>) -> Void) {
+        DispatchQueue.global().async {
+            do {
+                let resolvedURLs = try self.resolvedURLs
+                resolvedURLs.forEach { _ = $0.startAccessingSecurityScopedResource() }
+                let files = try self.buildFileList(from: resolvedURLs)
+                completion(.success(files))
+                resolvedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
 }
 
 enum ImportRequestError: Error {
     case failedToResolveBookmark(URL)
+    case noURLs
 }
 
 @objc(ImportURL)
