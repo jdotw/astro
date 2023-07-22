@@ -20,6 +20,7 @@ public extension ImportRequest {
     }
 
     convenience init(url: URL) {
+        // For Unit Tests
         let context = PersistenceController.shared.container.viewContext
         self.init(entity: ImportRequest.entity(), insertInto: context)
         self.id = UUID().uuidString
@@ -101,6 +102,7 @@ public extension ImportURL {
     }
 
     convenience init(url: URL, importRequest: ImportRequest) {
+        // For Unit Tests
         let context = PersistenceController.shared.container.viewContext
         self.init(entity: ImportURL.entity(), insertInto: context)
         self.url = url
