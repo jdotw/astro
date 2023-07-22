@@ -54,10 +54,8 @@ class ImageProcessor: ObservableObject {
     }
 
     func processFrames(completion: ((CIImage) -> Void)?) {
-        // 1
         isProcessingFrames = true
         self.completion = completion
-        // 2
         let firstFrame = frameBuffer.removeFirst()
 
         // JW DEBUG
@@ -67,7 +65,6 @@ class ImageProcessor: ObservableObject {
         // END JW DEBUG
 
         alignedFrameBuffer.append(firstFrame)
-        // 3
         var imageCount = 0
         for frame in frameBuffer {
             let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
@@ -75,23 +72,17 @@ class ImageProcessor: ObservableObject {
             try! ciContext.writeTIFFRepresentation(of: frame, to: docsURL.appendingPathComponent("original-\(imageCount).tiff"), format: .L16, colorSpace: CGColorSpaceCreateDeviceGray(), options: [:])
             imageCount += 1
 
-            // 4
             let request = VNTranslationalImageRegistrationRequest(targetedCIImage: frame)
-
             do {
-                // 5
                 let sequenceHandler = VNSequenceRequestHandler()
-                // 6
                 try sequenceHandler.perform([request], on: firstFrame)
             } catch {
                 print(error.localizedDescription)
             }
-            // 7
             alignImages(request: request, frame: frame)
         }
         imageCount = 0
         for frame in alignedFrameBuffer {
-            // 8
             let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
             let ciContext = CIContext()
             try! ciContext.writeTIFFRepresentation(of: frame, to: docsURL.appendingPathComponent("aligned-\(imageCount).tiff"), format: .L16, colorSpace: CGColorSpaceCreateDeviceGray(), options: [:])

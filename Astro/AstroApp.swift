@@ -17,7 +17,7 @@ struct AstroApp: App {
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
         WindowGroup(for: ImportRequest.ID.self) { $importRequestID in
-            ImportContentView(importRequestID: $importRequestID)
+            FileImportContentView(importRequestID: $importRequestID)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

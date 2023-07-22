@@ -14,16 +14,13 @@ class AverageStackingFilter: CIFilter {
     var inputStackCount = 1.0
 
     override init() {
-        // 1
         guard let url = Bundle.main.url(forResource: "default",
                                         withExtension: "metallib")
         else {
             fatalError("Check your build settings.")
         }
         do {
-            // 2
             let data = try Data(contentsOf: url)
-            // 3
             kernel = try CIColorKernel(
                 functionName: "avgStacking",
                 fromMetalLibraryData: data)
@@ -31,7 +28,6 @@ class AverageStackingFilter: CIFilter {
             print(error.localizedDescription)
             fatalError("Make sure the function names match")
         }
-        // 4
         super.init()
     }
 
