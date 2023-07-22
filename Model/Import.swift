@@ -26,6 +26,34 @@ public extension ImportRequest {
 
 extension ImportRequest: Identifiable {}
 
+extension ImportRequest {
+    var resolvedURLs: [URL] {
+        get throws {
+            guard let urls = urls as? Set<ImportURL> else {
+                return []
+            }
+            var resolvedURLs = [URL]()
+            for importURL in urls {
+                var stale = false
+                guard let resolvedURL = try? URL(resolvingBookmarkData: importURL.bookmark,
+                                                 options: .withSecurityScope,
+                                                 relativeTo: nil,
+                                                 bookmarkDataIsStale: &stale)
+                else {
+                    print("Failed to get security scoped URL")
+                    throw ImportRequestError.failedToResolveBookmark(importURL.url)
+                }
+                resolvedURLs.append(resolvedURL)
+            }
+            return resolvedURLs
+        }
+    }
+}
+
+enum ImportRequestError: Error {
+    case failedToResolveBookmark(URL)
+}
+
 @objc(ImportURL)
 public class ImportURL: NSManagedObject {}
 

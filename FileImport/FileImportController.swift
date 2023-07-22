@@ -18,15 +18,16 @@ class FileImportController: ObservableObject {
         total = 0
         importing = true
 
-        // Get user-specified URLs
-        guard let userSpecifiedURLs = request.urls as? Set<ImportURL>
-        else {
-            throw FileImportControllerError.noURLs
+        // Resolve security-scoped URLs from bookmarks
+        let resolvedURLs = try request.resolvedURLs
+        try resolvedURLs.forEach { url in
+            guard url.startAccessingSecurityScopedResource() else {
+                throw FileImportControllerError.failedToAccessSecurityScopedURL(url)
+            }
         }
 
         // Build file list
-        let resolvedURLs = try resolvedURLs(fromBookmarks: userSpecifiedURLs.map(\.bookmark))
-        let fileLists = try buildSecurityScopedFileLists(fromURLs: resolvedURLs)
+        let fileLists = try buildFileLists(fromURLs: resolvedURLs)
         fileLists.forEach { list in
             self.total += list.files.count
         }
@@ -34,41 +35,14 @@ class FileImportController: ObservableObject {
         // Start background import
         importFrom(fileLists: fileLists) {
             self.importing = false
+            resolvedURLs.forEach { url in
+                url.stopAccessingSecurityScopedResource()
+            }
             completion()
         }
     }
 
-    func resolvedURLs(fromBookmarks bookmarks: [Data]) throws -> [URL] {
-        var urls = [URL]()
-        for bookmark in bookmarks {
-            var stale = false
-            do {
-                let _ = try URL(resolvingBookmarkData: bookmark,
-                                options: .withSecurityScope,
-                                relativeTo: nil,
-                                bookmarkDataIsStale: &stale)
-            } catch {
-                print("Failed to resolve bookmark: ", error)
-                throw FileImportControllerError.failedToResolveBookmark
-            }
-            guard let resolvedURL = try? URL(resolvingBookmarkData: bookmark,
-                                             options: .withSecurityScope,
-                                             relativeTo: nil,
-                                             bookmarkDataIsStale: &stale)
-            else {
-                print("Failed to get security scoped URL")
-                throw FileImportControllerError.failedToResolveBookmark
-            }
-            if resolvedURL.startAccessingSecurityScopedResource() {
-                urls.append(resolvedURL)
-            } else {
-                throw FileImportControllerError.failedToAccessSecurityScopedURL(resolvedURL)
-            }
-        }
-        return urls
-    }
-
-    func buildSecurityScopedFileLists(fromURLs urls: [URL]) throws -> [ImportFileList] {
+    func buildFileLists(fromURLs urls: [URL]) throws -> [ImportFileList] {
         var fileLists = [ImportFileList]()
         for url in urls {
             let fileList = try ImportFileList(at: url)
@@ -103,7 +77,6 @@ class FileImportController: ObservableObject {
                     }
                 }
                 fileListGroup.notify(queue: .main) {
-                    fileList.baseURL.stopAccessingSecurityScopedResource()
                     importDispatchGroup.leave()
                 }
             }
