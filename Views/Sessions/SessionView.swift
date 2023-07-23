@@ -14,6 +14,7 @@ struct SessionView: View {
     @State private var sortOrder: [KeyPathComparator<File>] = [
         .init(\.timestamp, order: SortOrder.reverse)
     ]
+    @State private var focusedFile: File?
 
     var body: some View {
         VStack {
@@ -38,7 +39,7 @@ struct SessionView: View {
                     .width(50)
                 }
                 VStack {
-                    MultiFileView(files: selectedFiles)
+                    MultiFileView(files: selectedFiles, focusedFile: $focusedFile)
                 }
                 .frame(width: 250.0)
             }

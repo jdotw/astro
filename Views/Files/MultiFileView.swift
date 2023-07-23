@@ -13,6 +13,7 @@ struct MultiFileView: View {
     @State private var exposureValue: Double = 0
     @State private var selection: Set<File> = []
     @State private var itemSize: CGFloat = 250
+    @Binding var focusedFile: File?
     
     var body: some View {
         ScrollView {
@@ -21,6 +22,7 @@ struct MultiFileView: View {
                     GalleryItem(file: file, size: itemSize, isSelected: selection.contains(file))
                         .gesture(TapGesture(count: 2).onEnded {
                             print("double clicked")
+                            focusedFile = file
                         })
                         .simultaneousGesture(TapGesture().onEnded {
                             print("Single.. bruh")
