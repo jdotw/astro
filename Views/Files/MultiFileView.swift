@@ -76,7 +76,7 @@ struct MultiFileView: View {
         var size: CGFloat
         
         var body: some View {
-            AsyncImage(url: file.rawDataURL) { image in
+            AsyncImage(url: file.previewURL) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
