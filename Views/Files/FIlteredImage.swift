@@ -10,7 +10,7 @@ import SwiftUI
 
 struct FilteredImage: View {
     var file: File
-    @Binding var exposureValue: Double
+    var exposureValue: Double = 4.0
 
     @State private var image: NSImage?
     @State private var inputImage: CIImage?
