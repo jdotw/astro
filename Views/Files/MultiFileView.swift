@@ -14,20 +14,23 @@ struct MultiFileView: View {
     @State private var selection: Set<File> = []
     @State private var itemSize: CGFloat = 250
     @Binding var focusedFile: File?
+    @Binding var navStackPath: [File]
     
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns) {
                 ForEach(files.map { $0 }) { file in
+//                    NavigationLink(value: file) {
                     GalleryItem(file: file, size: itemSize, isSelected: selection.contains(file))
                         .gesture(TapGesture(count: 2).onEnded {
                             print("double clicked")
-                            focusedFile = file
+                            navStackPath.append(file)
                         })
                         .simultaneousGesture(TapGesture().onEnded {
                             print("Single.. bruh")
                             selection = [file]
                         })
+//                    }
                 }
             }
         }

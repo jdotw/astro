@@ -17,13 +17,14 @@ struct TargetView: View {
     ]
 
     @State private var processedImage: NSImage?
+    @Binding var navStackPath: [File]
 
     @ObservedObject private var imageProcessor = ImageProcessor()
 
     var body: some View {
         // yer item's here, do what ye want with it
         HStack {
-            FileView(files: target.files as? Set<File> ?? [])
+            FileView(files: target.files as? Set<File> ?? [], navStackPath: $navStackPath)
 //            Table(files, selection: $selectedFileIDs, sortOrder: $sortOrder) {
 //                TableColumn("Filter", value: \.filter!) { file in
 //                    Text(file.filter?.localizedCapitalized ?? "N/A")

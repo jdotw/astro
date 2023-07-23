@@ -15,13 +15,14 @@ struct SessionView: View {
         .init(\.timestamp, order: SortOrder.reverse)
     ]
     @State private var focusedFile: File?
+    @Binding var navStackPath: [File]
 
     var body: some View {
         VStack {
             HStack {
-                Table(files ?? [], selection: $selectedFileIDs, sortOrder: $sortOrder) {
-                    TableColumn("Timestamp", value: \.timestamp) {
-                        Text($0.timestamp.formatted(date: .omitted, time: .shortened))
+                Table(files, selection: $selectedFileIDs, sortOrder: $sortOrder) {
+                    TableColumn("Timestamp", value: \.timestamp) { file in
+                        Text(file.timestamp.formatted(date: .omitted, time: .shortened))
                     }
                     .width(100)
 
@@ -38,8 +39,16 @@ struct SessionView: View {
                     }
                     .width(50)
                 }
+                .contextMenu(forSelectionType: File.ID.self, menu: { _ in
+//                    Button("Rename", action: { print("RENAME \(items)") })
+//                    Button("Delete", action: { print("DELETE \(items)") })
+                }, primaryAction: { _ in
+                    if selectedFiles.count == 1, let selectedFile = selectedFiles.first {
+                        navStackPath.append(selectedFile)
+                    }
+                })
                 VStack {
-                    MultiFileView(files: selectedFiles, focusedFile: $focusedFile)
+                    MultiFileView(files: selectedFiles, focusedFile: $focusedFile, navStackPath: $navStackPath)
                 }
                 .frame(width: 250.0)
             }
@@ -48,10 +57,10 @@ struct SessionView: View {
 }
 
 extension SessionView {
-    var files: [File]? {
+    var files: [File] {
         guard let files = session.files as? Set<File>
         else {
-            return nil
+            return []
         }
         return files.sorted(using: sortOrder)
     }

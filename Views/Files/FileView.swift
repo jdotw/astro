@@ -11,6 +11,8 @@ import SwiftUI
 struct FileView: View {
     var files: Set<File>
     @State private var focusedFile: File?
+    @Binding var navStackPath: [File]
+
     var body: some View {
         VStack {
             if let focusedFile = focusedFile {
@@ -18,7 +20,7 @@ struct FileView: View {
             } else if files.count == 1, let singleFile = files.first {
                 SingleFileView(file: singleFile)
             } else {
-                MultiFileView(files: files, focusedFile: $focusedFile)
+                MultiFileView(files: files, focusedFile: $focusedFile, navStackPath: $navStackPath)
             }
         }
     }

@@ -17,39 +17,65 @@ struct ContentView: View {
     @State private var selectedSession: Session?
     @State private var selectedTarget: Target?
     @State private var selectedFiles: Set<File> = []
+    @State private var navStackPath = [File]()
 
     var body: some View {
         NavigationSplitView {
             CategoryList(selection: $selectedCategory)
         } content: {
-            switch selectedCategory {
-            case .sessions:
-                SessionList(selection: $selectedSession)
-            case .targets:
-                TargetList(selection: $selectedTarget)
-            case .files:
-                FileList(selection: $selectedFiles)
+            VStack {
+                switch selectedCategory {
+                case .sessions:
+                    SessionList(selection: $selectedSession)
+                case .targets:
+                    TargetList(selection: $selectedTarget)
+                case .files:
+                    FileList(selection: $selectedFiles)
+                }
             }
+            .navigationDestination(for: File.self) { file in
+                SingleFileView(file: file)
+            }
+            .navigationDestination(for: Target.self) { target in
+                TargetView(target: target, navStackPath: $navStackPath)
+            }
+            .navigationDestination(for: Session.self) { session in
+                SessionView(session: session, navStackPath: $navStackPath)
+            }
+
         } detail: {
-            switch selectedCategory {
-            case .sessions:
-                if let selectedSession = selectedSession {
-                    SessionView(session: selectedSession)
-                } else {
-                    Text("No session selected")
+            NavigationStack(path: $navStackPath) {
+                VStack {
+                    switch selectedCategory {
+                    case .sessions:
+                        if let selectedSession = selectedSession {
+                            SessionView(session: selectedSession, navStackPath: $navStackPath)
+                        } else {
+                            Text("No session selected")
+                        }
+                    case .targets:
+                        if let selectedTarget = selectedTarget {
+                            TargetView(target: selectedTarget, navStackPath: $navStackPath)
+                        } else {
+                            Text("No target selected")
+                        }
+                    case .files:
+                        switch selectedFiles.count {
+                        case 0:
+                            Text("No files selected")
+                        default:
+                            FileView(files: selectedFiles, navStackPath: $navStackPath)
+                        }
+                    }
                 }
-            case .targets:
-                if let selectedTarget = selectedTarget {
-                    TargetView(target: selectedTarget)
-                } else {
-                    Text("No target selected")
+                .navigationDestination(for: File.self) { file in
+                    SingleFileView(file: file)
                 }
-            case .files:
-                switch selectedFiles.count {
-                case 0:
-                    Text("No files selected")
-                default:
-                    FileView(files: selectedFiles)
+                .navigationDestination(for: Target.self) { target in
+                    TargetView(target: target, navStackPath: $navStackPath)
+                }
+                .navigationDestination(for: Session.self) { session in
+                    SessionView(session: session, navStackPath: $navStackPath)
                 }
             }
         }
