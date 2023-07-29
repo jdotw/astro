@@ -25,7 +25,7 @@ class FileImportController: ObservableObject {
                 DispatchQueue.main.async {
                     self.total = urls.count
                 }
-                self.importFilesFrom(fileURLs: urls)
+                self.importFilesFrom(fileURLs: urls, persistentContainer: PersistenceController.shared.container)
             case .failure(let error):
                 print("Failed to import: ", error)
                 self.errors.append(error)
@@ -37,7 +37,7 @@ class FileImportController: ObservableObject {
         }
     }
 
-    private func importFilesFrom(fileURLs: [URL]) {
+    private func importFilesFrom(fileURLs: [URL], persistentContainer: NSPersistentContainer) {
         print("IMPORTING FROM:\n\(fileURLs)")
         let waitSema = DispatchSemaphore(value: 0)
         let rateSema = DispatchSemaphore(value: ProcessInfo.processInfo.processorCount)
@@ -45,7 +45,7 @@ class FileImportController: ObservableObject {
         for fileURL in fileURLs {
             rateSema.wait()
             group.enter()
-            PersistenceController.shared.container.performBackgroundTask { context in
+            persistentContainer.performBackgroundTask { context in
                 guard let importer = FileImporter.importer(forURL: fileURL, context: context) else {
                     rateSema.signal()
                     return
