@@ -17,6 +17,7 @@ struct SingleFileView: View {
     @State private var toneCurve4: Double = 0.75
     @State private var toneCurve5: Double = 1.0
     @State private var applyToneCurve: Bool = true
+    @State private var sharpness: Double = 0.0
 
     @State private var showInspector: Bool = true
     @State private var histogramImage: NSImage = .init()
@@ -24,7 +25,7 @@ struct SingleFileView: View {
     var body: some View {
         VStack {
             Text(file.name)
-            FilteredImage(file: file, exposureValue: exposureValue, gammaValue: gammaValue, toneCurve1: toneCurve1, toneCurve2: toneCurve2, toneCurve3: toneCurve3, toneCurve4: toneCurve4, toneCurve5: toneCurve5, applyToneCurve: applyToneCurve, histogramImage: $histogramImage)
+            FilteredImage(file: file, exposureValue: exposureValue, gammaValue: gammaValue, toneCurve1: toneCurve1, toneCurve2: toneCurve2, toneCurve3: toneCurve3, toneCurve4: toneCurve4, toneCurve5: toneCurve5, sharpness: sharpness, applyToneCurve: applyToneCurve, histogramImage: $histogramImage)
         }
         .inspector(isPresented: $showInspector) {
             Slider(value: $gammaValue, in: -3 ... 3, step: 0.3) {
@@ -64,6 +65,12 @@ struct SingleFileView: View {
             Toggle(isOn: $applyToneCurve) {
                 Text("Apply Tone Curve")
             }
+            .padding()
+
+            Slider(value: $sharpness, in: 0 ... 3, step: 0.1) {
+                Text("Sharpness")
+            }
+            .padding()
 
             Image(nsImage: histogramImage)
         }

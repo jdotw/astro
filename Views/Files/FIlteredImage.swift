@@ -21,6 +21,8 @@ struct FilteredImage: View {
     var toneCurve4: Double
     var toneCurve5: Double
 
+    var sharpness: Double
+
     var applyToneCurve: Bool
 
     @State private var image: NSImage?
@@ -77,6 +79,15 @@ struct FilteredImage: View {
         return filter.outputImage
     }
 
+    func applySharpen(inputImage: CIImage) -> CIImage? {
+        guard let filter = CIFilter(name: "CISharpenLuminance") else {
+            return nil
+        }
+        filter.setValue(inputImage, forKey: kCIInputImageKey)
+        filter.setValue(sharpness, forKey: "inputSharpness") // Increase exposure
+        return filter.outputImage
+    }
+
     func applyToneCurveAdjustment(inputImage: CIImage) -> CIImage? {
         guard let filter = CIFilter(name: "CIToneCurve") else {
             return nil
@@ -108,11 +119,21 @@ struct FilteredImage: View {
             toneCurveAdjustedImage = exposureAdjustedImage
         }
 
-        let imageRep = NSCIImageRep(ciImage: toneCurveAdjustedImage)
+        var sharpenedImage: CIImage!
+        if applyToneCurve {
+            guard let result = applySharpen(inputImage: toneCurveAdjustedImage) else {
+                return
+            }
+            sharpenedImage = result
+        } else {
+            sharpenedImage = toneCurveAdjustedImage
+        }
+
+        let imageRep = NSCIImageRep(ciImage: sharpenedImage)
         let nsImage = NSImage(size: imageRep.size)
         nsImage.addRepresentation(imageRep)
         image = nsImage
-        generateHistogram(inputImage: toneCurveAdjustedImage)
+        generateHistogram(inputImage: sharpenedImage)
     }
 
     func generateHistogram(inputImage: CIImage) {
