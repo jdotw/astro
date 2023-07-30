@@ -61,6 +61,8 @@ class FITSFileImporter: FileImporter {
         guard let targetName = headers["OBJECT"]?.value else {
             throw FITSFileImportError.noTarget
         }
+
+        // Get Data and Image
         guard let data = file.getImageData(fromOffset: dataStartOffset, headers: headers) else {
             throw FITSFileImportError.dataReadFailed
         }
@@ -71,8 +73,12 @@ class FITSFileImporter: FileImporter {
         // Create UUID for this file
         let fileID = UUID().uuidString
 
-        // Save a TIFF representation (lossless)
+        // Save a FP32 representation (raw data)
         let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
+        let fp32URL = docsURL.appendingPathComponent("\(fileID).fp32")
+        try data.write(to: fp32URL, options: [.atomic])
+
+        // Save a TIFF representation (lossless)
         guard let tiffData = cgImage.tiffData else {
             throw FITSFileImportError.tiffConversionFailed
         }
@@ -97,7 +103,7 @@ class FITSFileImporter: FileImporter {
         file.url = url
         file.bookmark = bookmarkData
         file.filter = headers["FILTER"]?.value?.lowercased()
-        file.rawDataURL = tiffURL
+        file.rawDataURL = fp32URL
         file.previewURL = previewURL
 
         // Find/Create Target
@@ -143,6 +149,7 @@ enum FITSFileImportError: Error {
     case noTarget
     case dataConversionFailed
     case cgImageCreationFailed
+    case fp32ConversionFailed
     case tiffConversionFailed
     case pngConversionFailed
     case dataReadFailed

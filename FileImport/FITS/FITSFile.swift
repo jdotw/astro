@@ -47,6 +47,7 @@ struct FITSFile {
     // MARK: Data
     
     func getImageData(fromOffset dataStartOffset: UInt64, headers: [String: FITSHeaderKeyword]) -> Data? {
+        // Must return the image as 32bit Floating Point data
         guard let file = try? FileHandle(forReadingFrom: url),
               let bitpixString = headers["BITPIX"]?.value,
               let bitpix = Int(bitpixString),
@@ -75,16 +76,16 @@ struct FITSFile {
         }
         
         guard let bZeroString = headers["BZERO"]?.value,
-              let bZero = Int32(bZeroString)
+              let bZero = Float(bZeroString)
         else {
             return nil
         }
         
         let signedArray = data.withUnsafeBytes { Array($0.bindMemory(to: Int16.self)) }
-        let unsigned16Array = signedArray.map { UInt16(Int32(Int16(bigEndian: $0)) + bZero).bigEndian }
-        let unsignedData = unsigned16Array.withUnsafeBytes { Data($0) }
+        let fpArray = signedArray.map { (Float(Int16(bigEndian: $0)) + bZero) / Float(UINT16_MAX) }
+        let fpData = fpArray.withUnsafeBytes { Data($0) }
         
-        return unsignedData
+        return fpData
     }
     
     // MARK: Hash
@@ -103,24 +104,18 @@ struct FITSFile {
     
     func cgImage(data: Data, headers: [String: FITSHeaderKeyword]) -> CGImage? {
         guard let width = Int(headers["NAXIS1"]!.value!),
-              let height = Int(headers["NAXIS2"]!.value!),
-              let bitsPerComponent = Int(headers["BITPIX"]!.value!),
-              let bitsPerPixel = Int(headers["BITPIX"]!.value!)
-        else {
+              let height = Int(headers["NAXIS2"]!.value!)
+              else {
             return nil
         }
+        
+        let bitsPerComponent = 32
+        let bitsPerPixel = 32
+
         let bytesPerRow = width * (abs(bitsPerPixel) / 8)
         let colorSpace = CGColorSpaceCreateDeviceGray()
         
-        var bitmapInfo = CGBitmapInfo()
-        switch bitsPerPixel {
-        case 16:
-            bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder16Big.rawValue)
-        case -32:
-            bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Big.rawValue | CGBitmapInfo.floatComponents.rawValue)
-        default:
-            return nil
-        }
+        let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
         
         let image = CGImage(
             width: width,

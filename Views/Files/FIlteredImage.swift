@@ -9,35 +9,55 @@ import Accelerate
 import Foundation
 import SwiftUI
 
-let cs = CGColorSpaceCreateDeviceGray()
-
-var format = vImage_CGImageFormat(
-    bitsPerComponent: 16,
-    bitsPerPixel: 16,
-    colorSpace: Unmanaged.passRetained(cs),
-    bitmapInfo: CGBitmapInfo(
-        rawValue: CGImageAlphaInfo.none.rawValue),
-    version: 0,
-    decode: nil,
-    renderingIntent: .defaultIntent)
-
 struct FilteredImage: View {
     var file: File
-    var exposureValue: Double = 4.0
-    var gammaValue: Double = 0.0
 
-    var toneCurve1: Double = 0.0
-    var toneCurve2: Double = 0.5
-    var toneCurve3: Double = 0.9
-    var toneCurve4: Double = 1.0
-    var toneCurve5: Double = 1.2
+    var exposureValue: Double
+    var gammaValue: Double
 
-    var applyToneCurve: Bool = true
+    var toneCurve1: Double
+    var toneCurve2: Double
+    var toneCurve3: Double
+    var toneCurve4: Double
+    var toneCurve5: Double
+
+    var applyToneCurve: Bool
 
     @State private var image: NSImage?
-    @State private var inputImage: CIImage?
+    @State private var unstretchedImage: CGImage!
+    @State private var stretchedImage: CGImage!
 
     @Binding var histogramImage: NSImage
+
+    func loadImage() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard let data = try? Data(contentsOf: file.rawDataURL) else { return }
+            let width = 3326
+            let height = 2504
+            let bitsPerComponent = 32
+            let bitsPerPixel = 32
+            let bytesPerRow = width * (abs(bitsPerPixel) / 8)
+            let colorSpace = CGColorSpaceCreateDeviceGray()
+            let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
+            unstretchedImage = CGImage(
+                width: width,
+                height: height,
+                bitsPerComponent: bitsPerComponent,
+                bitsPerPixel: bitsPerPixel,
+                bytesPerRow: bytesPerRow,
+                space: colorSpace,
+                bitmapInfo: bitmapInfo,
+                provider: CGDataProvider(data: data as CFData)!,
+                decode: nil,
+                shouldInterpolate: false,
+                intent: CGColorRenderingIntent.defaultIntent)
+            stretchedImage = unstretchedImage.stretchedImage
+            DispatchQueue.main.async {
+                image = NSImage(cgImage: stretchedImage, size: NSZeroSize)
+                applyFilters()
+            }
+        }
+    }
 
     func applyExposureFilter(inputImage: CIImage) -> CIImage? {
         guard let filter = CIFilter(name: "CIExposureAdjust") else {
@@ -70,58 +90,8 @@ struct FilteredImage: View {
         return filter.outputImage
     }
 
-    func applyVImageHistogramEqualization(inputImage: CIImage) -> CIImage? {
-        let imageRef = CIContext().createCGImage(
-            inputImage,
-            from: inputImage.extent)!
-
-        var imageBuffer = vImage_Buffer()
-
-        vImageBuffer_InitWithCGImage(
-            &imageBuffer,
-            &format,
-            nil,
-            imageRef,
-            UInt32(kvImageNoFlags))
-
-        let pixelBuffer = malloc(imageRef.bytesPerRow * imageRef.height)
-
-        var outBuffer = vImage_Buffer(
-            data: pixelBuffer,
-            height: UInt(imageRef.height),
-            width: UInt(imageRef.width),
-            rowBytes: imageRef.bytesPerRow)
-
-        vImageEqualization_ARGB8888(
-            &imageBuffer,
-            &outBuffer,
-            UInt32(kvImageNoFlags))
-
-        let outImage = CIImage(fromvImageBuffer: outBuffer)
-
-        free(imageBuffer.data)
-        free(pixelBuffer)
-
-        return outImage
-    }
-
     func applyFilters() {
-        if inputImage == nil {
-            print("URL: ", file.rawDataURL)
-            inputImage = CIImage(contentsOf: file.rawDataURL)
-        }
-        guard let inputImage = inputImage else {
-            return
-        }
-
-        // MEDIAN TEST
-        let ciContext = CIContext()
-        let cgImage = ciContext.createCGImage(inputImage, from: inputImage.extent, format: CIFormat.Lf, colorSpace: CGColorSpaceCreateDeviceGray())!
-        try! cgImage.tiffData?.write(to: URL(fileURLWithPath: "/Users/jwilson/Downloads/input2.tiff"))
-        let stretchedImage = CIImage(cgImage: cgImage.stretchedImage!)
-
-        // END MEDIAN TEST
-
+        let inputImage = CIImage(cgImage: stretchedImage)
         guard let gammaAdjustedImage = applyGammaFilter(inputImage: inputImage) else {
             return
         }
@@ -138,14 +108,11 @@ struct FilteredImage: View {
             toneCurveAdjustedImage = exposureAdjustedImage
         }
 
-        let acceleratedImage = applyVImageHistogramEqualization(inputImage: inputImage)!
-
-        let imageRep = NSCIImageRep(ciImage: stretchedImage)
+        let imageRep = NSCIImageRep(ciImage: toneCurveAdjustedImage)
         let nsImage = NSImage(size: imageRep.size)
         nsImage.addRepresentation(imageRep)
         image = nsImage
-
-        generateHistogram(inputImage: stretchedImage)
+        generateHistogram(inputImage: toneCurveAdjustedImage)
     }
 
     func generateHistogram(inputImage: CIImage) {
@@ -218,24 +185,7 @@ struct FilteredImage: View {
             applyFilters()
         }
         .task {
-            applyFilters()
+            loadImage()
         }
-    }
-}
-
-extension CIImage {
-    convenience init?(fromvImageBuffer: vImage_Buffer) {
-        var mutableBuffer = fromvImageBuffer
-        var error = vImage_Error()
-
-        let cgImage = vImageCreateCGImageFromBuffer(
-            &mutableBuffer,
-            &format,
-            nil,
-            nil,
-            UInt32(kvImageNoFlags),
-            &error)!
-
-        self.init(cgImage: cgImage.takeRetainedValue())
     }
 }
