@@ -9,6 +9,7 @@ import CoreData
 import CoreGraphics
 import CryptoKit
 import Foundation
+import ImageIO
 
 class FITSFileImporter: FileImporter {
     private var file: FITSFile
@@ -85,6 +86,16 @@ class FITSFileImporter: FileImporter {
         let tiffURL = docsURL.appendingPathComponent("\(fileID).tiff")
         try tiffData.write(to: tiffURL, options: [.atomic])
 
+        // Save a stretched fill-size TIFF representation
+        guard let stretchedImage = cgImage.stretchedImage else {
+            throw FITSFileImportError.stretchFailed
+        }
+        guard let stretchedTiffData = stretchedImage.tiffData else {
+            throw FITSFileImportError.tiffConversionFailed
+        }
+        let stretchedTiffURL = docsURL.appendingPathComponent("\(fileID).stretched.tiff")
+        try stretchedTiffData.write(to: stretchedTiffURL, options: [.atomic])
+
         // Save a PNG at lower resolution (lossy)
         let resizedImage = cgImage.resize(to: CGSize(width: 256, height: 256))!
         guard let pngData = resizedImage.pngData else {
@@ -92,6 +103,16 @@ class FITSFileImporter: FileImporter {
         }
         let previewURL = docsURL.appendingPathComponent("\(fileID).png")
         try pngData.write(to: previewURL, options: [.atomic])
+
+        // Save a stretched PNG preview (lossy)
+        let thumbnailWidth = 512.0
+        let aspectRatio = Double(stretchedImage.height) / Double(stretchedImage.width)
+        let thumbnail = stretchedImage.resize(to: CGSize(width: thumbnailWidth, height: thumbnailWidth * aspectRatio))
+        guard let stretchedPreviewData = thumbnail?.pngData else {
+            throw FITSFileImportError.pngConversionFailed
+        }
+        let stretchedPreviewURL = docsURL.appendingPathComponent("\(fileID).stretched.png")
+        try stretchedPreviewData.write(to: stretchedPreviewURL, options: [.atomic])
 
         // Create the File record (we have already de-duped)
         let file = File(context: context)
@@ -104,7 +125,7 @@ class FITSFileImporter: FileImporter {
         file.bookmark = bookmarkData
         file.filter = headers["FILTER"]?.value?.lowercased()
         file.rawDataURL = fp32URL
-        file.previewURL = previewURL
+        file.previewURL = stretchedPreviewURL
 
         // Find/Create Target
         let targetReq = NSFetchRequest<Target>(entityName: "Target")
@@ -153,6 +174,7 @@ enum FITSFileImportError: Error {
     case tiffConversionFailed
     case pngConversionFailed
     case dataReadFailed
+    case stretchFailed
 }
 
 enum FITSFileError: Error {
