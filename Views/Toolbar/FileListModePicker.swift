@@ -7,18 +7,12 @@
 
 import SwiftUI
 
-struct FileListModePicker: View {
-    enum ViewMode: String, CaseIterable, Identifiable {
-        var id: Self { self }
-        case table
-        case gallery
-    }
-
-    @Binding var mode: ViewMode
+struct FileBrowserModePicker: View {
+    @Binding var mode: FileBrowserViewMode
 
     var body: some View {
         Picker("Display Mode", selection: $mode) {
-            ForEach(ViewMode.allCases) { viewMode in
+            ForEach(FileBrowserViewMode.allCases) { viewMode in
                 viewMode.label
             }
         }
@@ -26,13 +20,13 @@ struct FileListModePicker: View {
     }
 }
 
-extension FileListModePicker.ViewMode {
+extension FileBrowserViewMode {
     var labelContent: (name: String, systemImage: String) {
         switch self {
         case .table:
             return ("Table", "tablecells")
-        case .gallery:
-            return ("Gallery", "photo")
+        case .grid:
+            return ("Grid", "photo")
         }
     }
 

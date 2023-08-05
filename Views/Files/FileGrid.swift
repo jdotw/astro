@@ -8,8 +8,8 @@
 import CoreData
 import SwiftUI
 
-struct MultiFileView: View {
-    var files: Set<File>
+struct FileGrid: View {
+    var files: [File]
     @State private var exposureValue: Double = 0
     @State private var selection: Set<File> = []
     @State private var itemSize: CGFloat = 250
@@ -19,7 +19,7 @@ struct MultiFileView: View {
         ScrollView {
             LazyVGrid(columns: columns) {
                 ForEach(files.map { $0 }) { file in
-                    GalleryItem(file: file, size: itemSize, isSelected: selection.contains(file))
+                    Item(file: file, size: itemSize, isSelected: selection.contains(file))
                         .gesture(TapGesture(count: 2).onEnded {
                             print("double clicked")
                             navStackPath.append(file)
@@ -44,14 +44,14 @@ struct MultiFileView: View {
         [GridItem(.adaptive(minimum: itemSize, maximum: itemSize), spacing: 40)]
     }
     
-    private struct GalleryItem: View {
+    private struct Item: View {
         var file: File
         var size: CGFloat
         var isSelected: Bool
         
         var body: some View {
             VStack {
-                GalleryImage(file: file, size: size)
+                ItemImage(file: file, size: size)
                     .background(selectionBackground)
                 Text(verbatim: file.name)
                     .font(.callout)
@@ -68,7 +68,7 @@ struct MultiFileView: View {
         }
     }
     
-    private struct GalleryImage: View {
+    private struct ItemImage: View {
         var file: File
         var size: CGFloat
         

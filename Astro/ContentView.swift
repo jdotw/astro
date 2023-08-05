@@ -19,10 +19,14 @@ struct ContentView: View {
     @State private var selectedFiles: Set<File> = []
     @State private var navStackPath = [File]()
 
+    @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
+
     var body: some View {
         NavigationSplitView {
+            // Collapsable far-left side bar
             CategoryList(selection: $selectedCategory)
         } content: {
+            // Side bar
             VStack {
                 switch selectedCategory {
                 case .sessions:
@@ -33,17 +37,8 @@ struct ContentView: View {
                     FileList(selection: $selectedFiles)
                 }
             }
-            .navigationDestination(for: File.self) { file in
-                SingleFileView(file: file)
-            }
-            .navigationDestination(for: Target.self) { target in
-                TargetView(target: target, navStackPath: $navStackPath)
-            }
-            .navigationDestination(for: Session.self) { session in
-                SessionView(session: session, navStackPath: $navStackPath)
-            }
-
         } detail: {
+            // Content
             NavigationStack(path: $navStackPath) {
                 VStack {
                     switch selectedCategory {
@@ -64,18 +59,12 @@ struct ContentView: View {
                         case 0:
                             Text("No files selected")
                         default:
-                            FileView(files: selectedFiles, navStackPath: $navStackPath)
+                            FileBrowser(files: [File](selectedFiles), navStackPath: $navStackPath, viewMode: $fileBrowserViewMode)
                         }
                     }
                 }
                 .navigationDestination(for: File.self) { file in
-                    SingleFileView(file: file)
-                }
-                .navigationDestination(for: Target.self) { target in
-                    TargetView(target: target, navStackPath: $navStackPath)
-                }
-                .navigationDestination(for: Session.self) { session in
-                    SessionView(session: session, navStackPath: $navStackPath)
+                    FileViewer(file: file)
                 }
             }
         }

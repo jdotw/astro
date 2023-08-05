@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SingleFileView: View {
+struct FileViewer: View {
     var file: File
     @State private var exposureValue: Double = 0.0
     @State private var gammaValue: Double = 1.0
