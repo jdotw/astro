@@ -41,15 +41,11 @@ class ImageProcessor: ObservableObject {
         }
     }
 
-    func setFilesIDs(_ fileIDs: Set<File.ID>, context: NSManagedObjectContext) {
+    func setFiles(_ files: Set<File>) {
         frameBuffer.removeAll()
         alignedFrameBuffer.removeAll()
-        let req = File.fetchRequest()
-        for fileID in fileIDs {
-            req.predicate = NSPredicate(format: "id == %@", fileID as CVarArg)
-            if let file = try? context.fetch(req).first {
-                add(file.rawDataURL)
-            }
+        for file in files {
+            add(file.rawDataURL)
         }
     }
 
