@@ -293,7 +293,6 @@
 				10B792542A621F3300291B6D /* Import */,
 				10D8332C2A6000F700C63083 /* Sidebar */,
 				10D8332B2A6000DE00C63083 /* Files */,
-				1005774A2A7DF3E6000B0D2B /* Image */,
 				10D8332A2A6000C700C63083 /* Targets */,
 				10D833292A6000BC00C63083 /* Sessions */,
 			);
@@ -326,6 +325,7 @@
 				10E81F462A5104C300846852 /* FileGrid.swift */,
 				100577482A7DF3AF000B0D2B /* FileTable.swift */,
 				108F82252A60DE0000061511 /* FileViewer.swift */,
+				1005774A2A7DF3E6000B0D2B /* Image */,
 			);
 			path = Files;
 			sourceTree = "<group>";
