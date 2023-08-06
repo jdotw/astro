@@ -24,6 +24,20 @@ struct FileTable: View {
     ]
     @Binding var navStackPath: [File]
 
+    @ObservedObject var imageProcessor: ImageProcessor = .init()
+    @State private var processedImage: NSImage?
+
+    func processSelected() {
+        print("processSelected")
+        imageProcessor.setFiles(Set(selectedFiles))
+        imageProcessor.processFrames { image in
+            let rep = NSCIImageRep(ciImage: image)
+            let nsImage = NSImage(size: rep.size)
+            nsImage.addRepresentation(rep)
+            processedImage = nsImage
+        }
+    }
+
     var body: some View {
         HStack {
             Table(sortedFiles, selection: $selectedFileIDs, sortOrder: $sortOrder) {
@@ -58,10 +72,21 @@ struct FileTable: View {
                 }
             })
             VStack {
+                if let image = $processedImage.wrappedValue {
+                    Image(nsImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+
                 FileGrid(files: selectedFiles,
                          navStackPath: $navStackPath)
             }
             .frame(width: 250.0)
+        }
+        .toolbar {
+            Button(action: processSelected) {
+                Image(systemName: "checkmark.circle.fill")
+            }
         }
     }
 }

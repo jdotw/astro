@@ -45,7 +45,7 @@ class ImageProcessor: ObservableObject {
         frameBuffer.removeAll()
         alignedFrameBuffer.removeAll()
         for file in files {
-            add(file.rawDataURL)
+            add(file.previewURL)
         }
     }
 
