@@ -14,11 +14,14 @@ struct FileGrid: View {
     @State private var selection: Set<File> = []
     @State private var itemSize: CGFloat = 250
     @Binding var navStackPath: [File]
+    @State private var sortOrder: [KeyPathComparator<File>] = [
+        .init(\.timestamp, order: SortOrder.forward)
+    ]
     
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns) {
-                ForEach(files.map { $0 }) { file in
+                ForEach(sortedFiles) { file in
                     Item(file: file, size: itemSize, isSelected: selection.contains(file))
                         .gesture(TapGesture(count: 2).onEnded {
                             print("double clicked")
@@ -110,5 +113,11 @@ struct FileGrid: View {
             .frame(maxWidth: .infinity)
             .background(.bar)
         }
+    }
+}
+
+extension FileGrid {
+    var sortedFiles: [File] {
+        files.sorted(using: sortOrder)
     }
 }
