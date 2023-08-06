@@ -23,6 +23,8 @@ struct FileBrowserModePicker: View {
 extension FileBrowserViewMode {
     var labelContent: (name: String, systemImage: String) {
         switch self {
+        case .approve:
+            return ("Approve", "checkmark.circle")
         case .table:
             return ("Table", "tablecells")
         case .grid:

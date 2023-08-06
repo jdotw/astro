@@ -97,7 +97,7 @@ class FITSFileImporter: FileImporter {
         try stretchedTiffData.write(to: stretchedTiffURL, options: [.atomic])
 
         // Save a PNG at lower resolution (lossy)
-        let resizedImage = cgImage.resize(to: CGSize(width: 256, height: 256))!
+        let resizedImage = cgImage.resize(to: CGSize(width: 1024, height: 1024))!
         guard let pngData = resizedImage.pngData else {
             throw FITSFileImportError.pngConversionFailed
         }

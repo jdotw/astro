@@ -31,6 +31,7 @@ public extension File {
     @NSManaged var previewURL: URL
     @NSManaged var session: Session?
     @NSManaged var target: Target?
+    @NSManaged var rejected: Bool
 }
 
 extension File: Identifiable {}

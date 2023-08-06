@@ -10,6 +10,7 @@ import SwiftUI
 
 enum FileBrowserViewMode: String, CaseIterable, Identifiable {
     var id: Self { self }
+    case approve
     case table
     case grid
 }
@@ -27,6 +28,8 @@ struct FileBrowser: View {
     var body: some View {
         VStack {
             switch viewMode {
+            case .approve:
+                FileApproval(files: files, navStackPath: $navStackPath)
             case .table:
                 FileTable(files: files, columns: columns, navStackPath: $navStackPath)
             case .grid:

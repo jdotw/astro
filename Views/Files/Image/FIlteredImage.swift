@@ -12,18 +12,18 @@ import SwiftUI
 struct FilteredImage: View {
     var file: File
 
-    var exposureValue: Double
-    var gammaValue: Double
+    var exposureValue: Double = 0.0
+    var gammaValue: Double = 1.0
 
-    var toneCurve1: Double
-    var toneCurve2: Double
-    var toneCurve3: Double
-    var toneCurve4: Double
-    var toneCurve5: Double
+    var toneCurve1: Double = 0.0
+    var toneCurve2: Double = 0.25
+    var toneCurve3: Double = 0.5
+    var toneCurve4: Double = 0.75
+    var toneCurve5: Double = 1.0
 
-    var sharpness: Double
+    var sharpness: Double = 1.0
 
-    var applyToneCurve: Bool
+    var applyToneCurve: Bool = false
 
     @State private var image: NSImage?
     @State private var unstretchedImage: CGImage!
@@ -204,6 +204,9 @@ struct FilteredImage: View {
         }
         .onChange(of: applyToneCurve) {
             applyFilters()
+        }
+        .onChange(of: file) {
+            loadImage()
         }
         .task {
             loadImage()
