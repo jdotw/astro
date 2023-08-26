@@ -153,11 +153,11 @@ struct FilteredImage: View {
             sharpenedImage = toneCurveAdjustedImage
         }
 
-        var binaryImage: CIImage!
-        guard let result = applyBinarization(inputImage: sharpenedImage, threshold: 0.7) else { return }
-        binaryImage = result
+//        var binaryImage: CIImage!
+//        guard let result = applyBinarization(inputImage: sharpenedImage, threshold: 0.7) else { return }
+//        binaryImage = result
 
-        let imageRep = NSCIImageRep(ciImage: binaryImage)
+        let imageRep = NSCIImageRep(ciImage: sharpenedImage)
         let nsImage = NSImage(size: imageRep.size)
         nsImage.addRepresentation(imageRep)
         image = nsImage

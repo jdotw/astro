@@ -301,9 +301,9 @@
 				106D0FA52A7DE3A1003015EA /* Toolbar */,
 				10B792542A621F3300291B6D /* Import */,
 				10D8332C2A6000F700C63083 /* Sidebar */,
-				10D8332B2A6000DE00C63083 /* Files */,
 				10D8332A2A6000C700C63083 /* Targets */,
 				10D833292A6000BC00C63083 /* Sessions */,
+				10D8332B2A6000DE00C63083 /* Files */,
 			);
 			path = Views;
 			sourceTree = "<group>";

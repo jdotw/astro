@@ -50,6 +50,8 @@ extension CGImage {
     
     var statistics: ImageStatistics? {
         print("GETTING DOWN-SIZED PIXELS")
+//        let subframeWidth = width
+//        let subframeHeight = height
         let subframeWidth = width / 4
         let subframeHeight = height / 4
         guard var pixels = self.unsortedPixels(ofWidth: subframeWidth, height: subframeHeight)?.sorted()
@@ -164,5 +166,4 @@ extension CGImage {
         
         return image
     }
-    
 }

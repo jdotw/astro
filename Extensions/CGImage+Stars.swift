@@ -12,13 +12,14 @@ import Foundation
 private let LIT_PIXEL = UInt8(255)
 private let SEEN_PIXEL = UInt8(20)
 private let DARK_PIXEL = UInt8(0)
+private let ERASED_PIXEL = UInt8(1)
 
 extension CGImage {
     var starRects: [NSRect] {
         return starRects()
     }
 
-    func starRects(minimumSize: CGSize = CGSize(width: 2.0, height: 2.0)) -> [NSRect] {
+    func starRects(minimumSize: CGSize = CGSize(width: 3.0, height: 3.0)) -> [NSRect] {
         // Get image stats (median, etc)
         guard let stats = statistics else { return [] }
         
@@ -51,7 +52,11 @@ extension CGImage {
                                       space: colorSpace ?? CGColorSpaceCreateDeviceGray(),
                                       bitmapInfo: bitmapInfo.rawValue) else { return [] }
         context.draw(binaryCGImage, in: CGRect(origin: .zero, size: CGSize(width: width, height: height)))
-        
+
+        return self.starRects(inPixels: &pixels, minimumSize: minimumSize)
+    }
+    
+    func starRects(inPixels pixels: inout [UInt8], minimumSize: CGSize = CGSize(width: 3.0, height: 3.0)) -> [NSRect] {
         // Loop through every pixel in the image
         var rects = [NSRect]()
         for y in 0 ..< height {
@@ -70,6 +75,7 @@ extension CGImage {
                     if rect.width >= minimumSize.width, rect.height >= minimumSize.height {
                         rects.append(rect)
                     }
+                    self.erasePixels(inRect: rect, in: &pixels)
                 }
             }
         }
@@ -83,59 +89,98 @@ extension CGImage {
 
         // Left side of the box, iterate through vertical
         if rect.origin.x > 0 {
-            var foundContiguous = false
+            var widthDelta = 0.0
             for y in Int(rect.minY) ..< Int(rect.maxY) {
                 let insidePoint = CGPoint(x: rect.origin.x, y: CGFloat(y))
                 let insidePixel = self.pixel(at: insidePoint, in: pixels)
-                let outsidePoint = CGPoint(x: rect.origin.x - 1, y: CGFloat(y))
-                let outsidePixel = self.pixel(at: outsidePoint, in: pixels)
-                if insidePixel == SEEN_PIXEL, outsidePixel == LIT_PIXEL {
-                    // CONTIGUOUS PIXELS!
-                    self.markPixelAsSeen(at: outsidePoint, in: &pixels)
-                    foundContiguous = true
+                if insidePixel == SEEN_PIXEL {
+                    var candidates = [CGPoint(x: rect.origin.x - 1, y: CGFloat(y))]
+                    if (y - 1) >= Int(rect.minY) {
+                        candidates.append(CGPoint(x: rect.origin.x - 1, y: CGFloat(y - 1)))
+                    }
+                    if (y + 1) < Int(rect.maxY) {
+                        candidates.append(CGPoint(x: rect.origin.x - 1, y: CGFloat(y + 1)))
+                    }
+                    for outsidePoint in candidates {
+                        let outsidePixel = self.pixel(at: outsidePoint, in: pixels)
+                        if outsidePixel == LIT_PIXEL {
+                            // CONTIGUOUS PIXELS!
+                            self.markPixelAsSeen(at: outsidePoint, in: &pixels)
+                            widthDelta = 1
+                        }
+                    }
                 }
             }
-            if foundContiguous {
-                rect.origin.x -= 1
-                rect.size.width += 1
-            }
+            rect.origin.x -= widthDelta
+            rect.size.width += widthDelta
         }
         
         // Right side of the box, iterate through vertical
         if Int(rect.maxX) < width {
-            var foundContiguous = false
+            var widthDelta = 0.0
             for y in Int(rect.minY) ..< Int(rect.maxY) {
                 let insidePoint = CGPoint(x: rect.maxX - 1, y: CGFloat(y))
                 let insidePixel = self.pixel(at: insidePoint, in: pixels)
-                let outsidePoint = CGPoint(x: rect.maxX, y: CGFloat(y))
-                let outsidePixel = self.pixel(at: outsidePoint, in: pixels)
-                if insidePixel == SEEN_PIXEL, outsidePixel == LIT_PIXEL {
-                    // CONTIGUOUS PIXELS!
-                    self.markPixelAsSeen(at: outsidePoint, in: &pixels)
-                    foundContiguous = true
+                if insidePixel == SEEN_PIXEL {
+                    var candidates = [CGPoint(x: rect.maxX, y: CGFloat(y))]
+                    if (y - 1) >= Int(rect.minY) {
+                        candidates.append(CGPoint(x: rect.maxX, y: CGFloat(y - 1)))
+                    }
+                    if (y + 1) < Int(rect.maxY) {
+                        candidates.append(CGPoint(x: rect.maxX, y: CGFloat(y + 1)))
+                    }
+                    for outsidePoint in candidates {
+                        let outsidePixel = self.pixel(at: outsidePoint, in: pixels)
+                        if outsidePixel == LIT_PIXEL {
+                            // CONTIGUOUS PIXELS!
+                            self.markPixelAsSeen(at: outsidePoint, in: &pixels)
+                            widthDelta = 1
+                        }
+                    }
                 }
             }
-            if foundContiguous {
-                rect.size.width += 1
-            }
+            rect.size.width += widthDelta
         }
 
         // Bottom of the box, iterate through horizontal
         if Int(rect.maxY) < height {
-            var foundContiguous = false
+            var heightDelta = 0.0
+            var foundDiagonalLeft = false
+            var foundDiagonalRight = false
             for x in Int(rect.minX) ..< Int(rect.maxX) {
                 let insidePoint = CGPoint(x: x, y: Int(rect.maxY - 1))
                 let insidePixel = self.pixel(at: insidePoint, in: pixels)
-                let outsidePoint = CGPoint(x: x, y: Int(rect.maxY))
-                let outsidePixel = self.pixel(at: outsidePoint, in: pixels)
-                if insidePixel == SEEN_PIXEL, outsidePixel == LIT_PIXEL {
+                if insidePixel == SEEN_PIXEL {
                     // CONTIGUOUS PIXELS!
-                    self.markPixelAsSeen(at: outsidePoint, in: &pixels)
-                    foundContiguous = true
+                    var candidates = [CGPoint(x: x, y: Int(rect.maxY))]
+                    if (x - 1) >= 0 {
+                        candidates.append(CGPoint(x: x - 1, y: Int(rect.maxY)))
+                    }
+                    if (x + 1) < width {
+                        candidates.append(CGPoint(x: x + 1, y: Int(rect.maxY)))
+                    }
+                    for outsidePoint in candidates {
+                        let outsidePixel = self.pixel(at: outsidePoint, in: pixels)
+                        if outsidePixel == LIT_PIXEL {
+                            // CONTIGUOUS PIXELS!
+                            self.markPixelAsSeen(at: outsidePoint, in: &pixels)
+                            if Int(outsidePoint.x) < Int(rect.minX) {
+                                foundDiagonalLeft = true
+                            } else if Int(outsidePoint.x) >= Int(rect.maxX) {
+                                foundDiagonalRight = true
+                            }
+                            heightDelta = 1
+                        }
+                    }
                 }
             }
-            if foundContiguous {
-                rect.size.height += 1
+            rect.size.height += heightDelta
+            if foundDiagonalLeft {
+                rect.origin.x -= 1
+                rect.size.width += 1
+            }
+            if foundDiagonalRight {
+                rect.size.width += 1
             }
         }
         
@@ -154,5 +199,14 @@ extension CGImage {
     func markPixelAsSeen(at point: CGPoint, in pixels: inout [UInt8]) {
         let i = Int(point.x) + (Int(point.y) * width)
         pixels[i] = SEEN_PIXEL
+    }
+    
+    func erasePixels(inRect rect: CGRect, in pixels: inout [UInt8]) {
+        for y in Int(rect.minY) ..< Int(rect.maxY) {
+            for x in Int(rect.minX) ..< Int(rect.maxX) {
+                let i = x + (y * width)
+                pixels[i] = ERASED_PIXEL
+            }
+        }
     }
 }

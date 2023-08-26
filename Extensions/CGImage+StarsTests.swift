@@ -35,7 +35,7 @@ final class CGImage_StarsTests: XCTestCase {
         let pixels: [UInt8] = [0, 0, n, 0, 0, 0,
                                0, n, n, 0, 0, 0,
                                0, n, n, n, n, 0,
-                               0, 0, n, 0, 0, n]
+                               0, 0, n, 0, 0, 0]
         let image = image(fromPixels: pixels, width: 6, height: 4)
         let rects = image!.starRects
         XCTAssertEqual(rects.count, 1)
@@ -54,8 +54,8 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, n, n, n, 0, 0, 0, 0, 0, 0, 0,
                                0, n, n, n, n, n, 0, 0, 0, 0, 0, 0,
                                0, 0, n, n, n, 0, 0, 0, 0, 0, 0, 0,
-                               0, 0, 0, n, 0, n, 0, 0, 0, 0, 0, 0,
-                               0, 0, 0, 0, n, n, n, 0, 0, 0, 0, 0,
+                               0, 0, 0, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, n, n, 0, 0, 0, 0, 0,
                                0, 0, 0, n, n, n, n, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, n, n, n, 0, 0, n, n, 0,
                                0, 0, 0, 0, 0, n, 0, 0, 0, n, n, 0,
@@ -73,9 +73,9 @@ final class CGImage_StarsTests: XCTestCase {
         XCTAssertEqual(first.size.height, 5)
         let second = rects[1]
         XCTAssertEqual(second.origin.x, 3)
-        XCTAssertEqual(second.origin.y, 5)
+        XCTAssertEqual(second.origin.y, 6)
         XCTAssertEqual(second.size.width, 4)
-        XCTAssertEqual(second.size.height, 5)
+        XCTAssertEqual(second.size.height, 4)
     }
     
     func testTooSmallRects() throws {
@@ -130,5 +130,226 @@ final class CGImage_StarsTests: XCTestCase {
         let image = image(fromPixels: pixels, width: 12, height: 12)
         let rects = image!.starRects(minimumSize: CGSize(width: 2.0, height: 4.0))
         XCTAssertEqual(rects.count, 0)
+    }
+    
+    func testDiagonalBottomLeftRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, n, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 1)
+        XCTAssertEqual(first.origin.y, 3)
+        XCTAssertEqual(first.size.width, 3)
+        XCTAssertEqual(first.size.height, 3)
+    }
+    
+    func testDiagonalTopLeftRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, n, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 1)
+        XCTAssertEqual(first.origin.y, 2)
+        XCTAssertEqual(first.size.width, 3)
+        XCTAssertEqual(first.size.height, 3)
+    }
+    
+    func testDiagonalTopRightRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, n, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 2)
+        XCTAssertEqual(first.origin.y, 2)
+        XCTAssertEqual(first.size.width, 3)
+        XCTAssertEqual(first.size.height, 3)
+    }
+    
+    func testDiagonalBottomRightRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, n, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 2)
+        XCTAssertEqual(first.origin.y, 3)
+        XCTAssertEqual(first.size.width, 3)
+        XCTAssertEqual(first.size.height, 3)
+    }
+    
+    func testDiagonalLeftRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, n, 0, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 1)
+        XCTAssertEqual(first.origin.y, 3)
+        XCTAssertEqual(first.size.width, 3)
+        XCTAssertEqual(first.size.height, 3)
+    }
+    
+    func testDiagonalBottomRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, n, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, 0, n, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 2)
+        XCTAssertEqual(first.origin.y, 3)
+        XCTAssertEqual(first.size.width, 3)
+        XCTAssertEqual(first.size.height, 3)
+    }
+    
+    func testDiagonalRightRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, 0, n, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 2)
+        XCTAssertEqual(first.origin.y, 3)
+        XCTAssertEqual(first.size.width, 3)
+        XCTAssertEqual(first.size.height, 3)
+    }
+    
+    func testDetectedPixelsErased() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, n, 0, 0, 0, 0, n, 0, 0, 0,
+                               0, 0, n, n, n, 0, 0, 0, 0, n, 0, 0,
+                               0, n, n, n, n, n, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, n, 0, 0, 0, 0, 0, 0, n,
+                               0, 0, 0, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, n, n, 0, 0, 0, 0, 0,
+                               0, 0, 0, n, n, n, n, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, n, n, n, 0, 0, n, n, 0,
+                               0, 0, 0, 0, 0, n, 0, 0, 0, n, n, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, n, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 3.0, height: 3.0))
+        XCTAssertGreaterThan(rects.count, 0)
+        for pixel in pixels {
+            XCTAssertNotEqual(pixel, n)
+        }
+    }
+    
+    func testDiagonalTrailingTopRightRect() throws {
+        var pixels: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, n, 0, 0, 0, 0, 0, 0, 0,
+                               0, n, 0, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, n, n, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let image = image(fromPixels: pixels, width: 12, height: 12)
+        let rects = image!.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(rects.count, 1)
+        guard let first = rects.first else {
+            return XCTFail()
+        }
+        XCTAssertEqual(first.origin.x, 1)
+        XCTAssertEqual(first.origin.y, 1)
+        XCTAssertEqual(first.size.width, 4)
+        XCTAssertEqual(first.size.height, 4)
     }
 }
