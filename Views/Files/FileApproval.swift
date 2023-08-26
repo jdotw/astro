@@ -15,6 +15,8 @@ struct FileApproval: View {
     ]
 
     @State private var selectedFileID: File.ID?
+    @State private var showStarRects: Bool = false
+
     @FocusState private var focused: Bool
     @Environment(\.managedObjectContext) private var viewContext
 
@@ -70,7 +72,7 @@ struct FileApproval: View {
 
     var body: some View {
         VStack {
-            ItemFullSizeImage(file: selectedFile)
+            ItemFullSizeImage(file: selectedFile, showStarRects: $showStarRects)
             Text("File: \(selectedFile?.name ?? "no selection")")
                 .toolbar(content: {
                     ToolbarItemGroup(placement: .automatic) {
@@ -89,6 +91,10 @@ struct FileApproval: View {
                         }
                         .disabled(selectedFile == nil)
                         .keyboardShortcut(.delete, modifiers: [])
+                        Button(action: { showStarRects.toggle() }) {
+                            Image(systemName: "star.fill")
+                        }
+                        .keyboardShortcut(.space, modifiers: [])
                     }
                 })
         }
@@ -100,10 +106,11 @@ struct FileApproval: View {
     private struct ItemFullSizeImage: View {
         var file: File?
         @State private var histogram: NSImage = .init()
+        @Binding var showStarRects: Bool
 
         var body: some View {
             if let file = file {
-                FilteredImage(file: file, histogramImage: $histogram)
+                FilteredImage(file: file, histogramImage: $histogram, showStarRects: $showStarRects)
             } else {
                 Text("no file")
             }

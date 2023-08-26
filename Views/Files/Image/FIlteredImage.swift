@@ -28,8 +28,10 @@ struct FilteredImage: View {
     @State private var image: NSImage?
     @State private var unstretchedImage: CGImage!
     @State private var stretchedImage: CGImage!
+    @State private var starRects: [NSRect]?
 
     @Binding var histogramImage: NSImage
+    @Binding var showStarRects: Bool
 
     func loadImage() {
         DispatchQueue.global(qos: .userInitiated).async {
@@ -41,7 +43,7 @@ struct FilteredImage: View {
             let bytesPerRow = width * (abs(bitsPerPixel) / 8)
             let colorSpace = CGColorSpaceCreateDeviceGray()
             let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
-            unstretchedImage = CGImage(
+            self.unstretchedImage = CGImage(
                 width: width,
                 height: height,
                 bitsPerComponent: bitsPerComponent,
@@ -53,7 +55,8 @@ struct FilteredImage: View {
                 decode: nil,
                 shouldInterpolate: false,
                 intent: CGColorRenderingIntent.defaultIntent)
-            stretchedImage = unstretchedImage.stretchedImage
+            self.stretchedImage = unstretchedImage.stretchedImage
+            self.starRects = unstretchedImage.starRects
             DispatchQueue.main.async {
                 image = NSImage(cgImage: stretchedImage, size: NSZeroSize)
                 applyFilters()
@@ -101,6 +104,27 @@ struct FilteredImage: View {
         return filter.outputImage
     }
 
+    func applyBinarization(inputImage: CIImage, threshold: CGFloat) -> CIImage? {
+        // Get image stats (median, etc)
+        guard let stats = unstretchedImage.statistics else { return nil }
+
+        // Binarize using the median
+        guard let filter = CIFilter(name: "CIColorThreshold") else {
+            return nil
+        }
+        filter.setValue(CIImage(cgImage: unstretchedImage), forKey: kCIInputImageKey)
+        let calculatedThreshold = stats.median - (2.0 * stats.avgMedianDeviation)
+        if calculatedThreshold > 0.0 {
+            // Calculated a non-zero threshold using median and avgMedianDeviation
+            filter.setValue(CGFloat(calculatedThreshold), forKey: "inputThreshold")
+        } else {
+            // Image is so dark that the calculated threshold is at or below 0.0
+            // Use just the avgMedianDeviation in this case
+            filter.setValue(CGFloat(stats.avgMedianDeviation), forKey: "inputThreshold")
+        }
+        return filter.outputImage
+    }
+
     func applyFilters() {
         let inputImage = CIImage(cgImage: stretchedImage)
         guard let gammaAdjustedImage = applyGammaFilter(inputImage: inputImage) else {
@@ -129,7 +153,11 @@ struct FilteredImage: View {
             sharpenedImage = toneCurveAdjustedImage
         }
 
-        let imageRep = NSCIImageRep(ciImage: sharpenedImage)
+        var binaryImage: CIImage!
+        guard let result = applyBinarization(inputImage: sharpenedImage, threshold: 0.7) else { return }
+        binaryImage = result
+
+        let imageRep = NSCIImageRep(ciImage: binaryImage)
         let nsImage = NSImage(size: imageRep.size)
         nsImage.addRepresentation(imageRep)
         image = nsImage
@@ -176,10 +204,13 @@ struct FilteredImage: View {
 
     var body: some View {
         VStack {
-            Image(nsImage: image ?? NSImage())
-                .resizable()
-                .scaledToFit()
-                .padding()
+            ZStack {
+//                Image(nsImage: image ?? NSImage())
+//                    .resizable()
+//                    .scaledToFit()
+//                    .padding()
+                StarRectsView(showStarRects: $showStarRects, rects: starRects, image: image)
+            }
         }
         .onChange(of: exposureValue) {
             applyFilters()

@@ -21,11 +21,12 @@ struct FileViewer: View {
 
     @State private var showInspector: Bool = true
     @State private var histogramImage: NSImage = .init()
+    @State private var showStarRects: Bool = false
 
     var body: some View {
         VStack {
             Text(file.name)
-            FilteredImage(file: file, exposureValue: exposureValue, gammaValue: gammaValue, toneCurve1: toneCurve1, toneCurve2: toneCurve2, toneCurve3: toneCurve3, toneCurve4: toneCurve4, toneCurve5: toneCurve5, sharpness: sharpness, applyToneCurve: applyToneCurve, histogramImage: $histogramImage)
+            FilteredImage(file: file, exposureValue: exposureValue, gammaValue: gammaValue, toneCurve1: toneCurve1, toneCurve2: toneCurve2, toneCurve3: toneCurve3, toneCurve4: toneCurve4, toneCurve5: toneCurve5, sharpness: sharpness, applyToneCurve: applyToneCurve, histogramImage: $histogramImage, showStarRects: $showStarRects)
         }
         .inspector(isPresented: $showInspector) {
             Slider(value: $gammaValue, in: -3 ... 3, step: 0.3) {

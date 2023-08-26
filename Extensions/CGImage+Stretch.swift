@@ -6,7 +6,14 @@
 //
 
 import CoreGraphics
+import CoreImage
 import Foundation
+
+struct ImageStatistics {
+    var max: Float
+    var median: Float
+    var avgMedianDeviation: Float
+}
 
 struct StretchParameters {
     var shadowClip: Float
@@ -16,6 +23,7 @@ struct StretchParameters {
 extension CGImage {
     func unsortedPixels(ofWidth width: Int, height: Int) -> [Float]? {
         var pixels = [Float](repeating: 0, count: width * height)
+        let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
         guard let context = CGContext(data: &pixels,
                                       width: width,
                                       height: height,
@@ -40,6 +48,38 @@ extension CGImage {
         }
     }
     
+    var statistics: ImageStatistics? {
+        print("GETTING DOWN-SIZED PIXELS")
+        let subframeWidth = width / 4
+        let subframeHeight = height / 4
+        guard var pixels = self.unsortedPixels(ofWidth: subframeWidth, height: subframeHeight)?.sorted()
+        else { return nil }
+        print("SORTED")
+        guard let max = pixels.last else { return nil }
+        print("MAX: ", max)
+        
+        for i in 0 ..< pixels.count {
+            pixels[i] = pixels[i] / max
+        }
+        
+        var median: Float = 0.0
+        if pixels.count % 2 == 0 {
+            median = (pixels[pixels.count / 2] + pixels[(pixels.count / 2) - 1]) / 2.0
+        } else {
+            median = pixels[(pixels.count - 1) / 2]
+        }
+        print("CALCULATED MEDIAN: ", median)
+        
+        var deviations = [Float](repeating: 0.0, count: pixels.count)
+        for i in 0 ..< pixels.count {
+            deviations[i] = abs(pixels[i] - median)
+        }
+        let avgMedDev = deviations.reduce(0, +) / Float(deviations.count)
+        print("AVG MEDIAN DEVIATION: ", avgMedDev)
+        
+        return ImageStatistics(max: max, median: median, avgMedianDeviation: avgMedDev)
+    }
+
     var stretchParameters: StretchParameters? {
         print("GETTING DOWN-SIZED PIXELS")
         let subframeWidth = width / 4
@@ -124,4 +164,5 @@ extension CGImage {
         
         return image
     }
+    
 }
