@@ -55,11 +55,12 @@ struct FilteredImage: View {
                 decode: nil,
                 shouldInterpolate: false,
                 intent: CGColorRenderingIntent.defaultIntent)
-            self.stretchedImage = unstretchedImage.stretchedImage
-            self.starRects = unstretchedImage.starRects
+            self.stretchedImage = file.stretchedImage
             DispatchQueue.main.async {
-                image = NSImage(cgImage: stretchedImage, size: NSZeroSize)
-                applyFilters()
+                if let stretchedImage = stretchedImage {
+                    image = NSImage(cgImage: stretchedImage, size: NSZeroSize)
+                    applyFilters()
+                }
             }
         }
     }
@@ -106,7 +107,7 @@ struct FilteredImage: View {
 
     func applyBinarization(inputImage: CIImage, threshold: CGFloat) -> CIImage? {
         // Get image stats (median, etc)
-        guard let stats = unstretchedImage.statistics else { return nil }
+        guard let stats = file.statistics else { return nil }
 
         // Binarize using the median
         guard let filter = CIFilter(name: "CIColorThreshold") else {
@@ -209,7 +210,7 @@ struct FilteredImage: View {
 //                    .resizable()
 //                    .scaledToFit()
 //                    .padding()
-                StarRectsView(showStarRects: $showStarRects, rects: starRects, image: image)
+                StarRectsView(file: file, showStarRects: $showStarRects, image: image)
             }
         }
         .onChange(of: exposureValue) {

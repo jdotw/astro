@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+class FileProcessController {
+    static let shared = FileProcessController()
+
+    let queue = OperationQueue()
+}

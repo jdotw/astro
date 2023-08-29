@@ -91,7 +91,7 @@ struct FITSFile {
     // MARK: Hash
     
     var fileHash: String? {
-        let file = try! FileHandle(forReadingFrom: url)
+        let file = try! FileHandle(forReadingFrom: self.url)
         do {
             let digest = try SHA512.hash(data: file.readToEnd()!)
             return digest.map { String(format: "%02x", $0) }.joined()
@@ -105,7 +105,7 @@ struct FITSFile {
     func cgImage(data: Data, headers: [String: FITSHeaderKeyword]) -> CGImage? {
         guard let width = Int(headers["NAXIS1"]!.value!),
               let height = Int(headers["NAXIS2"]!.value!)
-              else {
+        else {
             return nil
         }
         

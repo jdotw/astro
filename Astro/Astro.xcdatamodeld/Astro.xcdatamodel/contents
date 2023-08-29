@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22203.2" systemVersion="23A5301h" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22221.1" systemVersion="23A5328b" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="File" representedClassName="File" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
         <attribute name="filter" optional="YES" attributeType="String"/>
+        <attribute name="height" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
-        <attribute name="previewURL" attributeType="URI"/>
+        <attribute name="previewURL" optional="YES" attributeType="URI"/>
         <attribute name="rawDataURL" attributeType="URI"/>
         <attribute name="rejected" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
+        <attribute name="width" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="import" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="files" inverseEntity="ImportRequest"/>
+        <relationship name="regions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Region" inverseName="file" inverseEntity="Region"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="files" inverseEntity="Session"/>
+        <relationship name="statistics" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="FileStatistics" inverseName="file" inverseEntity="FileStatistics"/>
         <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="files" inverseEntity="Target"/>
+    </entity>
+    <entity name="FileStatistics" representedClassName="FileStatistics" syncable="YES">
+        <attribute name="avgMedianDeviation" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="max" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="median" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="file" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="statistics" inverseEntity="File"/>
     </entity>
     <entity name="ImportRequest" representedClassName="ImportRequest" syncable="YES">
         <attribute name="id" attributeType="String"/>
@@ -26,6 +36,15 @@
         <attribute name="bookmark" optional="YES" attributeType="Binary"/>
         <attribute name="url" optional="YES" attributeType="URI"/>
         <relationship name="importRequest" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="urls" inverseEntity="ImportRequest"/>
+    </entity>
+    <entity name="Region" representedClassName="Region" syncable="YES">
+        <attribute name="epochX" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="epochY" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="height" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="width" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="x" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="y" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="file" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="regions" inverseEntity="File"/>
     </entity>
     <entity name="Session" representedClassName="Session" syncable="YES">
         <attribute name="dateString" attributeType="String"/>

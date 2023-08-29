@@ -12,12 +12,12 @@ import Foundation
 import ImageIO
 
 class FITSFileImporter: FileImporter {
-    private var file: FITSFile
+    private var fitsFile: FITSFile
 
     // MARK: API
 
     override init?(url: URL, context: NSManagedObjectContext) {
-        file = FITSFile(url: url)
+        fitsFile = FITSFile(url: url)
         super.init(url: url, context: context)
     }
 
@@ -33,7 +33,7 @@ class FITSFileImporter: FileImporter {
     // MARK: Internal
 
     private func importFileSync() throws -> File? {
-        guard let fileHash = file.fileHash else {
+        guard let fileHash = fitsFile.fileHash else {
             throw FITSFileImportError.hashFailed
         }
 
@@ -47,7 +47,7 @@ class FITSFileImporter: FileImporter {
 
         // Get Headers
         var dataStartOffset: UInt64 = 0
-        guard let headers = file.parseHeaders(dataStartOffset: &dataStartOffset) else {
+        guard let headers = fitsFile.parseHeaders(dataStartOffset: &dataStartOffset) else {
             throw FITSFileImportError.noHeaders
         }
         guard let observationDateString = headers["DATE-OBS"]?.value,
@@ -62,13 +62,17 @@ class FITSFileImporter: FileImporter {
         guard let targetName = headers["OBJECT"]?.value else {
             throw FITSFileImportError.noTarget
         }
+        guard let widthString = headers["NAXIS1"]?.value,
+              let width = Int32(widthString),
+              let heightString = headers["NAXIS2"]?.value,
+              let height = Int32(heightString)
+        else {
+            throw FITSFileImportError.noDimensions
+        }
 
         // Get Data and Image
-        guard let data = file.getImageData(fromOffset: dataStartOffset, headers: headers) else {
+        guard let data = fitsFile.getImageData(fromOffset: dataStartOffset, headers: headers) else {
             throw FITSFileImportError.dataReadFailed
-        }
-        guard let cgImage = file.cgImage(data: data, headers: headers) else {
-            throw FITSFileImportError.cgImageCreationFailed
         }
 
         // Create UUID for this file
@@ -76,43 +80,9 @@ class FITSFileImporter: FileImporter {
 
         // Save a FP32 representation (raw data)
         let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
+        try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
         let fp32URL = docsURL.appendingPathComponent("\(fileID).fp32")
         try data.write(to: fp32URL, options: [.atomic])
-
-        // Save a TIFF representation (lossless)
-        guard let tiffData = cgImage.tiffData else {
-            throw FITSFileImportError.tiffConversionFailed
-        }
-        let tiffURL = docsURL.appendingPathComponent("\(fileID).tiff")
-        try tiffData.write(to: tiffURL, options: [.atomic])
-
-        // Save a stretched fill-size TIFF representation
-        guard let stretchedImage = cgImage.stretchedImage else {
-            throw FITSFileImportError.stretchFailed
-        }
-        guard let stretchedTiffData = stretchedImage.tiffData else {
-            throw FITSFileImportError.tiffConversionFailed
-        }
-        let stretchedTiffURL = docsURL.appendingPathComponent("\(fileID).stretched.tiff")
-        try stretchedTiffData.write(to: stretchedTiffURL, options: [.atomic])
-
-        // Save a PNG at lower resolution (lossy)
-        let resizedImage = cgImage.resize(to: CGSize(width: 1024, height: 1024))!
-        guard let pngData = resizedImage.pngData else {
-            throw FITSFileImportError.pngConversionFailed
-        }
-        let previewURL = docsURL.appendingPathComponent("\(fileID).png")
-        try pngData.write(to: previewURL, options: [.atomic])
-
-        // Save a stretched PNG preview (lossy)
-        let thumbnailWidth = 512.0
-        let aspectRatio = Double(stretchedImage.height) / Double(stretchedImage.width)
-        let thumbnail = stretchedImage.resize(to: CGSize(width: thumbnailWidth, height: thumbnailWidth * aspectRatio))
-        guard let stretchedPreviewData = thumbnail?.pngData else {
-            throw FITSFileImportError.pngConversionFailed
-        }
-        let stretchedPreviewURL = docsURL.appendingPathComponent("\(fileID).stretched.png")
-        try stretchedPreviewData.write(to: stretchedPreviewURL, options: [.atomic])
 
         // Create the File record (we have already de-duped)
         let file = File(context: context)
@@ -125,7 +95,8 @@ class FITSFileImporter: FileImporter {
         file.bookmark = bookmarkData
         file.filter = headers["FILTER"]?.value?.lowercased()
         file.rawDataURL = fp32URL
-        file.previewURL = stretchedPreviewURL
+        file.width = width
+        file.height = height
 
         // Find/Create Target
         let targetReq = NSFetchRequest<Target>(entityName: "Target")
@@ -165,16 +136,10 @@ enum FITSFileImportError: Error {
     case alreadyExists(File)
     case noHeaders
     case noObservationDate
-    case noType
     case noBookmark
     case noTarget
-    case dataConversionFailed
-    case cgImageCreationFailed
-    case fp32ConversionFailed
-    case tiffConversionFailed
-    case pngConversionFailed
     case dataReadFailed
-    case stretchFailed
+    case noDimensions
 }
 
 enum FITSFileError: Error {

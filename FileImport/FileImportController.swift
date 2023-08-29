@@ -50,12 +50,22 @@ class FileImportController: ObservableObject {
                     rateSema.signal()
                     return
                 }
-                importer.importFile { _, _ in
-                    DispatchQueue.main.async {
-                        self.imported += 1
+                importer.importFile { file, error in
+                    guard error == nil, let file = file else {
+                        print("Failed to import \(fileURL): \(error!)")
+                        rateSema.signal()
+                        group.leave()
+                        return
                     }
-                    rateSema.signal()
-                    group.leave()
+                    let processor = FileProcessOperation(fileObjectID: file.objectID, context: context)
+                    processor.completionBlock = {
+                        DispatchQueue.main.async {
+                            self.imported += 1
+                        }
+                        rateSema.signal()
+                        group.leave()
+                    }
+                    FileProcessController.shared.queue.addOperation(processor)
                 }
             }
         }

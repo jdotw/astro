@@ -11,12 +11,22 @@
 import CoreData
 import Foundation
 
-@objc(RegionOfInterest)
-public class RegionOfInterest: NSManagedObject {}
+@objc(Region)
+public class Region: NSManagedObject {}
 
-public extension RegionOfInterest {
-    @nonobjc class func fetchRequest() -> NSFetchRequest<RegionOfInterest> {
-        return NSFetchRequest<RegionOfInterest>(entityName: "RegionOfInterest")
+public extension Region {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<Region> {
+        return NSFetchRequest<Region>(entityName: "Region")
+    }
+
+    convenience init(rect: CGRect, epoch: CGPoint, context: NSManagedObjectContext) {
+        self.init(context: context)
+        x = Int32(rect.origin.x)
+        y = Int32(rect.origin.y)
+        width = Int32(rect.size.width)
+        height = Int32(rect.size.height)
+        epochX = Int32(epoch.x)
+        epochY = Int32(epoch.y)
     }
 
     @NSManaged var x: Int32
@@ -29,4 +39,4 @@ public extension RegionOfInterest {
     @NSManaged var file: File
 }
 
-extension File: Identifiable {}
+extension Region: Identifiable {}

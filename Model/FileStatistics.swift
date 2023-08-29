@@ -11,32 +11,19 @@
 import CoreData
 import Foundation
 
-@objc(File)
-public class File: NSManagedObject {}
+@objc(FileStatistics)
+public class FileStatistics: NSManagedObject {}
 
-public extension File {
-    @nonobjc class func fetchRequest() -> NSFetchRequest<File> {
-        return NSFetchRequest<File>(entityName: "File")
+public extension FileStatistics {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<FileStatistics> {
+        return NSFetchRequest<FileStatistics>(entityName: "FileStatistics")
     }
 
-    @NSManaged var bookmark: Data
-    @NSManaged var contentHash: String
-    @NSManaged var filter: String?
-    @NSManaged var id: String
-    @NSManaged var name: String
-    @NSManaged var timestamp: Date
-    @NSManaged var type: String
-    @NSManaged var url: URL
-    @NSManaged var rawDataURL: URL
-    @NSManaged var previewURL: URL
-    @NSManaged var session: Session?
-    @NSManaged var target: Target?
-    @NSManaged var rejected: Bool
-    @NSManaged var width: Int32
-    @NSManaged var height: Int32
-    @NSManaged var bitsPerComponent: Int16
-    @NSManaged var bitsPerChannel: Int16
-    @NSManaged var regions: NSSet?
+    @NSManaged var file: File
+
+    @NSManaged var max: Float
+    @NSManaged var median: Float
+    @NSManaged var avgMedianDeviation: Float
 }
 
-extension File: Identifiable {}
+extension FileStatistics: Identifiable {}

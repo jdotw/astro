@@ -1,5 +1,5 @@
 //
-//  CGImage+StarsTests.swift
+//  File+RegionTests.swift
 //  AstroTests
 //
 //  Created by James Wilson on 24/8/2023.
@@ -8,7 +8,7 @@
 @testable import Astro
 import XCTest
 
-final class CGImage_StarsTests: XCTestCase {
+final class File_RegionTests: XCTestCase {
     override func setUpWithError() throws {}
 
     override func tearDownWithError() throws {}
@@ -45,15 +45,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, n, n, n, n, 0,
                                0, 0, n, 0, 0, 0]
         let file = file(size: CGSize(width: 6, height: 4))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let rect = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let region = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(rect.origin.x, 1)
-        XCTAssertEqual(rect.origin.y, 0)
-        XCTAssertEqual(rect.size.width, 4)
-        XCTAssertEqual(rect.size.height, 4)
+        XCTAssertEqual(region.x, 1)
+        XCTAssertEqual(region.y, 0)
+        XCTAssertEqual(region.width, 4)
+        XCTAssertEqual(region.height, 4)
     }
 
     func testTwoRects() throws {
@@ -70,20 +70,20 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 3.0, height: 3.0))
-        XCTAssertEqual(rects.count, 2)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 3.0, height: 3.0))
+        XCTAssertEqual(regions.count, 2)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 1)
-        XCTAssertEqual(first.origin.y, 1)
-        XCTAssertEqual(first.size.width, 5)
-        XCTAssertEqual(first.size.height, 5)
-        let second = rects[1]
-        XCTAssertEqual(second.origin.x, 3)
-        XCTAssertEqual(second.origin.y, 6)
-        XCTAssertEqual(second.size.width, 4)
-        XCTAssertEqual(second.size.height, 4)
+        XCTAssertEqual(first.x, 1)
+        XCTAssertEqual(first.y, 1)
+        XCTAssertEqual(first.width, 5)
+        XCTAssertEqual(first.height, 5)
+        let second = regions[1]
+        XCTAssertEqual(second.x, 3)
+        XCTAssertEqual(second.y, 6)
+        XCTAssertEqual(second.width, 4)
+        XCTAssertEqual(second.height, 4)
     }
 
     func testTooSmallRects() throws {
@@ -100,8 +100,8 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, n, n, n, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 4.0, height: 4.0))
-        XCTAssertEqual(rects.count, 0)
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 4.0, height: 4.0))
+        XCTAssertEqual(regions.count, 0)
     }
 
     func testTooSmallRectByWidth() throws {
@@ -118,8 +118,8 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, n, n, n, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 4.0, height: 2.0))
-        XCTAssertEqual(rects.count, 0)
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 4.0, height: 2.0))
+        XCTAssertEqual(regions.count, 0)
     }
 
     func testTooSmallRectByHeight() throws {
@@ -136,8 +136,8 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, n, n, n, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 4.0))
-        XCTAssertEqual(rects.count, 0)
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 4.0))
+        XCTAssertEqual(regions.count, 0)
     }
 
     func testDiagonalBottomLeftRect() throws {
@@ -154,15 +154,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 1)
-        XCTAssertEqual(first.origin.y, 3)
-        XCTAssertEqual(first.size.width, 3)
-        XCTAssertEqual(first.size.height, 3)
+        XCTAssertEqual(first.x, 1)
+        XCTAssertEqual(first.y, 3)
+        XCTAssertEqual(first.width, 3)
+        XCTAssertEqual(first.height, 3)
     }
 
     func testDiagonalTopLeftRect() throws {
@@ -179,15 +179,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 1)
-        XCTAssertEqual(first.origin.y, 2)
-        XCTAssertEqual(first.size.width, 3)
-        XCTAssertEqual(first.size.height, 3)
+        XCTAssertEqual(first.x, 1)
+        XCTAssertEqual(first.y, 2)
+        XCTAssertEqual(first.width, 3)
+        XCTAssertEqual(first.height, 3)
     }
 
     func testDiagonalTopRightRect() throws {
@@ -204,15 +204,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 2)
-        XCTAssertEqual(first.origin.y, 2)
-        XCTAssertEqual(first.size.width, 3)
-        XCTAssertEqual(first.size.height, 3)
+        XCTAssertEqual(first.x, 2)
+        XCTAssertEqual(first.y, 2)
+        XCTAssertEqual(first.width, 3)
+        XCTAssertEqual(first.height, 3)
     }
 
     func testDiagonalBottomRightRect() throws {
@@ -229,15 +229,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 2)
-        XCTAssertEqual(first.origin.y, 3)
-        XCTAssertEqual(first.size.width, 3)
-        XCTAssertEqual(first.size.height, 3)
+        XCTAssertEqual(first.x, 2)
+        XCTAssertEqual(first.y, 3)
+        XCTAssertEqual(first.width, 3)
+        XCTAssertEqual(first.height, 3)
     }
 
     func testDiagonalLeftRect() throws {
@@ -254,15 +254,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 1)
-        XCTAssertEqual(first.origin.y, 3)
-        XCTAssertEqual(first.size.width, 3)
-        XCTAssertEqual(first.size.height, 3)
+        XCTAssertEqual(first.x, 1)
+        XCTAssertEqual(first.y, 3)
+        XCTAssertEqual(first.width, 3)
+        XCTAssertEqual(first.height, 3)
     }
 
     func testDiagonalBottomRect() throws {
@@ -279,15 +279,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 2)
-        XCTAssertEqual(first.origin.y, 3)
-        XCTAssertEqual(first.size.width, 3)
-        XCTAssertEqual(first.size.height, 3)
+        XCTAssertEqual(first.x, 2)
+        XCTAssertEqual(first.y, 3)
+        XCTAssertEqual(first.width, 3)
+        XCTAssertEqual(first.height, 3)
     }
 
     func testDiagonalRightRect() throws {
@@ -304,15 +304,15 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 2)
-        XCTAssertEqual(first.origin.y, 3)
-        XCTAssertEqual(first.size.width, 3)
-        XCTAssertEqual(first.size.height, 3)
+        XCTAssertEqual(first.x, 2)
+        XCTAssertEqual(first.y, 3)
+        XCTAssertEqual(first.width, 3)
+        XCTAssertEqual(first.height, 3)
     }
 
     func testDetectedPixelsErased() throws {
@@ -329,8 +329,8 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, n, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 3.0, height: 3.0))
-        XCTAssertGreaterThan(rects.count, 0)
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 3.0, height: 3.0))
+        XCTAssertGreaterThan(regions.count, 0)
         for pixel in pixels {
             XCTAssertNotEqual(pixel, n)
         }
@@ -350,14 +350,14 @@ final class CGImage_StarsTests: XCTestCase {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         let file = file(size: CGSize(width: 12, height: 12))
-        let rects = file.starRects(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
-        XCTAssertEqual(rects.count, 1)
-        guard let first = rects.first else {
+        let regions = file.detectRegions(inPixels: &pixels, minimumSize: CGSize(width: 2.0, height: 2.0))
+        XCTAssertEqual(regions.count, 1)
+        guard let first = regions.first else {
             return XCTFail()
         }
-        XCTAssertEqual(first.origin.x, 1)
-        XCTAssertEqual(first.origin.y, 1)
-        XCTAssertEqual(first.size.width, 4)
-        XCTAssertEqual(first.size.height, 4)
+        XCTAssertEqual(first.x, 1)
+        XCTAssertEqual(first.y, 1)
+        XCTAssertEqual(first.width, 4)
+        XCTAssertEqual(first.height, 4)
     }
 }

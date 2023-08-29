@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct StarRectsView: View {
+    let file: File
     @Binding var showStarRects: Bool
-    let rects: [NSRect]?
     let image: NSImage?
+
     var body: some View {
         Image(nsImage: image ?? NSImage())
             .resizable()
@@ -20,12 +21,11 @@ struct StarRectsView: View {
                     GeometryReader { geometry in
                         let xScale = image != nil ? geometry.size.width / image!.size.width : 0.0
                         let yScale = image != nil ? geometry.size.height / image!.size.height : 0.0
-                        //                    ZStack(alignment: .topTrailing) {
-                        ForEach(sortedRects, id: \.self) { rect in
-                            let scaledRect = NSRect(x: rect.minX * xScale,
-                                                    y: rect.minY * yScale,
-                                                    width: rect.width * xScale,
-                                                    height: rect.height * yScale)
+                        ForEach(regionRects, id: \.self) { region in
+                            let scaledRect = NSRect(x: region.origin.x * xScale,
+                                                    y: region.origin.y * yScale,
+                                                    width: region.width * xScale,
+                                                    height: region.height * yScale)
                             let drawRect = NSRect(x: scaledRect.minX,
                                                   y: scaledRect.minY,
                                                   width: max(scaledRect.width, 1),
@@ -57,14 +57,17 @@ struct StarRectsView: View {
             })
     }
 
-    var sortedRects: [NSRect] {
-        guard let rects = rects else { return [] }
-        let sortedRects = rects.sorted { a, b in
-            b.minY > a.minY
+    var regionRects: [NSRect] {
+        if let regions = file.regions as? Set<Region> {
+            return regions.map { region in
+                NSRect(x: Int(region.x),
+                       y: Int(region.y),
+                       width: Int(region.width),
+                       height: Int(region.height))
+            }
+        } else {
+            return []
         }
-        return sortedRects
-//        var blah = Array(sortedRects[0 ... 7])
-//        return blah
     }
 }
 

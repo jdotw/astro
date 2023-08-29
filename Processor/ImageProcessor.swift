@@ -45,7 +45,9 @@ class ImageProcessor: ObservableObject {
         frameBuffer.removeAll()
         alignedFrameBuffer.removeAll()
         for file in files {
-            add(file.previewURL)
+            if let url = file.previewURL {
+                add(url)
+            }
         }
     }
 
