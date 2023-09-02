@@ -144,7 +144,7 @@ extension File {
         }
     }
 
-    var stretchParameters: StretchParameters? {
+    var stretchedImage: CGImage? {
         guard let statistics = self.statistics else { return nil }
 
         print("STORED MEDIAN: ", statistics.median)
@@ -157,11 +157,8 @@ extension File {
         let midtone = self.mtf(midtone: targetBG, x: statistics.median - shadowClip)
         print("MIDTONE: ", midtone)
 
-        return StretchParameters(shadowClip: shadowClip, midtone: midtone)
-    }
+        let params = StretchParameters(shadowClip: shadowClip, midtone: midtone)
 
-    var stretchedImage: CGImage? {
-        guard let params = stretchParameters else { return nil }
         guard let pixels = self.unsortedPixels() else { return nil }
         var out = [Float](repeating: 0.0, count: pixels.count)
         for i in 0 ..< pixels.count {
@@ -202,4 +199,3 @@ extension File {
         return image
     }
 }
-

@@ -34,35 +34,27 @@ struct FilteredImage: View {
     @Binding var showStarRects: Bool
 
     func loadImage() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            guard let data = try? Data(contentsOf: file.rawDataURL) else { return }
-            let width = 3326
-            let height = 2504
-            let bitsPerComponent = 32
-            let bitsPerPixel = 32
-            let bytesPerRow = width * (abs(bitsPerPixel) / 8)
-            let colorSpace = CGColorSpaceCreateDeviceGray()
-            let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
-            self.unstretchedImage = CGImage(
-                width: width,
-                height: height,
-                bitsPerComponent: bitsPerComponent,
-                bitsPerPixel: bitsPerPixel,
-                bytesPerRow: bytesPerRow,
-                space: colorSpace,
-                bitmapInfo: bitmapInfo,
-                provider: CGDataProvider(data: data as CFData)!,
-                decode: nil,
-                shouldInterpolate: false,
-                intent: CGColorRenderingIntent.defaultIntent)
-            self.stretchedImage = file.stretchedImage
-            DispatchQueue.main.async {
-                if let stretchedImage = stretchedImage {
-                    image = NSImage(cgImage: stretchedImage, size: NSZeroSize)
-                    applyFilters()
-                }
-            }
+//        DispatchQueue.global(qos: .userInitiated).async {
+        unstretchedImage = file.cgImage
+//            DispatchQueue.main.async {
+//                if let unstretchedImage = unstretchedImage {
+//                    image = NSImage(cgImage: unstretchedImage, size: NSZeroSize)
+        applyFilters()
+//                }
+//                if let stretchedImage = stretchedImage {
+//                    image = NSImage(cgImage: stretchedImage, size: NSZeroSize)
+//                    applyFilters()
+//                }
+//            }
+//        }
+    }
+
+    func applyStretchFilter(inputImage: CIImage) -> CIImage? {
+        guard let statistics = file.statistics else {
+            return nil
         }
+        let filter = StretchFilter(inputImage: inputImage, statistics: statistics)
+        return filter.outputImage
     }
 
     func applyExposureFilter(inputImage: CIImage) -> CIImage? {
@@ -127,8 +119,18 @@ struct FilteredImage: View {
     }
 
     func applyFilters() {
-        let inputImage = CIImage(cgImage: stretchedImage)
-        guard let gammaAdjustedImage = applyGammaFilter(inputImage: inputImage) else {
+        let inputImage = CIImage(cgImage: unstretchedImage)
+        guard let stretchedImage = applyStretchFilter(inputImage: inputImage) else {
+            return
+        }
+        let imageRep = NSCIImageRep(ciImage: stretchedImage)
+        let nsImage = NSImage(size: imageRep.size)
+        nsImage.addRepresentation(imageRep)
+        image = nsImage
+//        generateHistogram(inputImage: sharpenedImage)
+        return
+
+        guard let gammaAdjustedImage = applyGammaFilter(inputImage: stretchedImage) else {
             return
         }
         guard let exposureAdjustedImage = applyExposureFilter(inputImage: gammaAdjustedImage) else {
@@ -154,15 +156,11 @@ struct FilteredImage: View {
             sharpenedImage = toneCurveAdjustedImage
         }
 
-//        var binaryImage: CIImage!
-//        guard let result = applyBinarization(inputImage: sharpenedImage, threshold: 0.7) else { return }
-//        binaryImage = result
-
-        let imageRep = NSCIImageRep(ciImage: sharpenedImage)
-        let nsImage = NSImage(size: imageRep.size)
-        nsImage.addRepresentation(imageRep)
-        image = nsImage
-        generateHistogram(inputImage: sharpenedImage)
+//        let imageRep = NSCIImageRep(ciImage: sharpenedImage)
+//        let nsImage = NSImage(size: imageRep.size)
+//        nsImage.addRepresentation(imageRep)
+//        image = nsImage
+//        generateHistogram(inputImage: sharpenedImage)
     }
 
     func generateHistogram(inputImage: CIImage) {
