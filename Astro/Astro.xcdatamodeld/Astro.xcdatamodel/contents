@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22221.1" systemVersion="23A5328b" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22221.1" systemVersion="23A5337a" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="File" representedClassName="File" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
@@ -15,10 +15,16 @@
         <attribute name="url" attributeType="URI"/>
         <attribute name="width" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="import" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="files" inverseEntity="ImportRequest"/>
+        <relationship name="metadata" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileMetadata" inverseName="file" inverseEntity="FileMetadata"/>
         <relationship name="regions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Region" inverseName="file" inverseEntity="Region"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="files" inverseEntity="Session"/>
         <relationship name="statistics" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="FileStatistics" inverseName="file" inverseEntity="FileStatistics"/>
         <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="files" inverseEntity="Target"/>
+    </entity>
+    <entity name="FileMetadata" representedClassName="FileMetadata" syncable="YES">
+        <attribute name="key" optional="YES" attributeType="String"/>
+        <attribute name="string" optional="YES" attributeType="String"/>
+        <relationship name="file" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="metadata" inverseEntity="File"/>
     </entity>
     <entity name="FileStatistics" representedClassName="FileStatistics" syncable="YES">
         <attribute name="avgMedianDeviation" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>

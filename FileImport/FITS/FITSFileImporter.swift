@@ -125,6 +125,14 @@ class FITSFileImporter: FileImporter {
             file.session = newSession
         }
 
+        // Create metadata entities from FITS Header Keywors
+        for (key, value) in headers {
+            let metadata = FileMetadata(context: context)
+            metadata.key = key
+            metadata.string = value.value ?? ""
+            metadata.file = file
+        }
+
         try context.save()
 
         return file

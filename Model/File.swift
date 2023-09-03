@@ -39,6 +39,7 @@ public extension File {
 
     @NSManaged var statistics: FileStatistics?
     @NSManaged var regions: NSSet?
+    @NSManaged var metadata: NSSet?
 }
 
 extension File: Identifiable {}

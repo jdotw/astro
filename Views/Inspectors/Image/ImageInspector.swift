@@ -10,10 +10,10 @@ import SwiftUI
 struct ImageInspector: View {
     var file: File?
     var body: some View {
-        if let _ = file {
+        if let file {
 //            ScrollView {
             VStack {
-                FileMetadataInspectorPane()
+                FileMetadataInspectorPane(file: file)
             }
 //            }
         } else {
