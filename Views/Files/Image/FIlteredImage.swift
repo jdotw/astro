@@ -203,13 +203,8 @@ struct FilteredImage: View {
 
     var body: some View {
         VStack {
-            ZStack {
-//                Image(nsImage: image ?? NSImage())
-//                    .resizable()
-//                    .scaledToFit()
-//                    .padding()
-                StarRectsView(file: file, showStarRects: $showStarRects, image: image)
-            }
+            StarRectsView(file: file, showStarRects: $showStarRects, image: image)
+                .rotationEffect(.degrees(file.pierSideRotationDegrees))
         }
         .onChange(of: exposureValue) {
             applyFilters()

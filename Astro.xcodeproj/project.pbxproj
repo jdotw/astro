@@ -10,6 +10,7 @@
 		100519452AA4209400C25AF6 /* ImageInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100519442AA4209400C25AF6 /* ImageInspector.swift */; };
 		1005194A2AA421AC00C25AF6 /* FileMetadataInspectorPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100519492AA421AC00C25AF6 /* FileMetadataInspectorPane.swift */; };
 		1005194D2AA4267B00C25AF6 /* FileMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1005194C2AA425E800C25AF6 /* FileMetadata.swift */; };
+		1005194F2AA42C6F00C25AF6 /* File+Rotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1005194E2AA42C6F00C25AF6 /* File+Rotation.swift */; };
 		100577492A7DF3AF000B0D2B /* FileTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100577482A7DF3AF000B0D2B /* FileTable.swift */; };
 		100AC9892A6B6F60009E6CBA /* FileImportControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100AC9882A6B6F60009E6CBA /* FileImportControllerTests.swift */; };
 		100AC98B2A6BEEF0009E6CBA /* 20230629 in Resources */ = {isa = PBXBuildFile; fileRef = 100AC98A2A6BEEE5009E6CBA /* 20230629 */; };
@@ -98,6 +99,7 @@
 		100519442AA4209400C25AF6 /* ImageInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageInspector.swift; sourceTree = "<group>"; };
 		100519492AA421AC00C25AF6 /* FileMetadataInspectorPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMetadataInspectorPane.swift; sourceTree = "<group>"; };
 		1005194C2AA425E800C25AF6 /* FileMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMetadata.swift; sourceTree = "<group>"; };
+		1005194E2AA42C6F00C25AF6 /* File+Rotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+Rotation.swift"; sourceTree = "<group>"; };
 		100577482A7DF3AF000B0D2B /* FileTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTable.swift; sourceTree = "<group>"; };
 		100AC9882A6B6F60009E6CBA /* FileImportControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImportControllerTests.swift; sourceTree = "<group>"; };
 		100AC98A2A6BEEE5009E6CBA /* 20230629 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = 20230629; sourceTree = "<group>"; };
@@ -474,6 +476,7 @@
 				108F82292A61557600061511 /* CGImage+Format.swift */,
 				103B8A612A65F44500B526C7 /* CGImage+Resize.swift */,
 				103B8A632A65F4A600B526C7 /* CGImage+Filter.swift */,
+				1005194E2AA42C6F00C25AF6 /* File+Rotation.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -641,6 +644,7 @@
 				1038709F2A5E4F8000064EF1 /* Session+PreviewProvider.swift in Sources */,
 				100519452AA4209400C25AF6 /* ImageInspector.swift in Sources */,
 				10D8331D2A5FA34000C63083 /* Session.swift in Sources */,
+				1005194F2AA42C6F00C25AF6 /* File+Rotation.swift in Sources */,
 				103E22582AA2BF8400B35FA6 /* Stretch.metal in Sources */,
 				10D833132A5F758000C63083 /* CategoryList.swift in Sources */,
 				102D542E2A63FAF300389791 /* FileBrowser.swift in Sources */,
