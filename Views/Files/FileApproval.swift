@@ -92,7 +92,7 @@ struct FileApproval: View {
                         }
                         .disabled(selectedFile == nil)
                         .keyboardShortcut(.delete, modifiers: [])
-                        Button(action: { showStarRects.toggle() }) {
+                        Toggle(isOn: $showStarRects) {
                             Image(systemName: "star.fill")
                         }
                         .keyboardShortcut(.space, modifiers: [])
