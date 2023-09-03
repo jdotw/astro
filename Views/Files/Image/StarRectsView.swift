@@ -15,7 +15,7 @@ struct StarRectsView: View {
     var body: some View {
         Image(nsImage: image ?? NSImage())
             .resizable()
-            .scaledToFit()
+            .scaledToFill()
             .overlay(alignment: .topLeading, content: {
                 if showStarRects {
                     GeometryReader { geometry in
