@@ -11,7 +11,7 @@ struct SessionView: View {
     var session: Session
     @Binding var navStackPath: [File]
 
-    @AppStorage("sessionFileBrowserViewMode") private var fileViewMode: FileBrowserViewMode = .table
+    @AppStorage("sessionFileBrowserViewMode") private var fileViewMode: FileBrowserViewMode = .approve
 
     var body: some View {
         VStack {
