@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SessionList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var selection: Session?
+    @Binding var selectedSessionID: String?
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
@@ -17,8 +17,8 @@ struct SessionList: View {
     private var sessions: FetchedResults<Session>
 
     var body: some View {
-        List(selection: $selection) {
-            ForEach(sessions, id: \.self) { session in
+        List(selection: $selectedSessionID) {
+            ForEach(sessions, id: \.self.id) { session in
                 if let date = Date(sessionDateString: session.dateString) {
                     Label(date.formatted(date: .abbreviated, time: .omitted), systemImage: "moon")
                 } else {

@@ -14,7 +14,7 @@ struct ContentView: View {
 
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
 
-    @State private var selectedSession: Session?
+    @AppStorage("selectedSession") private var selectedSessionID: String?
     @State private var selectedTarget: Target?
     @State private var selectedFiles: Set<File> = []
     @State private var navStackPath = [File]()
@@ -30,7 +30,7 @@ struct ContentView: View {
             VStack {
                 switch selectedCategory {
                 case .sessions:
-                    SessionList(selection: $selectedSession)
+                    SessionList(selectedSessionID: $selectedSessionID)
                 case .targets:
                     TargetList(selection: $selectedTarget)
                 case .files:
@@ -99,6 +99,16 @@ struct ContentView: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
             openWindow(value: importRequest.id)
+        }
+    }
+}
+
+extension ContentView {
+    var selectedSession: Session? {
+        return selectedSessionID.flatMap { id in
+            let fetchRequest: NSFetchRequest<Session> = Session.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "id == %@", id)
+            return try? viewContext.fetch(fetchRequest).first
         }
     }
 }
