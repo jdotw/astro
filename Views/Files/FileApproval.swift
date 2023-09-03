@@ -15,7 +15,8 @@ struct FileApproval: View {
     ]
 
     @State private var selectedFileID: File.ID?
-    @State private var showStarRects: Bool = false
+    @State private var showStarRects: Bool = true
+    @State private var showInspector: Bool = true
 
     @FocusState private var focused: Bool
     @Environment(\.managedObjectContext) private var viewContext
@@ -100,6 +101,9 @@ struct FileApproval: View {
         }
         .onChange(of: files) {
             selectedFileID = nil
+        }
+        .inspector(isPresented: $showInspector) {
+            ImageInspector(file: selectedFile)
         }
     }
 
