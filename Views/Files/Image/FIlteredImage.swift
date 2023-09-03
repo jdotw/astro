@@ -123,19 +123,15 @@ struct FilteredImage: View {
         guard let stretchedImage = applyStretchFilter(inputImage: inputImage) else {
             return
         }
-        let imageRep = NSCIImageRep(ciImage: stretchedImage)
-        let nsImage = NSImage(size: imageRep.size)
-        nsImage.addRepresentation(imageRep)
-        image = nsImage
-//        generateHistogram(inputImage: sharpenedImage)
-        return
 
         guard let gammaAdjustedImage = applyGammaFilter(inputImage: stretchedImage) else {
             return
         }
+
         guard let exposureAdjustedImage = applyExposureFilter(inputImage: gammaAdjustedImage) else {
             return
         }
+
         var toneCurveAdjustedImage: CIImage!
         if applyToneCurve {
             guard let result = applyToneCurveAdjustment(inputImage: exposureAdjustedImage) else {
@@ -156,11 +152,11 @@ struct FilteredImage: View {
             sharpenedImage = toneCurveAdjustedImage
         }
 
-//        let imageRep = NSCIImageRep(ciImage: sharpenedImage)
-//        let nsImage = NSImage(size: imageRep.size)
-//        nsImage.addRepresentation(imageRep)
-//        image = nsImage
-//        generateHistogram(inputImage: sharpenedImage)
+        let imageRep = NSCIImageRep(ciImage: sharpenedImage)
+        let nsImage = NSImage(size: imageRep.size)
+        nsImage.addRepresentation(imageRep)
+        image = nsImage
+        generateHistogram(inputImage: sharpenedImage)
     }
 
     func generateHistogram(inputImage: CIImage) {
