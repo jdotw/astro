@@ -34,19 +34,8 @@ struct FilteredImage: View {
     @Binding var showStarRects: Bool
 
     func loadImage() {
-//        DispatchQueue.global(qos: .userInitiated).async {
         unstretchedImage = file.cgImage
-//            DispatchQueue.main.async {
-//                if let unstretchedImage = unstretchedImage {
-//                    image = NSImage(cgImage: unstretchedImage, size: NSZeroSize)
         applyFilters()
-//                }
-//                if let stretchedImage = stretchedImage {
-//                    image = NSImage(cgImage: stretchedImage, size: NSZeroSize)
-//                    applyFilters()
-//                }
-//            }
-//        }
     }
 
     func applyStretchFilter(inputImage: CIImage) -> CIImage? {
