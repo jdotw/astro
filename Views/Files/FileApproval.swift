@@ -73,32 +73,57 @@ struct FileApproval: View {
 
     var body: some View {
         VStack {
-            ItemFullSizeImage(file: selectedFile, showStarRects: $showStarRects)
             Text("File: \(selectedFile?.name ?? "no selection")")
-                .toolbar(content: {
-                    ToolbarItemGroup(placement: .automatic) {
-                        Button(action: goPrev) {
-                            Image(systemName: "chevron.left")
+            ItemFullSizeImage(file: selectedFile, showStarRects: $showStarRects)
+                .frame(maxHeight: .infinity)
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal) {
+                    LazyHStack {
+                        ForEach(sortedFiles) { file in
+                            ItemPreviewImage(file: file)
+                                .frame(width: 100, height: 100)
+                                .onTapGesture {
+                                    selectedFileID = file.id
+                                }
+                                .background(RoundedRectangle(cornerRadius: 8).fill(file == selectedFile ? Color.accentColor : Color.clear))
                         }
-                        .disabled(!canGoBack)
-                        .keyboardShortcut(.leftArrow, modifiers: [])
-                        Button(action: goNext) {
-                            Image(systemName: "chevron.right")
-                        }
-                        .disabled(!canGoForward)
-                        .keyboardShortcut(.rightArrow, modifiers: [])
-                        Button(action: delete) {
-                            Image(systemName: "trash.fill")
-                        }
-                        .disabled(selectedFile == nil)
-                        .keyboardShortcut(.delete, modifiers: [])
-                        Toggle(isOn: $showStarRects) {
-                            Image(systemName: "star.fill")
-                        }
-                        .keyboardShortcut(.space, modifiers: [])
                     }
-                })
+                    .onChange(of: selectedFile) { _, _ in
+                        if let selectedFile = selectedFile {
+                            DispatchQueue.main.async {
+                                print("scrolling to \(selectedFile.name)")
+                                proxy.scrollTo(selectedFile.id, anchor: .center)
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: 100, alignment: .bottom)
+                .background(Color.black.opacity(0.5))
+            }
         }
+        .toolbar(content: {
+            ToolbarItemGroup(placement: .automatic) {
+                Button(action: goPrev) {
+                    Image(systemName: "chevron.left")
+                }
+                .disabled(!canGoBack)
+                .keyboardShortcut(.leftArrow, modifiers: [])
+                Button(action: goNext) {
+                    Image(systemName: "chevron.right")
+                }
+                .disabled(!canGoForward)
+                .keyboardShortcut(.rightArrow, modifiers: [])
+                Button(action: delete) {
+                    Image(systemName: "trash.fill")
+                }
+                .disabled(selectedFile == nil)
+                .keyboardShortcut(.delete, modifiers: [])
+                Toggle(isOn: $showStarRects) {
+                    Image(systemName: "star.fill")
+                }
+                .keyboardShortcut(.space, modifiers: [])
+            }
+        })
         .onChange(of: files) {
             selectedFileID = nil
         }
@@ -134,6 +159,8 @@ struct FileApproval: View {
                     .font(.system(size: 40))
                     .foregroundColor(Color.accentColor)
             }
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .padding(4)
         }
     }
 }
