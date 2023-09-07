@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.undoManager) var undoManager
     @Environment(\.openWindow) private var openWindow
 
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
@@ -74,6 +75,9 @@ struct ContentView: View {
                     Label("Import Files", systemImage: "plus")
                 }
             }
+        }
+        .onAppear {
+            viewContext.undoManager = undoManager
         }
     }
 
