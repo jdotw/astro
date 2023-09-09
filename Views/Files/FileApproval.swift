@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct FileApproval: View {
-    var files: [File]
-    @Binding var navStackPath: [File]
+    var source: FileBrowserSource
+
+    @FetchRequest var files: FetchedResults<File>
     @State private var sortOrder: [KeyPathComparator<File>] = [
         .init(\.timestamp, order: SortOrder.forward)
     ]
@@ -21,8 +22,14 @@ struct FileApproval: View {
     @FocusState private var focused: Bool
     @Environment(\.managedObjectContext) private var viewContext
 
+    init(source: FileBrowserSource) {
+        let fetchReq = source.fileFetchRequest
+        _files = fetchReq
+        self.source = source
+    }
+
     func delete() {
-        guard let fileToDelete = selectedFile else { return }
+        guard let fileIDToDelete = selectedFileID else { return }
         // Perform navigation before marking the file as rejected
         // Becuase once it's rejected, it won't appear in sortedFiles
         if canGoForward {
@@ -33,19 +40,22 @@ struct FileApproval: View {
             selectedFileID = nil
         }
         // Mark file as rejected
-        fileToDelete.rejected = true
-        try! viewContext.save()
+        if let fileToDelete = files.first(where: { $0.id == fileIDToDelete }) {
+            fileToDelete.rejected = true
+            try! viewContext.save()
+        }
     }
 
     func moveSelection(delta: Int) -> Bool {
-        guard let selectedFile = selectedFile,
-              let index = sortedFiles.firstIndex(where: { $0.id == selectedFile.id })
+        let sortedFiles = files
+        guard let selectedFileID = selectedFileID,
+              let index = sortedFiles.firstIndex(where: { $0.id == selectedFileID })
         else { return false }
         let newIndex = index + delta
         if newIndex < 0 || newIndex >= sortedFiles.count {
             return false
         }
-        selectedFileID = sortedFiles[newIndex].id
+        self.selectedFileID = sortedFiles[newIndex].id
         return true
     }
 
@@ -58,28 +68,33 @@ struct FileApproval: View {
     }
 
     var canGoBack: Bool {
-        guard let selectedFile = selectedFile,
-              let index = sortedFiles.firstIndex(where: { $0.id == selectedFile.id })
+        let sortedFiles = files
+        guard let selectedFileID = selectedFileID,
+              let index = sortedFiles.firstIndex(where: { $0.id == selectedFileID })
         else { return false }
         return index > 0
     }
 
     var canGoForward: Bool {
-        guard let selectedFile = selectedFile,
-              let index = sortedFiles.firstIndex(where: { $0.id == selectedFile.id })
+        let sortedFiles = files
+        guard let selectedFileID = selectedFileID,
+              let index = sortedFiles.firstIndex(where: { $0.id == selectedFileID })
         else { return false }
         return index < sortedFiles.count - 1
     }
 
     var body: some View {
+        let selectedFile = selectedFile
         VStack {
-            Text("File: \(selectedFile?.name ?? "no selection")")
+            if let selectedFile {
+                Text("File: \(selectedFile.name)")
+            }
             ItemFullSizeImage(file: selectedFile, showStarRects: $showStarRects)
                 .frame(maxHeight: .infinity)
             ScrollViewReader { proxy in
                 ScrollView(.horizontal) {
                     LazyHStack {
-                        ForEach(sortedFiles) { file in
+                        ForEach(files) { file in
                             ItemPreviewImage(file: file)
                                 .frame(width: 100, height: 100)
                                 .onTapGesture {
@@ -88,10 +103,12 @@ struct FileApproval: View {
                                 .background(RoundedRectangle(cornerRadius: 8).fill(file == selectedFile ? Color.accentColor : Color.clear))
                         }
                     }
-                    .onChange(of: selectedFile) { _, _ in
-                        if let selectedFile = selectedFile {
-                            DispatchQueue.main.async {
-                                print("scrolling to \(selectedFile.name)")
+                    .onChange(of: selectedFileID) { _, _ in
+                        let selectedFile = self.selectedFile
+                        DispatchQueue.main.async {
+                            // use selectedFile here to ensure we get the default
+                            // selection of the first file if selectedFileID is nil
+                            if let selectedFile {
                                 proxy.scrollTo(selectedFile.id, anchor: .center)
                             }
                         }
@@ -116,7 +133,7 @@ struct FileApproval: View {
                 Button(action: delete) {
                     Image(systemName: "trash.fill")
                 }
-                .disabled(selectedFile == nil)
+                .disabled(selectedFileID == nil)
                 .keyboardShortcut(.delete, modifiers: [])
                 Toggle(isOn: $showStarRects) {
                     Image(systemName: "star.fill")
@@ -124,11 +141,11 @@ struct FileApproval: View {
                 .keyboardShortcut(.space, modifiers: [])
             }
         })
-        .onChange(of: files) {
-            selectedFileID = nil
-        }
         .inspector(isPresented: $showInspector) {
             ImageInspector(file: selectedFile)
+        }
+        .onChange(of: source) { _, _ in
+            self.selectedFileID = nil
         }
     }
 
@@ -141,7 +158,7 @@ struct FileApproval: View {
             if let file = file {
                 FilteredImage(file: file, histogramImage: $histogram, showStarRects: $showStarRects)
             } else {
-                Text("no file")
+                Text("no file selected")
             }
         }
     }
@@ -166,14 +183,10 @@ struct FileApproval: View {
 }
 
 extension FileApproval {
-    var sortedFiles: [File] {
-        files.filter { !$0.rejected }.sorted(using: sortOrder)
-    }
-
     var selectedFile: File? {
         guard let selectedFileID = selectedFileID else {
-            return sortedFiles.first
+            return files.first
         }
-        return sortedFiles.first { $0.id == selectedFileID }
+        return files.first { $0.id == selectedFileID }
     }
 }

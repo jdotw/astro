@@ -15,7 +15,7 @@ struct SessionView: View {
 
     var body: some View {
         VStack {
-            FileBrowser(files: files,
+            FileBrowser(source: .session(session),
                         navStackPath: $navStackPath,
                         viewMode: $fileViewMode)
         }

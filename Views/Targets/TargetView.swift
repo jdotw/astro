@@ -15,7 +15,7 @@ struct TargetView: View {
 
     var body: some View {
         VStack {
-            FileBrowser(files: files, columns: [.timestamp, .type, .filter], navStackPath: $navStackPath, viewMode: $fileViewMode)
+            FileBrowser(source: .target(target), columns: [.timestamp, .type, .filter], navStackPath: $navStackPath, viewMode: $fileViewMode)
         }
         .navigationTitle(target.name)
     }

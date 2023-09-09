@@ -58,9 +58,13 @@ struct ContentView: View {
                     case .files:
                         switch selectedFiles.count {
                         case 0:
-                            Text("No files selected")
+                            Text("No files selected - YO: \(selectedFiles.count)")
+                        case 1:
+                            FileViewer(file: selectedFiles.first!)
                         default:
-                            FileBrowser(files: [File](selectedFiles), navStackPath: $navStackPath, viewMode: $fileBrowserViewMode)
+                            FileBrowser(source: .selection(selectedFiles.map { $0.id }),
+                                        navStackPath: $navStackPath,
+                                        viewMode: $fileBrowserViewMode)
                         }
                     }
                 }

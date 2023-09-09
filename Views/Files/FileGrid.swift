@@ -9,7 +9,10 @@ import CoreData
 import SwiftUI
 
 struct FileGrid: View {
-    var files: [File]
+    var source: FileBrowserSource
+    
+    @FetchRequest var files: FetchedResults<File>
+
     @State private var exposureValue: Double = 0
     @State private var selection: Set<File> = []
     @State private var itemSize: CGFloat = 250
@@ -18,10 +21,16 @@ struct FileGrid: View {
         .init(\.timestamp, order: SortOrder.forward)
     ]
     
+    init(source: FileBrowserSource, navStackPath: Binding<[File]>) {
+        self.source = source
+        _files = source.fileFetchRequest
+        _navStackPath = navStackPath
+    }
+    
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns) {
-                ForEach(sortedFiles) { file in
+                ForEach(files) { file in
                     Item(file: file, size: itemSize, isSelected: selection.contains(file))
                         .gesture(TapGesture(count: 2).onEnded {
                             print("double clicked")
@@ -116,8 +125,4 @@ struct FileGrid: View {
     }
 }
 
-extension FileGrid {
-    var sortedFiles: [File] {
-        files.sorted(using: sortOrder)
-    }
-}
+extension FileGrid {}

@@ -15,8 +15,10 @@ enum FileTableColumns: String, CaseIterable {
 }
 
 struct FileTable: View {
-    var files: [File]
+    var source: FileBrowserSource
     var columns: [FileTableColumns] = FileTableColumns.allCases
+
+    @FetchRequest var files: FetchedResults<File>
 
     @State private var selectedFileIDs: Set<File.ID> = []
     @State private var sortOrder: [KeyPathComparator<File>] = [
@@ -27,20 +29,26 @@ struct FileTable: View {
     @ObservedObject var imageProcessor: ImageProcessor = .init()
     @State private var processedImage: NSImage?
 
+    init(source: FileBrowserSource, columns: [FileTableColumns], navStackPath: Binding<[File]>) {
+        self.source = source
+        self.columns = columns
+        _files = source.fileFetchRequest
+        _navStackPath = navStackPath
+    }
+
     func processSelected() {
-        print("processSelected")
-        imageProcessor.setFiles(Set(selectedFiles))
-        imageProcessor.processFrames { image in
-            let rep = NSCIImageRep(ciImage: image)
-            let nsImage = NSImage(size: rep.size)
-            nsImage.addRepresentation(rep)
-            processedImage = nsImage
-        }
+//        imageProcessor.setFiles(Set(selectedFiles))
+//        imageProcessor.processFrames { image in
+//            let rep = NSCIImageRep(ciImage: image)
+//            let nsImage = NSImage(size: rep.size)
+//            nsImage.addRepresentation(rep)
+//            processedImage = nsImage
+//        }
     }
 
     var body: some View {
         HStack {
-            Table(sortedFiles, selection: $selectedFileIDs, sortOrder: $sortOrder) {
+            Table(files, selection: $selectedFileIDs, sortOrder: $sortOrder) {
                 TableColumn("Timestamp", value: \.timestamp) { file in
                     Text(file.timestamp.formatted(date: .numeric, time: .shortened))
                 }
@@ -67,7 +75,9 @@ struct FileTable: View {
                 //                    Button("Rename", action: { print("RENAME \(items)") })
                 //                    Button("Delete", action: { print("DELETE \(items)") })
             }, primaryAction: { _ in
-                if selectedFiles.count == 1, let selectedFile = selectedFiles.first {
+                if selectedFileIDs.count == 1,
+                   let selectedFile = files.first(where: { $0.id == selectedFileIDs.first })
+                {
                     navStackPath.append(selectedFile)
                 }
             })
@@ -77,8 +87,7 @@ struct FileTable: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 }
-
-                FileGrid(files: selectedFiles,
+                FileGrid(source: .selection(selectedFileIDs.map { $0 }),
                          navStackPath: $navStackPath)
             }
             .frame(width: 250.0)
@@ -91,15 +100,4 @@ struct FileTable: View {
     }
 }
 
-extension FileTable {
-    var sortedFiles: [File] {
-        files.sorted(using: sortOrder)
-    }
-
-    var selectedFiles: [File] {
-        if selectedFileIDs.count == 0 {
-            return []
-        }
-        return files.filter { selectedFileIDs.contains($0.id) }
-    }
-}
+extension FileTable {}
