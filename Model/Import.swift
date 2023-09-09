@@ -1,5 +1,5 @@
 //
-//  File+CoreDataClass.swift
+//  ImportRequest.swift
 //
 //
 //  Created by James Wilson on 13/7/2023.
@@ -58,22 +58,29 @@ extension ImportRequest {
         }
     }
 
-    func buildFileList(from urls: [URL]) throws -> [URL] {
-        var files = [URL]()
+    func buildFileList(from urls: [URL]) throws -> [ImportRequestFile] {
+        var files = [ImportRequestFile]()
         for url in urls {
             let fileManager = FileManager.default
-            let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])!
-            for case let fileURL as URL in enumerator {
-                let resourceValues = try fileURL.resourceValues(forKeys: [.isDirectoryKey])
-                if !resourceValues.isDirectory! {
-                    files.append(fileURL)
+            let resourceValues = try url.resourceValues(forKeys: [.isDirectoryKey])
+            if let isDirectory = resourceValues.isDirectory, isDirectory {
+                let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])!
+                for case let fileURL as URL in enumerator {
+                    let resourceValues = try fileURL.resourceValues(forKeys: [.isDirectoryKey])
+                    if let isDirectory = resourceValues.isDirectory, !isDirectory {
+                        let importable = ImportRequestFile(url: fileURL)
+                        files.append(importable)
+                    }
                 }
+            } else {
+                let importable = ImportRequestFile(url: url)
+                files.append(importable)
             }
         }
         return files
     }
 
-    func performBackgroundTask(_ completion: @escaping (Result<[URL], Error>) -> Void) {
+    func performBackgroundTask(_ completion: @escaping (Result<[ImportRequestFile], Error>) -> Void) {
         DispatchQueue.global().async {
             do {
                 let resolvedURLs = try self.resolvedURLs
@@ -113,4 +120,34 @@ public extension ImportURL {
     @NSManaged var url: URL
     @NSManaged var bookmark: Data
     @NSManaged var importRequest: ImportRequest?
+}
+
+extension ImportURL: Identifiable {}
+
+enum ImportRequestFileStatus: Int {
+    case failed = 0
+    case importing = 1
+    case pending = 2
+    case imported = 3
+}
+
+extension ImportRequestFileStatus: Comparable {
+    static func < (lhs: ImportRequestFileStatus, rhs: ImportRequestFileStatus) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
+}
+
+class ImportRequestFile: Identifiable {
+    let id = UUID()
+    let url: URL
+    let name: String
+    var error: Error?
+    var status: ImportRequestFileStatus
+
+    init(url: URL) {
+        self.url = url
+        self.name = url.lastPathComponent
+        self.status = .pending
+        self.error = nil
+    }
 }

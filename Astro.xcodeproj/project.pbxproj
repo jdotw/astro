@@ -475,8 +475,8 @@
 				1038709A2A5E24F200064EF1 /* Date+SessionTests.swift */,
 				108F82292A61557600061511 /* CGImage+Format.swift */,
 				103B8A612A65F44500B526C7 /* CGImage+Resize.swift */,
-				103B8A632A65F4A600B526C7 /* CGImage+Filter.swift */,
 				1005194E2AA42C6F00C25AF6 /* File+Rotation.swift */,
+				103B8A632A65F4A600B526C7 /* CGImage+Filter.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";

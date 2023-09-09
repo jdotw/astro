@@ -150,6 +150,17 @@ enum FITSFileImportError: Error {
     case noDimensions
 }
 
+extension FITSFileImportError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .alreadyExists:
+            return NSLocalizedString("The file has already been imported", comment: "file already imported")
+        default:
+            return nil
+        }
+    }
+}
+
 enum FITSFileError: Error {
     case blockTooSmall(_: Int)
 }

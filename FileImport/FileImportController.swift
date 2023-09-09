@@ -13,6 +13,11 @@ class FileImportController: ObservableObject {
     @Published var total = 0
     @Published var importing = false
     @Published var errors = [Error]()
+    @Published var files = [ImportRequestFile]()
+
+    init() {
+        print("FILEIMPORTCONTROLLER INIT")
+    }
 
     func performImport(request: ImportRequest, completion: @escaping () -> Void) throws {
         imported = 0
@@ -21,46 +26,60 @@ class FileImportController: ObservableObject {
         errors = []
         request.performBackgroundTask { result in
             switch result {
-            case .success(let urls):
-                DispatchQueue.main.async {
-                    self.total = urls.count
+            case .success(let importableFiles):
+                DispatchQueue.main.sync {
+                    print("Importable: ", importableFiles)
+                    self.total = importableFiles.count
+                    self.files = importableFiles
                 }
-                self.importFilesFrom(fileURLs: urls, persistentContainer: PersistenceController.shared.container)
+                self.importFiles(importableFiles)
             case .failure(let error):
                 print("Failed to import: ", error)
-                self.errors.append(error)
+                DispatchQueue.main.sync {
+                    self.errors.append(error)
+                }
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.sync {
                 self.importing = false
                 completion()
             }
         }
     }
 
-    private func importFilesFrom(fileURLs: [URL], persistentContainer: NSPersistentContainer) {
-        print("IMPORTING FROM:\n\(fileURLs)")
+    private func importFiles(_ files: [ImportRequestFile]) {
+        print("IMPORTING FROM:\n\(files)")
         let waitSema = DispatchSemaphore(value: 0)
         let rateSema = DispatchSemaphore(value: ProcessInfo.processInfo.processorCount)
         let group = DispatchGroup()
-        for fileURL in fileURLs {
+        for importableFile in files {
             rateSema.wait()
             group.enter()
-            persistentContainer.performBackgroundTask { context in
-                guard let importer = FileImporter.importer(forURL: fileURL, context: context) else {
+            PersistenceController.shared.container.performBackgroundTask { context in
+                guard let importer = FileImporter.importer(forURL: importableFile.url, context: context) else {
                     rateSema.signal()
                     return
                 }
+                DispatchQueue.main.sync {
+                    importableFile.status = .importing
+                }
                 importer.importFile { file, error in
                     guard error == nil, let file = file else {
-                        print("Failed to import \(fileURL): \(error!)")
+                        print("Failed to import \(importableFile.url): \(error!)")
+                        DispatchQueue.main.sync {
+                            self.imported += 1
+                            importableFile.error = error
+                            importableFile.status = .failed
+                        }
                         rateSema.signal()
                         group.leave()
                         return
                     }
                     let processor = FileProcessOperation(fileObjectID: file.objectID, context: context)
                     processor.completionBlock = {
-                        DispatchQueue.main.async {
+                        DispatchQueue.main.sync {
                             self.imported += 1
+                            importableFile.error = nil
+                            importableFile.status = .imported
                         }
                         rateSema.signal()
                         group.leave()

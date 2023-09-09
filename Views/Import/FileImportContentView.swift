@@ -10,35 +10,78 @@ import SwiftUI
 
 struct FileImportContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+
     @Binding var importRequestID: ImportRequest.ID?
-    @ObservedObject var importController = FileImportController()
-    @State var errors: [Error] = []
+
+    @StateObject var importController = FileImportController()
+
+    @State private var errors: [Error] = []
+    @State private var selectedFileID: ImportRequestFile.ID?
+
+    @State private var resultsSortOrder: [KeyPathComparator<ImportRequestFile>] = [
+        .init(\.status, order: SortOrder.forward)
+    ]
 
     var importingBody: some View {
         VStack {
             Text("Importing...")
             Text("\(importController.imported) out of \(importController.total) completed")
             ProgressView(value: Float(importController.imported) / Float(importController.total), total: 1.0)
-            Text("Import ID: \(importRequest?.id ?? "no request")")
-        }
+        }.padding()
     }
 
     var doneBody: some View {
-        VStack {
-            Text("Done")
-            Text("Import ID: \(importRequest?.id ?? "no request")")
+        HStack(spacing: 20) {
+            Image(systemName: "checkmark.circle")
+                .resizable()
+                .foregroundColor(.green)
+                .frame(width: 44, height: 44)
+                .aspectRatio(contentMode: .fit)
+            VStack(alignment: .leading) {
+                Text("Done")
+                Text("Imported \(importController.imported) files")
+            }
         }
+        .padding()
     }
 
     var body: some View {
         VStack {
-            VStack {
+            HStack {
                 if importController.importing {
                     importingBody
                 } else {
                     doneBody
                 }
-            }.padding()
+                Table(importSourcedURLs) {
+                    TableColumn("Importing From", value: \.url.relativePath)
+                }
+            }
+            VStack {
+                Table(importController.files, selection: $selectedFileID, sortOrder: $resultsSortOrder) {
+                    TableColumn("", value: \.status) {
+                        switch $0.status {
+                        case .imported:
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        case .failed:
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.red)
+                        case .importing:
+                            ProgressView()
+                                .scaleEffect(0.5)
+                                .progressViewStyle(.circular)
+                                .frame(width: 14, height: 14)
+                        case .pending:
+                            Image(systemName: "doc.badge.clock.fill")
+                        }
+                    }.width(20)
+                    TableColumn("File", value: \.name)
+                    TableColumn("Error") {
+                        Text($0.error?.localizedDescription ?? "")
+                    }
+                }
+            }
         }
         .task {
             guard let importRequest = importRequest
@@ -48,7 +91,7 @@ struct FileImportContentView: View {
             }
             do {
                 try
-                importController.performImport(request: importRequest) {}
+                    importController.performImport(request: importRequest) {}
             } catch {
                 errors.append(error)
             }
@@ -63,5 +106,9 @@ struct FileImportContentView: View {
         let req = ImportRequest.fetchRequest()
         req.predicate = NSPredicate(format: "id == %@", importRequestID)
         return try? viewContext.fetch(req).first
+    }
+
+    var importSourcedURLs: [ImportURL] {
+        return importRequest?.urls?.allObjects as? [ImportURL] ?? []
     }
 }
