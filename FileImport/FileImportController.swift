@@ -12,7 +12,7 @@ class FileImportController: ObservableObject {
     @Published var imported = 0
     @Published var total = 0
     @Published var importing = false
-    @Published var errors = [Error]()
+    @Published var error: Error?
     @Published var files = [ImportRequestFile]()
 
     init() {
@@ -23,7 +23,7 @@ class FileImportController: ObservableObject {
         imported = 0
         total = 0
         importing = true
-        errors = []
+        error = nil
         request.performBackgroundTask { result in
             switch result {
             case .success(let importableFiles):
@@ -36,7 +36,7 @@ class FileImportController: ObservableObject {
             case .failure(let error):
                 print("Failed to import: ", error)
                 DispatchQueue.main.sync {
-                    self.errors.append(error)
+                    self.error = error
                 }
             }
             DispatchQueue.main.sync {
