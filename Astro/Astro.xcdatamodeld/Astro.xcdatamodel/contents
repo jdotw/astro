@@ -62,6 +62,13 @@
     <entity name="Target" representedClassName="Target" syncable="YES">
         <attribute name="id" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="exportRequests" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TargetExportRequest" inverseName="target" inverseEntity="TargetExportRequest"/>
         <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="target" inverseEntity="File"/>
+    </entity>
+    <entity name="TargetExportRequest" representedClassName="TargetExportRequest" syncable="YES">
+        <attribute name="bookmark" attributeType="Binary"/>
+        <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" attributeType="URI"/>
+        <relationship name="target" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="exportRequests" inverseEntity="Target"/>
     </entity>
 </model>
