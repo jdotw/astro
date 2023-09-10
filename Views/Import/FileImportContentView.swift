@@ -72,6 +72,9 @@ struct FileImportContentView: View {
                                 .scaleEffect(0.5)
                                 .progressViewStyle(.circular)
                                 .frame(width: 14, height: 14)
+                        case .notImported:
+                            Image(systemName: "questionmark.square.fill")
+                                .foregroundColor(.gray)
                         case .pending:
                             Image(systemName: "doc.badge.clock.fill")
                         }

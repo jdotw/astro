@@ -129,11 +129,21 @@ enum ImportRequestFileStatus: Int {
     case importing = 1
     case pending = 2
     case imported = 3
+    case notImported = 4
 }
 
 extension ImportRequestFileStatus: Comparable {
     static func < (lhs: ImportRequestFileStatus, rhs: ImportRequestFileStatus) -> Bool {
         lhs.rawValue < rhs.rawValue
+    }
+}
+
+extension ImportRequestFileStatus {
+    var isFinal: Bool {
+        switch self {
+        case .imported, .notImported, .failed: return true
+        default: return false
+        }
     }
 }
 
