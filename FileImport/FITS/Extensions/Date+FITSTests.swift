@@ -18,11 +18,6 @@ final class Date_FITSTests: XCTestCase {
     }
     
     func testCanParseISODateFormat() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
         guard let date = Date(fitsDate: "2023-07-09T16:12:34.567890") else {
             XCTFail()
             return
@@ -35,6 +30,21 @@ final class Date_FITSTests: XCTestCase {
         XCTAssertEqual(components.minute, 12)
         XCTAssertEqual(components.second, 34)
     }
+
+    func testCanParseISODateFormatWithoutSubSeconds() throws {
+        guard let date = Date(fitsDate: "2018-09-02T01:33:54") else {
+            XCTFail()
+            return
+        }
+        let components = Calendar.current.dateComponents(in: TimeZone(secondsFromGMT: 0)!, from: date)
+        XCTAssertEqual(components.year, 2018)
+        XCTAssertEqual(components.month, 9)
+        XCTAssertEqual(components.day, 2)
+        XCTAssertEqual(components.hour, 1)
+        XCTAssertEqual(components.minute, 33)
+        XCTAssertEqual(components.second, 54)
+    }
+
     
     func testCanParseShortDateFormatWithSingleDigitDay() throws {
         guard let date = Date(fitsDate: "2/07/96") else {

@@ -50,11 +50,20 @@ class FITSFileImporter: FileImporter {
         guard let headers = fitsFile.parseHeaders(dataStartOffset: &dataStartOffset) else {
             throw FITSFileImportError.noHeaders
         }
-        guard let observationDateString = headers["DATE-OBS"]?.value,
-              let observationDate = Date(fitsDate: observationDateString)
-        else {
+        var observationDate: Date!
+        if let headerDateString = headers["DATE-OBS"]?.value {
+            guard
+                let headerDate = Date(fitsDate: headerDateString)
+            else {
+                throw FITSFileImportError.invalidObservationDate
+            }
+            observationDate = headerDate
+        } else if let fileCreationDate = try? fitsFile.url.resourceValues(forKeys: [.creationDateKey]).creationDate {
+            observationDate = fileCreationDate
+        } else {
             throw FITSFileImportError.noObservationDate
         }
+
         let type = headers["FRAME"]?.value?.lowercased() ?? "light"
         guard let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) else {
             throw FITSFileImportError.noBookmark
@@ -144,6 +153,7 @@ enum FITSFileImportError: Error {
     case alreadyExists(File)
     case noHeaders
     case noObservationDate
+    case invalidObservationDate
     case noBookmark
     case noTarget
     case dataReadFailed
