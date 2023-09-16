@@ -43,7 +43,10 @@ extension TargetExportRequest {
     func buildFileList(forDestination destinationURL: URL) throws -> [TargetExportRequestFile] {
         var exportableFiles = [TargetExportRequestFile]()
         for file in target.files?.allObjects as! [File] {
-            let destination = destinationURL.appendingPathComponent(file.name)
+            let filterName = file.filter?.localizedCapitalized ?? "UnknownFilter"
+            let filterURL = destinationURL.appendingPathComponent(filterName)
+            try FileManager.default.createDirectory(at: filterURL, withIntermediateDirectories: true, attributes: nil)
+            let destination = filterURL.appendingPathComponent(file.name)
             let exportable = TargetExportRequestFile(source: file, destination: destination)
             exportableFiles.append(exportable)
         }
