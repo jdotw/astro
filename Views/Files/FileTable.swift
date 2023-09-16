@@ -21,9 +21,7 @@ struct FileTable: View {
     @FetchRequest var files: FetchedResults<File>
 
     @State private var selectedFileIDs: Set<File.ID> = []
-    @State private var sortOrder: [KeyPathComparator<File>] = [
-        .init(\.timestamp, order: SortOrder.forward)
-    ]
+    @State private var sortOrder: [KeyPathComparator<File>]
     @Binding var navStackPath: [File]
 
     @ObservedObject var imageProcessor: ImageProcessor = .init()
@@ -34,6 +32,7 @@ struct FileTable: View {
         self.columns = columns
         _files = source.fileFetchRequest
         _navStackPath = navStackPath
+        _sortOrder = State(initialValue: source.defaultSortOrder)
     }
 
     func processSelected() {
@@ -48,7 +47,7 @@ struct FileTable: View {
 
     var body: some View {
         HStack {
-            Table(files, selection: $selectedFileIDs, sortOrder: $sortOrder) {
+            Table(sortedFiles, selection: $selectedFileIDs, sortOrder: $sortOrder) {
                 TableColumn("Timestamp", value: \.timestamp) { file in
                     Text(file.timestamp.formatted(date: .numeric, time: .shortened))
                 }
@@ -100,4 +99,8 @@ struct FileTable: View {
     }
 }
 
-extension FileTable {}
+extension FileTable {
+    var sortedFiles: [File] {
+        files.sorted(using: sortOrder)
+    }
+}

@@ -69,6 +69,16 @@ extension FileBrowserSource {
                                   sortDescriptors: sortDescriptors,
                                   predicate: predicate)
     }
+
+    var defaultSortOrder: [KeyPathComparator<File>] {
+        switch self {
+        case .target:
+            [.init(\.filter, order: SortOrder.forward),
+             .init(\.timestamp, order: SortOrder.forward)]
+        default:
+            [.init(\.timestamp, order: SortOrder.forward)]
+        }
+    }
 }
 
 extension FileBrowserSource: Equatable {
