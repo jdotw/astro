@@ -23,7 +23,7 @@ struct AstroApp: App {
         WindowGroup(for: URL.self) { $url in
             if let url,
                let objectID = persistenceController.container.persistentStoreCoordinator.managedObjectID(forURIRepresentation: url)
-               {
+            {
                 let object = persistenceController.container.viewContext.object(with: objectID)
                 switch object {
                 case let targetExportRequest as TargetExportRequest:

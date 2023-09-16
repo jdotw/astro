@@ -68,6 +68,7 @@
     </entity>
     <entity name="TargetExportRequest" representedClassName="TargetExportRequest" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
+        <attribute name="completed" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" attributeType="URI"/>
         <relationship name="target" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="exportRequests" inverseEntity="Target"/>

@@ -31,6 +31,7 @@ public extension TargetExportRequest {
     @NSManaged var url: URL
     @NSManaged var bookmark: Data
     @NSManaged var target: Target
+    @NSManaged var completed: Bool
 }
 
 extension TargetExportRequest: Identifiable {
@@ -43,17 +44,13 @@ extension TargetExportRequest {
     func buildFileList(forDestination destinationURL: URL) throws -> [TargetExportRequestFile] {
         var exportableFiles = [TargetExportRequestFile]()
         for file in target.files?.allObjects as! [File] {
-            let filterName = file.filter?.localizedCapitalized ?? "UnknownFilter"
-            let filterURL = destinationURL.appendingPathComponent(filterName)
-            try FileManager.default.createDirectory(at: filterURL, withIntermediateDirectories: true, attributes: nil)
-            let destination = filterURL.appendingPathComponent(file.name)
-            let exportable = TargetExportRequestFile(source: file, destination: destination)
+            let exportable = TargetExportRequestFile(source: file, atBaseURL: destinationURL)
             exportableFiles.append(exportable)
         }
         return exportableFiles
     }
 
-    func performBackgroundTask(_ completion: @escaping (Result<[TargetExportRequestFile], Error>) -> Void) throws {
+    func withResolvedDestinationURL(_ completion: @escaping (URL) -> Void) throws {
         var stale = false
         guard let resolvedDestinationURL = try? URL(resolvingBookmarkData: bookmark,
                                                     options: .withSecurityScope,
@@ -66,14 +63,20 @@ extension TargetExportRequest {
         guard resolvedDestinationURL.startAccessingSecurityScopedResource() else {
             throw TargetExportRequestError.failedToStartAccessingDestinationURL
         }
-        DispatchQueue.global().async {
-            do {
-                let files = try self.buildFileList(forDestination: resolvedDestinationURL)
-                completion(.success(files))
-            } catch {
-                completion(.failure(error))
+        completion(url)
+        resolvedDestinationURL.stopAccessingSecurityScopedResource()
+    }
+
+    func performBackgroundTask(_ completion: @escaping (Result<[TargetExportRequestFile], Error>) -> Void) throws {
+        try withResolvedDestinationURL { destinationURL in
+            DispatchQueue.global().async {
+                do {
+                    let files = try self.buildFileList(forDestination: destinationURL)
+                    completion(.success(files))
+                } catch {
+                    completion(.failure(error))
+                }
             }
-            resolvedDestinationURL.stopAccessingSecurityScopedResource()
         }
     }
 }
@@ -82,12 +85,6 @@ enum TargetExportRequestError: Error {
     case unknown
     case failedToResolveDestinationBookmark(URL)
     case failedToStartAccessingDestinationURL
-}
-
-enum TargetExportRequestStatus: Int {
-    case failed = 0
-    case exporting = 1
-    case done = 2
 }
 
 enum TargetExportRequestFileStatus: Int {
@@ -103,26 +100,33 @@ extension TargetExportRequestFileStatus: Comparable {
     }
 }
 
-extension TargetExportRequestFileStatus {
-    var isFinal: Bool {
-        switch self {
-        case .exported, .failed: return true
-        default: return false
+class TargetExportRequestFile: Identifiable {
+    let id = UUID()
+    let source: File
+    let destination: URL!
+    var error: Error?
+    var status: TargetExportRequestFileStatus
+
+    init(source: File, atBaseURL baseURL: URL) {
+        self.source = source
+        self.status = .pending
+        self.error = nil
+        do {
+            self.destination = try URL(exportURLForSource: source, atBase: baseURL)
+        } catch {
+            self.error = error
+            self.status = .failed
+            self.destination = nil
         }
     }
 }
 
-class TargetExportRequestFile: Identifiable {
-    let id = UUID()
-    let source: File
-    let destination: URL
-    var error: Error?
-    var status: TargetExportRequestFileStatus
-
-    init(source: File, destination: URL) {
-        self.source = source
-        self.destination = destination
-        self.status = .pending
-        self.error = nil
+extension URL {
+    init(exportURLForSource source: File, atBase baseURL: URL) throws {
+        let filterName = source.filter?.localizedCapitalized ?? "UnknownFilter"
+        let filterURL = baseURL.appendingPathComponent(filterName)
+        try FileManager.default.createDirectory(at: filterURL, withIntermediateDirectories: true, attributes: nil)
+        let destination = filterURL.appendingPathComponent(source.name)
+        self = destination
     }
 }
