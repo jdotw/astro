@@ -28,9 +28,10 @@ public extension File {
     @NSManaged var name: String
     @NSManaged var timestamp: Date
     @NSManaged var type: String
-    @NSManaged var url: URL
-    @NSManaged var rawDataURL: URL
-    @NSManaged var previewURL: URL?
+    @NSManaged var url: URL // Original Source URL
+    @NSManaged var fitsURL: URL // The FITS file as-imported
+    @NSManaged var rawDataURL: URL // The 32bit fp values
+    @NSManaged var previewURL: URL? // Downsized and stretched PNG
     @NSManaged var session: Session?
     @NSManaged var target: Target?
     @NSManaged var rejected: Bool

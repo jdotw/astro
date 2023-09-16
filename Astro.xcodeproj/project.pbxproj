@@ -30,6 +30,7 @@
 		106BD33F2A6CCF9A00DE947D /* FIlteredImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */; };
 		106D0FA72A7DE3C0003015EA /* FileListModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */; };
 		1075E0D02A7F30D100AF344A /* FileApproval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1075E0CF2A7F30D100AF344A /* FileApproval.swift */; };
+		1089AA622AB53B78007D4E6B /* TargetExportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1089AA612AB53B78007D4E6B /* TargetExportController.swift */; };
 		108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */; };
 		108F82242A60DB5E00061511 /* TargetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82232A60DB5E00061511 /* TargetView.swift */; };
 		108F82262A60DE0000061511 /* FileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82252A60DE0000061511 /* FileViewer.swift */; };
@@ -121,6 +122,7 @@
 		106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlteredImage.swift; sourceTree = "<group>"; };
 		106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListModePicker.swift; sourceTree = "<group>"; };
 		1075E0CF2A7F30D100AF344A /* FileApproval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileApproval.swift; sourceTree = "<group>"; };
+		1089AA612AB53B78007D4E6B /* TargetExportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportController.swift; sourceTree = "<group>"; };
 		108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITS.swift"; sourceTree = "<group>"; };
 		108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITSTests.swift"; sourceTree = "<group>"; };
 		108F82232A60DB5E00061511 /* TargetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetView.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 			isa = PBXGroup;
 			children = (
 				10C55BA72AAD6331000BBC5E /* TargetExportContentView.swift */,
+				1089AA612AB53B78007D4E6B /* TargetExportController.swift */,
 			);
 			path = TargetExport;
 			sourceTree = "<group>";
@@ -674,6 +677,7 @@
 				10F646832A623D5900DE27FE /* ImageProcessor.swift in Sources */,
 				10D833262A5FA46A00C63083 /* Target.swift in Sources */,
 				10E81F472A5104C300846852 /* FileGrid.swift in Sources */,
+				1089AA622AB53B78007D4E6B /* TargetExportController.swift in Sources */,
 				10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */,
 				1005194D2AA4267B00C25AF6 /* FileMetadata.swift in Sources */,
 				10F646872A629FED00DE27FE /* AverageStackingFilter.swift in Sources */,

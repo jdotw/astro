@@ -93,6 +93,10 @@ class FITSFileImporter: FileImporter {
         let fp32URL = docsURL.appendingPathComponent("\(fileID).fp32")
         try data.write(to: fp32URL, options: [.atomic])
 
+        // Save a copy of the original FITS file
+        let fitsURL = docsURL.appendingPathComponent("\(fileID).fits")
+        try FileManager.default.copyItem(at: url, to: fitsURL)
+
         // Create the File record (we have already de-duped)
         let file = File(context: context)
         file.id = fileID
@@ -103,6 +107,7 @@ class FITSFileImporter: FileImporter {
         file.url = url
         file.bookmark = bookmarkData
         file.filter = headers["FILTER"]?.value?.lowercased()
+        file.fitsURL = fitsURL
         file.rawDataURL = fp32URL
         file.width = width
         file.height = height
