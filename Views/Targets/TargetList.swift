@@ -20,6 +20,8 @@ struct TargetList: View {
         List(selection: $selection) {
             ForEach(targets, id: \.self) { target in
                 Label(target.name, systemImage: "scope")
+                    .badge(target.files?.count ?? 0)
+                    .badgeProminence(.standard)
             }
         }
     }
