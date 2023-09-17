@@ -31,10 +31,12 @@
 		106D0FA72A7DE3C0003015EA /* FileListModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */; };
 		1075E0D02A7F30D100AF344A /* FileApproval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1075E0CF2A7F30D100AF344A /* FileApproval.swift */; };
 		1089AA622AB53B78007D4E6B /* TargetExportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1089AA612AB53B78007D4E6B /* TargetExportController.swift */; };
+		1089AA652AB6843D007D4E6B /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1089AA642AB6843D007D4E6B /* CalibrationView.swift */; };
 		108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */; };
 		108F82242A60DB5E00061511 /* TargetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82232A60DB5E00061511 /* TargetView.swift */; };
 		108F82262A60DE0000061511 /* FileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82252A60DE0000061511 /* FileViewer.swift */; };
 		108F822A2A61557600061511 /* CGImage+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82292A61557600061511 /* CGImage+Format.swift */; };
+		1092FB292AB68B1700CD69BD /* CalibrationSessionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */; };
 		1096BDF02A9AD3E500420F4C /* FileProcessOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1096BDEF2A9AD3E500420F4C /* FileProcessOperation.swift */; };
 		1096BDF22A9AD48900420F4C /* FileProcessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1096BDF12A9AD48900420F4C /* FileProcessController.swift */; };
 		109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109D2DC52A5AC47D0024BBBD /* FITSFile.swift */; };
@@ -118,16 +120,19 @@
 		103CF3212A8C3D5D0051F593 /* StarRectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRectsView.swift; sourceTree = "<group>"; };
 		103E22552AA2BF7B00B35FA6 /* StretchFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StretchFilter.swift; sourceTree = "<group>"; };
 		103E22572AA2BF8400B35FA6 /* Stretch.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Stretch.metal; sourceTree = "<group>"; };
+		1047EB102AB69DD9008891B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1062D7692A981B2300466086 /* File+RegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+RegionTests.swift"; sourceTree = "<group>"; };
 		106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlteredImage.swift; sourceTree = "<group>"; };
 		106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListModePicker.swift; sourceTree = "<group>"; };
 		1075E0CF2A7F30D100AF344A /* FileApproval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileApproval.swift; sourceTree = "<group>"; };
 		1089AA612AB53B78007D4E6B /* TargetExportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportController.swift; sourceTree = "<group>"; };
+		1089AA642AB6843D007D4E6B /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationView.swift; sourceTree = "<group>"; };
 		108DD7ED2A5AA8F3002A7549 /* Date+FITS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITS.swift"; sourceTree = "<group>"; };
 		108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+FITSTests.swift"; sourceTree = "<group>"; };
 		108F82232A60DB5E00061511 /* TargetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetView.swift; sourceTree = "<group>"; };
 		108F82252A60DE0000061511 /* FileViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewer.swift; sourceTree = "<group>"; };
 		108F82292A61557600061511 /* CGImage+Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+Format.swift"; sourceTree = "<group>"; };
+		1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionList.swift; sourceTree = "<group>"; };
 		1096BDED2A9AD2AE00420F4C /* Region.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		1096BDEF2A9AD3E500420F4C /* FileProcessOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProcessOperation.swift; sourceTree = "<group>"; };
 		1096BDF12A9AD48900420F4C /* FileProcessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProcessController.swift; sourceTree = "<group>"; };
@@ -255,6 +260,15 @@
 			path = Toolbar;
 			sourceTree = "<group>";
 		};
+		1089AA632AB6842D007D4E6B /* Calibration */ = {
+			isa = PBXGroup;
+			children = (
+				1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */,
+				1089AA642AB6843D007D4E6B /* CalibrationView.swift */,
+			);
+			path = Calibration;
+			sourceTree = "<group>";
+		};
 		1096BDEE2A9AD3CE00420F4C /* FileProcessor */ = {
 			isa = PBXGroup;
 			children = (
@@ -320,6 +334,7 @@
 		10C432232A50F80F00E620DF /* Astro */ = {
 			isa = PBXGroup;
 			children = (
+				1047EB102AB69DD9008891B2 /* Info.plist */,
 				10C432242A50F80F00E620DF /* AstroApp.swift */,
 				10C432282A50F81000E620DF /* Assets.xcassets */,
 				10C4322D2A50F81000E620DF /* Persistence.swift */,
@@ -369,6 +384,7 @@
 		10D833282A6000B300C63083 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1089AA632AB6842D007D4E6B /* Calibration */,
 				100519462AA4218800C25AF6 /* Inspectors */,
 				106D0FA52A7DE3A1003015EA /* Toolbar */,
 				10B792542A621F3300291B6D /* Import */,
@@ -636,6 +652,7 @@
 				10C4322E2A50F81000E620DF /* Persistence.swift in Sources */,
 				1075E0D02A7F30D100AF344A /* FileApproval.swift in Sources */,
 				10A85CC22A9EAAC6001196E0 /* File+Region.swift in Sources */,
+				1089AA652AB6843D007D4E6B /* CalibrationView.swift in Sources */,
 				1005194A2AA421AC00C25AF6 /* FileMetadataInspectorPane.swift in Sources */,
 				10B792562A621F4800291B6D /* FileImportContentView.swift in Sources */,
 				106BD33F2A6CCF9A00DE947D /* FIlteredImage.swift in Sources */,
@@ -671,6 +688,7 @@
 				103B8A642A65F4A600B526C7 /* CGImage+Filter.swift in Sources */,
 				10C55BA82AAD6331000BBC5E /* TargetExportContentView.swift in Sources */,
 				1038709D2A5E4F4100064EF1 /* SessionView.swift in Sources */,
+				1092FB292AB68B1700CD69BD /* CalibrationSessionList.swift in Sources */,
 				1096BDF02A9AD3E500420F4C /* FileProcessOperation.swift in Sources */,
 				10F646852A629FCA00DE27FE /* AverageStacking.metal in Sources */,
 				103CF3222A8C3D5D0051F593 /* StarRectsView.swift in Sources */,
@@ -858,6 +876,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Astro/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -888,6 +907,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Astro/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

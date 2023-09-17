@@ -15,6 +15,7 @@
         <attribute name="type" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
         <attribute name="width" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="calibrationSession" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="calibratesFiles" inverseEntity="Session"/>
         <relationship name="import" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="files" inverseEntity="ImportRequest"/>
         <relationship name="metadata" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileMetadata" inverseName="file" inverseEntity="FileMetadata"/>
         <relationship name="regions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Region" inverseName="file" inverseEntity="Region"/>
@@ -58,6 +59,7 @@
     <entity name="Session" representedClassName="Session" syncable="YES">
         <attribute name="dateString" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
+        <relationship name="calibratesFiles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="calibrationSession" inverseEntity="File"/>
         <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="session" inverseEntity="File"/>
     </entity>
     <entity name="Target" representedClassName="Target" syncable="YES">

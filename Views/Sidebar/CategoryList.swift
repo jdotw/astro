@@ -13,6 +13,8 @@ enum CategoryItem: String, Identifiable, CaseIterable {
     case sessions
     case targets
     case files
+
+    case calibration
 }
 
 struct CategoryList: View {

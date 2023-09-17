@@ -36,6 +36,8 @@ struct ContentView: View {
                     TargetList(selection: $selectedTarget)
                 case .files:
                     FileList(selection: $selectedFiles)
+                case .calibration:
+                    CalibrationSessionList()
                 }
             }
         } detail: {
@@ -66,6 +68,8 @@ struct ContentView: View {
                                         navStackPath: $navStackPath,
                                         viewMode: $fileBrowserViewMode)
                         }
+                    case .calibration:
+                        CalibrationView()
                     }
                 }
                 .navigationDestination(for: File.self) { file in
