@@ -100,7 +100,7 @@ extension TargetExportRequestFileStatus: Comparable {
     }
 }
 
-class TargetExportRequestFile: Identifiable {
+class TargetExportRequestFile {
     let source: File
     let destination: URL!
     var error: Error?
@@ -117,6 +117,12 @@ class TargetExportRequestFile: Identifiable {
             self.status = .failed
             self.destination = nil
         }
+    }
+}
+
+extension TargetExportRequestFile: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
     }
 }
 

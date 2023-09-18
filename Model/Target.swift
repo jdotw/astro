@@ -37,5 +37,8 @@ public extension Target {
     @NSManaged func removeFromFiles(_ values: NSSet)
 }
 
-extension Target: Identifiable {}
-
+extension Target: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
+    }
+}

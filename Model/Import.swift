@@ -31,7 +31,11 @@ public extension ImportRequest {
     @NSManaged var urls: NSSet?
 }
 
-extension ImportRequest: Identifiable {}
+extension ImportRequest: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
+    }
+}
 
 extension ImportRequest {
     private var resolvedURLs: [URL] {
@@ -120,7 +124,11 @@ public extension ImportURL {
     @NSManaged var importRequest: ImportRequest?
 }
 
-extension ImportURL: Identifiable {}
+extension ImportURL: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
+    }
+}
 
 enum ImportRequestFileStatus: Int {
     case failed = 0
@@ -145,7 +153,7 @@ extension ImportRequestFileStatus {
     }
 }
 
-class ImportRequestFile: Identifiable {
+class ImportRequestFile {
     let url: URL
     let name: String
     var error: Error?
@@ -156,5 +164,11 @@ class ImportRequestFile: Identifiable {
         self.name = url.lastPathComponent
         self.status = .pending
         self.error = nil
+    }
+}
+
+extension ImportRequestFile: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
     }
 }

@@ -26,4 +26,8 @@ public extension FileStatistics {
     @NSManaged var avgMedianDeviation: Float
 }
 
-extension FileStatistics: Identifiable {}
+extension FileStatistics: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
+    }
+}

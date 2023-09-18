@@ -39,4 +39,8 @@ public extension Session {
     @NSManaged func removeFromFiles(_ values: NSSet)
 }
 
-extension Session: Identifiable {}
+extension Session: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
+    }
+}

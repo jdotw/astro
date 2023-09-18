@@ -39,4 +39,8 @@ public extension Region {
     @NSManaged var file: File
 }
 
-extension Region: Identifiable {}
+extension Region: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
+    }
+}

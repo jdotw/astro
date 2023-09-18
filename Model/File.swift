@@ -44,7 +44,11 @@ public extension File {
     @NSManaged var calibrationSession: Session?
 }
 
-extension File: Identifiable {}
+extension File: Identifiable {
+    public var id: URL {
+        objectID.uriRepresentation()
+    }
+}
 
 struct ImageStatistics {
     var max: Float
