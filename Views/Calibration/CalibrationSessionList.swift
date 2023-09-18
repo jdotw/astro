@@ -27,7 +27,7 @@ struct CalibrationSessionList: View {
                 .dropDestination(for: URL.self) { items, location in
                     var acceptDrop = false
                     var sessions = [Session]()
-                    print("DROP items=\(items) location=\(location)")
+                    print("DROP items=\(items) location=\(location) to=\(session.dateString)")
                     for url in items {
                         guard let droppedObjectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) else { continue }
                         let droppedObject = viewContext.object(with: droppedObjectID)
