@@ -20,7 +20,6 @@ public extension Session {
     }
 
     @NSManaged var dateString: String
-    @NSManaged var id: String
     @NSManaged var files: NSSet?
 }
 

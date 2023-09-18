@@ -23,12 +23,10 @@ public extension ImportRequest {
         // For Unit Tests
         let context = PersistenceController.shared.container.viewContext
         self.init(entity: ImportRequest.entity(), insertInto: context)
-        self.id = UUID().uuidString
         self.timestamp = Date()
         self.urls = NSSet(array: [ImportURL(url: url, importRequest: self)])
     }
 
-    @NSManaged var id: String
     @NSManaged var timestamp: Date
     @NSManaged var urls: NSSet?
 }
@@ -148,7 +146,6 @@ extension ImportRequestFileStatus {
 }
 
 class ImportRequestFile: Identifiable {
-    let id = UUID()
     let url: URL
     let name: String
     var error: Error?

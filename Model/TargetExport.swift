@@ -101,7 +101,6 @@ extension TargetExportRequestFileStatus: Comparable {
 }
 
 class TargetExportRequestFile: Identifiable {
-    let id = UUID()
     let source: File
     let destination: URL!
     var error: Error?

@@ -19,7 +19,6 @@ public extension Target {
         return NSFetchRequest<Target>(entityName: "Target")
     }
 
-    @NSManaged var id: String
     @NSManaged var name: String
     @NSManaged var files: NSSet?
 }

@@ -24,7 +24,6 @@ public extension File {
     @NSManaged var bookmark: Data
     @NSManaged var contentHash: String
     @NSManaged var filter: String?
-    @NSManaged var id: String
     @NSManaged var name: String
     @NSManaged var timestamp: Date
     @NSManaged var type: String
