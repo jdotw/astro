@@ -107,7 +107,7 @@ struct FileImportContentView: View {
             return nil
         }
         let req = ImportRequest.fetchRequest()
-        req.predicate = NSPredicate(format: "id == %@", importRequestID)
+        req.predicate = NSPredicate(format: "id == %@", importRequestID as CVarArg)
         return try? viewContext.fetch(req).first
     }
 

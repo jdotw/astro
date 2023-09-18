@@ -154,6 +154,7 @@ extension ImportRequestFileStatus {
 }
 
 class ImportRequestFile {
+    let id = UUID()
     let url: URL
     let name: String
     var error: Error?
@@ -167,8 +168,4 @@ class ImportRequestFile {
     }
 }
 
-extension ImportRequestFile: Identifiable {
-    public var id: URL {
-        objectID.uriRepresentation()
-    }
-}
+extension ImportRequestFile: Identifiable {}

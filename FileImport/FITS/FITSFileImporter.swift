@@ -99,7 +99,6 @@ class FITSFileImporter: FileImporter {
 
         // Create the File record (we have already de-duped)
         let file = File(context: context)
-        file.id = fileID
         file.timestamp = observationDate
         file.contentHash = fileHash
         file.name = url.lastPathComponent
@@ -120,7 +119,6 @@ class FITSFileImporter: FileImporter {
             file.target = target
         } else {
             let newTarget = Target(context: context)
-            newTarget.id = UUID().uuidString
             newTarget.name = targetName
             file.target = newTarget
         }
@@ -134,7 +132,6 @@ class FITSFileImporter: FileImporter {
             file.session = session
         } else {
             let newSession = Session(context: context)
-            newSession.id = UUID().uuidString
             newSession.dateString = dateString
             file.session = newSession
         }

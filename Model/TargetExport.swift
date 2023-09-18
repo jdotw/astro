@@ -101,6 +101,7 @@ extension TargetExportRequestFileStatus: Comparable {
 }
 
 class TargetExportRequestFile {
+    let id = UUID()
     let source: File
     let destination: URL!
     var error: Error?
@@ -120,11 +121,7 @@ class TargetExportRequestFile {
     }
 }
 
-extension TargetExportRequestFile: Identifiable {
-    public var id: URL {
-        objectID.uriRepresentation()
-    }
-}
+extension TargetExportRequestFile: Identifiable {}
 
 extension URL {
     init(exportURLForSource source: File, atBase baseURL: URL) throws {

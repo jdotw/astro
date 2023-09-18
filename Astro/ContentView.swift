@@ -96,7 +96,6 @@ struct ContentView: View {
         if panel.runModal() == .OK {
             // Open a new window with ImportContentView
             let importRequest = ImportRequest(context: viewContext)
-            importRequest.id = UUID().uuidString
             importRequest.timestamp = Date()
             for url in panel.urls {
                 let importURL = ImportURL(context: viewContext)
