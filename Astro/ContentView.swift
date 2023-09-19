@@ -15,7 +15,7 @@ struct ContentView: View {
 
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
 
-    @AppStorage("selectedSession") private var selectedSessionID: String?
+    @AppStorage("selectedSession") private var selectedSessionID: URL?
     @State private var selectedTarget: Target?
     @State private var selectedFiles: Set<File> = []
     @State private var navStackPath = [File]()
@@ -117,9 +117,8 @@ struct ContentView: View {
 extension ContentView {
     var selectedSession: Session? {
         return selectedSessionID.flatMap { id in
-            let fetchRequest: NSFetchRequest<Session> = Session.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "id == %@", id)
-            return try? viewContext.fetch(fetchRequest).first
+            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
+            return try? viewContext.existingObject(with: objectID!) as? Session
         }
     }
 }
