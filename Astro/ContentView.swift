@@ -60,7 +60,7 @@ struct ContentView: View {
                     case .files:
                         switch selectedFiles.count {
                         case 0:
-                            Text("No files selected - YO: \(selectedFiles.count)")
+                            Text("No files selected")
                         case 1:
                             FileViewer(file: selectedFiles.first!)
                         default:
