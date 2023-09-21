@@ -16,10 +16,6 @@ struct AstroApp: App {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
-        WindowGroup(for: ImportRequest.ID.self) { $importRequestID in
-            FileImportContentView(importRequestID: $importRequestID)
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
-        }
         WindowGroup(for: URL.self) { $url in
             if let url,
                let objectID = persistenceController.container.persistentStoreCoordinator.managedObjectID(forURIRepresentation: url)
@@ -29,8 +25,11 @@ struct AstroApp: App {
                 case let targetExportRequest as TargetExportRequest:
                     TargetExportContentView(exportRequest: targetExportRequest)
                         .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                case let importRequest as ImportRequest:
+                    FileImportContentView(importRequest: importRequest)
+                        .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 default:
-                    EmptyView()
+                    fatalError("Unknown entity retrieved for URL windowgroup")
                 }
             } else {
                 EmptyView()

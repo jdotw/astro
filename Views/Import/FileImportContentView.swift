@@ -11,7 +11,7 @@ import SwiftUI
 struct FileImportContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
-    @Binding var importRequestID: ImportRequest.ID?
+    @ObservedObject var importRequest: ImportRequest
 
     @StateObject var importController = FileImportController()
 
@@ -87,11 +87,6 @@ struct FileImportContentView: View {
             }
         }
         .task {
-            guard let importRequest = importRequest
-            else {
-                print("Failed to create import controller")
-                return
-            }
             do {
                 try
                     importController.performImport(request: importRequest) {}
@@ -101,17 +96,7 @@ struct FileImportContentView: View {
         }
     }
 
-    var importRequest: ImportRequest? {
-        guard let importRequestID = importRequestID
-        else {
-            return nil
-        }
-        let req = ImportRequest.fetchRequest()
-        req.predicate = NSPredicate(format: "id == %@", importRequestID as CVarArg)
-        return try? viewContext.fetch(req).first
-    }
-
     var importSourcedURLs: [ImportURL] {
-        return importRequest?.urls?.allObjects as? [ImportURL] ?? []
+        return importRequest.urls?.allObjects as? [ImportURL] ?? []
     }
 }
