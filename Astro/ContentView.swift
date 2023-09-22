@@ -16,7 +16,7 @@ struct ContentView: View {
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
 
     @AppStorage("selectedSession") private var selectedSessionID: URL?
-    @State private var selectedTarget: Target?
+    @AppStorage("selectedTarget") private var selectedTargetID: URL?
     @State private var selectedFiles: Set<File> = []
     @State private var navStackPath = [File]()
 
@@ -33,7 +33,7 @@ struct ContentView: View {
                 case .sessions:
                     SessionList(selectedSessionID: $selectedSessionID)
                 case .targets:
-                    TargetList(selection: $selectedTarget)
+                    TargetList(selectedTargetID: $selectedTargetID)
                 case .files:
                     FileList(selection: $selectedFiles)
                 case .calibration:
@@ -119,6 +119,13 @@ extension ContentView {
         return selectedSessionID.flatMap { id in
             let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
             return try? viewContext.existingObject(with: objectID!) as? Session
+        }
+    }
+
+    var selectedTarget: Target? {
+        return selectedTargetID.flatMap { id in
+            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
+            return try? viewContext.existingObject(with: objectID!) as? Target
         }
     }
 }

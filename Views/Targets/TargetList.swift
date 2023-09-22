@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TargetList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var selection: Target?
+    @Binding var selectedTargetID: URL?
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Target.name, ascending: true)],
@@ -17,8 +17,8 @@ struct TargetList: View {
     private var targets: FetchedResults<Target>
 
     var body: some View {
-        List(selection: $selection) {
-            ForEach(targets, id: \.self) { target in
+        List(selection: $selectedTargetID) {
+            ForEach(targets) { target in
                 Label(target.name, systemImage: "scope")
                     .badge(target.files?.count ?? 0)
                     .badgeProminence(.standard)

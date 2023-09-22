@@ -18,7 +18,7 @@ struct SessionList: View {
 
     var body: some View {
         List(selection: $selectedSessionID) {
-            ForEach(sessions, id: \.self.objectID) { session in
+            ForEach(sessions) { session in
                 if let date = Date(sessionDateString: session.dateString) {
                     Label(date.formatted(date: .abbreviated, time: .omitted), systemImage: "moon")
                 } else {
