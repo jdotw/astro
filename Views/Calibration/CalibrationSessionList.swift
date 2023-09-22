@@ -20,28 +20,7 @@ struct CalibrationSessionList: View {
     var body: some View {
         List(selection: $selectedSession) {
             ForEach(calibrationSessions, id: \.self) { session in
-                VStack(alignment: .leading) {
-                    Text(session.dateString)
-                    Text(session.uniqueFilterNames.joined(separator: ", "))
-                }
-                .dropDestination(for: URL.self) { items, location in
-                    var acceptDrop = false
-                    var sessions = [Session]()
-                    print("DROP items=\(items) location=\(location) to=\(session.dateString)")
-                    for url in items {
-                        guard let droppedObjectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) else { continue }
-                        let droppedObject = viewContext.object(with: droppedObjectID)
-                        switch droppedObject {
-                        case let session as Session:
-                            print("GOT US A SESSION BOSH: \(session)")
-                            acceptDrop = true
-                            sessions.append(session)
-                        default:
-                            print("DROPPED UNKNOWN ENTITY: ", droppedObject)
-                        }
-                    }
-                    return acceptDrop
-                }
+                CalibrationSessionView(session: session)
             }
         }
     }

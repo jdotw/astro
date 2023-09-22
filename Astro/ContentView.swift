@@ -17,7 +17,8 @@ struct ContentView: View {
 
     @AppStorage("selectedSession") private var selectedSessionID: URL?
     @AppStorage("selectedTarget") private var selectedTargetID: URL?
-    @State private var selectedFiles: Set<File> = []
+    @AppStorage("selectedFile") private var selectedFileID: URL?
+
     @State private var navStackPath = [File]()
 
     @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
@@ -35,7 +36,7 @@ struct ContentView: View {
                 case .targets:
                     TargetList(selectedTargetID: $selectedTargetID)
                 case .files:
-                    FileList(selection: $selectedFiles)
+                    FileList(selectedFileID: $selectedFileID)
                 case .calibration:
                     CalibrationSessionList()
                 }
@@ -46,27 +47,22 @@ struct ContentView: View {
                 VStack {
                     switch selectedCategory {
                     case .sessions:
-                        if let selectedSession = selectedSession {
+                        if let selectedSession {
                             SessionView(session: selectedSession, navStackPath: $navStackPath)
                         } else {
                             Text("No session selected")
                         }
                     case .targets:
-                        if let selectedTarget = selectedTarget {
+                        if let selectedTarget {
                             TargetView(target: selectedTarget, navStackPath: $navStackPath)
                         } else {
                             Text("No target selected")
                         }
                     case .files:
-                        switch selectedFiles.count {
-                        case 0:
+                        if let selectedFile {
+                            FileViewer(file: selectedFile)
+                        } else {
                             Text("No files selected")
-                        case 1:
-                            FileViewer(file: selectedFiles.first!)
-                        default:
-                            FileBrowser(source: .selection(selectedFiles.map { $0.id }),
-                                        navStackPath: $navStackPath,
-                                        viewMode: $fileBrowserViewMode)
                         }
                     case .calibration:
                         CalibrationView()
@@ -126,6 +122,13 @@ extension ContentView {
         return selectedTargetID.flatMap { id in
             let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
             return try? viewContext.existingObject(with: objectID!) as? Target
+        }
+    }
+
+    var selectedFile: File? {
+        return selectedFileID.flatMap { id in
+            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
+            return try? viewContext.existingObject(with: objectID!) as? File
         }
     }
 }

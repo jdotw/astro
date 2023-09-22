@@ -15,25 +15,13 @@ struct CalibrationView: View {
         animation: .default)
     private var uncalibratedSessions: FetchedResults<Session>
 
-    @State private var selectedSessions: Set<Session> = []
+    @State private var selectedSessions: Set<URL> = []
 
     var body: some View {
         List(selection: $selectedSessions) {
-            ForEach(uncalibratedSessions, id: \.self) { session in
-
-                VStack(alignment: .leading) {
-                    Text(session.dateString)
-                    Text(session.uniqueUncalibratedFilterNames.joined(separator: ", "))
-                }.draggable(session.objectID.uriRepresentation())
+            ForEach(uncalibratedSessions) { session in
+                CalibrationCandidateSessionView(session: session)
             }
         }
-    }
-}
-
-extension Session {
-    var uniqueUncalibratedFilterNames: [String] {
-        guard let files = files?.allObjects as? [File] else { return [] }
-        let filters = files.compactMap { $0.calibrationSession != nil ? nil : $0.filter }
-        return Array(Set(filters)).sorted()
     }
 }

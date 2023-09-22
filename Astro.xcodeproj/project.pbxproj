@@ -63,6 +63,8 @@
 		10C432482A50F81000E620DF /* AstroUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C432472A50F81000E620DF /* AstroUITestsLaunchTests.swift */; };
 		10C55BA82AAD6331000BBC5E /* TargetExportContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C55BA72AAD6331000BBC5E /* TargetExportContentView.swift */; };
 		10C55BAB2AAD6561000BBC5E /* TargetExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C55BA92AAD64BD000BBC5E /* TargetExport.swift */; };
+		10D5AA5D2ABDB1B90031F63A /* CalibrationCandidateSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D5AA5C2ABDB1B90031F63A /* CalibrationCandidateSessionView.swift */; };
+		10D5AA5F2ABDB4A20031F63A /* CalibrationSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D5AA5E2ABDB4A20031F63A /* CalibrationSessionView.swift */; };
 		10D833132A5F758000C63083 /* CategoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833122A5F758000C63083 /* CategoryList.swift */; };
 		10D833152A5F75AC00C63083 /* SessionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833142A5F75AC00C63083 /* SessionList.swift */; };
 		10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833182A5F7C6F00C63083 /* TargetList.swift */; };
@@ -162,6 +164,8 @@
 		10C432472A50F81000E620DF /* AstroUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstroUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		10C55BA72AAD6331000BBC5E /* TargetExportContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportContentView.swift; sourceTree = "<group>"; };
 		10C55BA92AAD64BD000BBC5E /* TargetExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExport.swift; sourceTree = "<group>"; };
+		10D5AA5C2ABDB1B90031F63A /* CalibrationCandidateSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationCandidateSessionView.swift; sourceTree = "<group>"; };
+		10D5AA5E2ABDB4A20031F63A /* CalibrationSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionView.swift; sourceTree = "<group>"; };
 		10D833122A5F758000C63083 /* CategoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryList.swift; sourceTree = "<group>"; };
 		10D833142A5F75AC00C63083 /* SessionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionList.swift; sourceTree = "<group>"; };
 		10D833182A5F7C6F00C63083 /* TargetList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetList.swift; sourceTree = "<group>"; };
@@ -263,7 +267,9 @@
 			isa = PBXGroup;
 			children = (
 				1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */,
+				10D5AA5E2ABDB4A20031F63A /* CalibrationSessionView.swift */,
 				1089AA642AB6843D007D4E6B /* CalibrationView.swift */,
+				10D5AA5C2ABDB1B90031F63A /* CalibrationCandidateSessionView.swift */,
 			);
 			path = Calibration;
 			sourceTree = "<group>";
@@ -690,6 +696,8 @@
 				1096BDF02A9AD3E500420F4C /* FileProcessOperation.swift in Sources */,
 				10F646852A629FCA00DE27FE /* AverageStacking.metal in Sources */,
 				103CF3222A8C3D5D0051F593 /* StarRectsView.swift in Sources */,
+				10D5AA5D2ABDB1B90031F63A /* CalibrationCandidateSessionView.swift in Sources */,
+				10D5AA5F2ABDB4A20031F63A /* CalibrationSessionView.swift in Sources */,
 				10F646832A623D5900DE27FE /* ImageProcessor.swift in Sources */,
 				10D833262A5FA46A00C63083 /* Target.swift in Sources */,
 				10E81F472A5104C300846852 /* FileGrid.swift in Sources */,
