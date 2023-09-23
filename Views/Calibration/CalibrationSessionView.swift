@@ -18,30 +18,30 @@ struct CalibrationSessionView: View {
         }
         .dropDestination(for: URL.self) { items, location in
             var acceptDrop = false
-            var sessions = [Session]()
+            var droppedSessions = [Session]()
             print("DROP items=\(items) location=\(location) to=\(session.dateString)")
             for url in items {
                 guard let droppedObjectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) else { continue }
                 let droppedObject = viewContext.object(with: droppedObjectID)
                 switch droppedObject {
                 case let session as Session:
-                    print("GOT US A SESSION BOSH: \(session)")
                     acceptDrop = true
-                    sessions.append(session)
+                    droppedSessions.append(session)
                 default:
                     print("DROPPED UNKNOWN ENTITY: ", droppedObject)
                 }
             }
-            /* DEBUG */
-            for session in sessions {
-                session.files?.forEach { file in
-                    guard let file = file as? File else { return }
-                    if file.filter == "green" {
+
+            let calibratedFilters = session.uniqueFilterNames
+            for candidateSession in droppedSessions {
+                candidateSession.files?.map { $0 as! File }.forEach { file in
+                    guard let fileFilter = file.filter else { return }
+                    if calibratedFilters.contains(fileFilter) {
                         file.calibrationSession = session
                     }
                 }
             }
-            /* END DEBUG */
+            try! viewContext.save()
 
             return acceptDrop
         }
