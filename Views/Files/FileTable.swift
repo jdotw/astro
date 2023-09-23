@@ -26,6 +26,7 @@ struct FileTable: View {
 
     @ObservedObject var imageProcessor: ImageProcessor = .init()
     @State private var processedImage: NSImage?
+    @Environment(\.managedObjectContext) private var viewContext
 
     init(source: FileBrowserSource, columns: [FileTableColumns], navStackPath: Binding<[File]>) {
         self.source = source
@@ -86,7 +87,7 @@ struct FileTable: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 }
-                FileGrid(source: .selection(selectedFileIDs.map { $0 }),
+                FileGrid(source: .selection(selectedFileIDs.compactMap { viewContext.managedObjectID(forURIRepresentation: $0) }),
                          navStackPath: $navStackPath)
             }
             .frame(width: 250.0)

@@ -18,7 +18,7 @@ enum FileBrowserViewMode: String, CaseIterable, Identifiable {
 enum FileBrowserSource {
     case session(Session)
     case target(Target)
-    case selection([File.ID])
+    case selection([NSManagedObjectID])
     case all
 }
 
@@ -62,7 +62,8 @@ extension FileBrowserSource {
         case .target(let target):
             predicate = NSPredicate(format: "target == %@ AND rejected = false", target)
         case .selection(let selectedIDs):
-            predicate = NSPredicate(format: "id IN %@", selectedIDs)
+            print("IDS: ", selectedIDs)
+            predicate = NSPredicate(format: "self IN %@", selectedIDs)
         }
         let sortDescriptors = [NSSortDescriptor(keyPath: \File.timestamp, ascending: true)]
         return FetchRequest<File>(entity: File.entity(),
