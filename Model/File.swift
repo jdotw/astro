@@ -21,6 +21,7 @@ public extension File {
         return NSFetchRequest<File>(entityName: "File")
     }
 
+    @NSManaged var uuid: UUID
     @NSManaged var bookmark: Data
     @NSManaged var contentHash: String
     @NSManaged var filter: String?

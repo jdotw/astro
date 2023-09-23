@@ -50,7 +50,7 @@ class FileProcessOperation: Operation {
             return
         }
         let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
-        let stretchedPreviewURL = docsURL.appendingPathComponent("\(file.id).preview.png")
+        let stretchedPreviewURL = docsURL.appendingPathComponent("\(file.uuid).preview.png")
         do {
             try stretchedPreviewData.write(to: stretchedPreviewURL, options: [.atomic])
         } catch {

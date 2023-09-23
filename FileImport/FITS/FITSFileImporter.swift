@@ -84,21 +84,22 @@ class FITSFileImporter: FileImporter {
             throw FITSFileImportError.dataReadFailed
         }
 
-        // Create UUID for this file
-        let fileID = UUID().uuidString
+        // Create UUID for this file]
+        let fileID = UUID()
 
         // Save a FP32 representation (raw data)
         let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
         try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
-        let fp32URL = docsURL.appendingPathComponent("\(fileID).fp32")
+        let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
         try data.write(to: fp32URL, options: [.atomic])
 
         // Save a copy of the original FITS file
-        let fitsURL = docsURL.appendingPathComponent("\(fileID).fits")
+        let fitsURL = docsURL.appendingPathComponent("\(fileID.uuidString).fits")
         try FileManager.default.copyItem(at: url, to: fitsURL)
 
         // Create the File record (we have already de-duped)
         let file = File(context: context)
+        file.uuid = fileID
         file.timestamp = observationDate
         file.contentHash = fileHash
         file.name = url.lastPathComponent
