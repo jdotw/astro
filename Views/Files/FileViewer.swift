@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct FileViewer: View {
-    var file: File
+    @ObservedObject var file: File
+
     @State private var exposureValue: Double = 0.0
     @State private var gammaValue: Double = 1.0
     @State private var toneCurve1: Double = 0.0

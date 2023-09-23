@@ -57,7 +57,7 @@ struct FileGrid: View {
     }
     
     private struct Item: View {
-        var file: File
+        @ObservedObject var file: File
         var size: CGFloat
         var isSelected: Bool
         
