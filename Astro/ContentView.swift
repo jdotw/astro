@@ -81,6 +81,11 @@ struct ContentView: View {
         .onAppear {
             viewContext.undoManager = undoManager
         }
+        .onChange(of: selectedCategory) { oldValue, newValue in
+            if newValue == .calibration && oldValue != .calibration {
+                navStackPath = []
+            }
+        }
     }
 
     private func importFiles() {
