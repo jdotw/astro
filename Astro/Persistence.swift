@@ -66,3 +66,8 @@ struct PersistenceController {
     }
 }
 
+extension NSManagedObjectContext {
+    func managedObjectID(forURIRepresentation url: URL) -> NSManagedObjectID? {
+        return PersistenceController.shared.container.persistentStoreCoordinator.managedObjectID(forURIRepresentation: url)
+    }
+}
