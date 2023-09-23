@@ -81,7 +81,7 @@ struct FileGrid: View {
     }
     
     private struct ItemImage: View {
-        var file: File
+        @ObservedObject var file: File
         var size: CGFloat
         
         var body: some View {
