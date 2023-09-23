@@ -14,14 +14,12 @@ struct ContentView: View {
     @Environment(\.openWindow) private var openWindow
 
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
-
     @AppStorage("selectedSession") private var selectedSessionID: URL?
     @AppStorage("selectedTarget") private var selectedTargetID: URL?
     @AppStorage("selectedFile") private var selectedFileID: URL?
+    @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
 
     @State private var navStackPath = [File]()
-
-    @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
 
     var body: some View {
         NavigationSplitView {
