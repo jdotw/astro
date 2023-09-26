@@ -106,7 +106,6 @@ class FITSFileImporter: FileImporter {
         file.type = type
         file.url = url
         file.bookmark = bookmarkData
-        file.filter = headers["FILTER"]?.value?.lowercased()
         file.fitsURL = fitsURL
         file.rawDataURL = fp32URL
         file.width = width
@@ -122,6 +121,19 @@ class FITSFileImporter: FileImporter {
             let newTarget = Target(context: context)
             newTarget.name = targetName
             file.target = newTarget
+        }
+
+        // Find/Create Filter
+        let filterName = headers["FILTER"]?.value?.lowercased() ?? "none"
+        let filterReq = NSFetchRequest<Filter>(entityName: "Filter")
+        filterReq.predicate = NSPredicate(format: "name == %@", filterName)
+        filterReq.fetchLimit = 1
+        if let filter = try? context.fetch(filterReq).first {
+            file.filter = filter
+        } else {
+            let newFilter = Filter(context: context)
+            newFilter.name = filterName
+            file.filter = newFilter
         }
 
         // Find Session by dateString

@@ -36,6 +36,8 @@
 		108F82242A60DB5E00061511 /* TargetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82232A60DB5E00061511 /* TargetView.swift */; };
 		108F82262A60DE0000061511 /* FileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82252A60DE0000061511 /* FileViewer.swift */; };
 		108F822A2A61557600061511 /* CGImage+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108F82292A61557600061511 /* CGImage+Format.swift */; };
+		10903D5A2ABFCD4F00065842 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10903D592ABFCCA500065842 /* Filter.swift */; };
+		10903D5C2ABFD2CB00065842 /* CalibrationFiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10903D5B2ABFD2CB00065842 /* CalibrationFiltersView.swift */; };
 		1092FB292AB68B1700CD69BD /* CalibrationSessionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */; };
 		1096BDF02A9AD3E500420F4C /* FileProcessOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1096BDEF2A9AD3E500420F4C /* FileProcessOperation.swift */; };
 		1096BDF22A9AD48900420F4C /* FileProcessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1096BDF12A9AD48900420F4C /* FileProcessController.swift */; };
@@ -133,6 +135,8 @@
 		108F82232A60DB5E00061511 /* TargetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetView.swift; sourceTree = "<group>"; };
 		108F82252A60DE0000061511 /* FileViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewer.swift; sourceTree = "<group>"; };
 		108F82292A61557600061511 /* CGImage+Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+Format.swift"; sourceTree = "<group>"; };
+		10903D592ABFCCA500065842 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
+		10903D5B2ABFD2CB00065842 /* CalibrationFiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationFiltersView.swift; sourceTree = "<group>"; };
 		1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionList.swift; sourceTree = "<group>"; };
 		1096BDED2A9AD2AE00420F4C /* Region.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		1096BDEF2A9AD3E500420F4C /* FileProcessOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProcessOperation.swift; sourceTree = "<group>"; };
@@ -270,6 +274,7 @@
 				10D5AA5E2ABDB4A20031F63A /* CalibrationFlatSessionView.swift */,
 				10D5AA5C2ABDB1B90031F63A /* CalibrationLightSessionView.swift */,
 				1089AA642AB6843D007D4E6B /* CalibrationView.swift */,
+				10903D5B2ABFD2CB00065842 /* CalibrationFiltersView.swift */,
 			);
 			path = Calibration;
 			sourceTree = "<group>";
@@ -464,6 +469,7 @@
 			children = (
 				10D833212A5FA46400C63083 /* File.swift */,
 				1096BDF32A9AD5ED00420F4C /* FileStatistics.swift */,
+				10903D592ABFCCA500065842 /* Filter.swift */,
 				1005194C2AA425E800C25AF6 /* FileMetadata.swift */,
 				1096BDED2A9AD2AE00420F4C /* Region.swift */,
 				10D833242A5FA46A00C63083 /* Target.swift */,
@@ -683,6 +689,7 @@
 				1038709F2A5E4F8000064EF1 /* Session+PreviewProvider.swift in Sources */,
 				100519452AA4209400C25AF6 /* ImageInspector.swift in Sources */,
 				10D8331D2A5FA34000C63083 /* Session.swift in Sources */,
+				10903D5A2ABFCD4F00065842 /* Filter.swift in Sources */,
 				1005194F2AA42C6F00C25AF6 /* File+Rotation.swift in Sources */,
 				103E22582AA2BF8400B35FA6 /* Stretch.metal in Sources */,
 				10D833132A5F758000C63083 /* CategoryList.swift in Sources */,
@@ -711,6 +718,7 @@
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,
 				10F6468C2A62B8EB00DE27FE /* FITSFileImporter.swift in Sources */,
 				10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */,
+				10903D5C2ABFD2CB00065842 /* CalibrationFiltersView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

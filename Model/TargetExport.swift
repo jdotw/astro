@@ -123,7 +123,7 @@ class TargetExportRequestFile: Identifiable {
 
 extension URL {
     init(exportURLForSource source: File, atBase baseURL: URL) throws {
-        let filterName = source.filter?.localizedCapitalized ?? "UnknownFilter"
+        let filterName = source.filter.name.localizedCapitalized
         let filterURL = baseURL.appendingPathComponent(filterName)
         try FileManager.default.createDirectory(at: filterURL, withIntermediateDirectories: true, attributes: nil)
         let destination = filterURL.appendingPathComponent(source.name)

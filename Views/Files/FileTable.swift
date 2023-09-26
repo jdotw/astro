@@ -65,8 +65,8 @@ struct FileTable: View {
                 .width(min: 50)
                 .defaultVisibility(columns.contains(.type) ? .visible : .hidden)
 
-                TableColumn("Filter", value: \.filter!) { file in
-                    Text(file.filter?.localizedCapitalized ?? "N/A")
+                TableColumn("Filter", value: \.filter.name) { file in
+                    Text(file.filter.name.localizedCapitalized)
                 }
                 .width(min: 50)
                 .defaultVisibility(columns.contains(.filter) ? .visible : .hidden)

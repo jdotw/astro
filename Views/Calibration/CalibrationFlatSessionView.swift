@@ -32,12 +32,19 @@ struct CalibrationFilterNamesView: View {
     }
 
     var body: some View {
-        Text(uniqueFilterNames.joined(separator: ", "))
+//        EmptyView()
+//        ForEach(uniqueFilterNames) { filter in
+//            switch filter {
+//            case "red":
+//                Image(systemName: "circle.fill").foregroundStyle(.red)
+//            }
+//        }
+        CalibrationFiltersView(session: session, orientation: .leftToRight)
+//        Text(uniqueFilterNames.joined(separator: ", "))
     }
 
     private var uniqueFilterNames: [String] {
-        let filters = files.compactMap { $0.filter }
+        let filters = files.compactMap { $0.filter.name }
         return Array(Set(filters)).sorted()
     }
 }
-

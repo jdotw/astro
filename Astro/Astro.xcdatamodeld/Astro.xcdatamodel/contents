@@ -3,7 +3,7 @@
     <entity name="File" representedClassName="File" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
-        <attribute name="filter" optional="YES" attributeType="String"/>
+        <attribute name="filterType" optional="YES" attributeType="String"/>
         <attribute name="fitsURL" attributeType="URI"/>
         <attribute name="height" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
@@ -16,6 +16,7 @@
         <attribute name="uuid" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="width" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="calibrationSession" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="calibratesFiles" inverseEntity="Session"/>
+        <relationship name="filter" maxCount="1" deletionRule="Nullify" destinationEntity="Filter" inverseName="files" inverseEntity="Filter"/>
         <relationship name="import" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="files" inverseEntity="ImportRequest"/>
         <relationship name="metadata" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileMetadata" inverseName="file" inverseEntity="FileMetadata"/>
         <relationship name="regions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Region" inverseName="file" inverseEntity="Region"/>
@@ -33,6 +34,10 @@
         <attribute name="max" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="median" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="file" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="statistics" inverseEntity="File"/>
+    </entity>
+    <entity name="Filter" representedClassName="Filter" syncable="YES">
+        <attribute name="name" attributeType="String"/>
+        <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="filter" inverseEntity="File"/>
     </entity>
     <entity name="ImportRequest" representedClassName="ImportRequest" syncable="YES">
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>

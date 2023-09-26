@@ -74,7 +74,7 @@ extension FileBrowserSource {
     var defaultSortOrder: [KeyPathComparator<File>] {
         switch self {
         case .target:
-            [.init(\.filter, order: SortOrder.forward),
+            [.init(\.filter.name, order: SortOrder.forward),
              .init(\.timestamp, order: SortOrder.forward)]
         default:
             [.init(\.timestamp, order: SortOrder.forward)]

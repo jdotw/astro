@@ -32,17 +32,19 @@ struct UncalibratedFilterNamesView: View {
     }
 
     var body: some View {
-        let uniqueUncalibratedFilterNames = self.uniqueUncalibratedFilterNames
-        if uniqueUncalibratedFilterNames.count > 0 {
-            Text(uniqueUncalibratedFilterNames.joined(separator: ", "))
-            Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.yellow)
-        } else {
-            Image(systemName: "checkmark.circle").foregroundColor(.green)
+        HStack {
+            CalibrationFiltersView(session: session, orientation: .rightToLeft)
+            let uniqueUncalibratedFilterNames = self.uniqueUncalibratedFilterNames
+            if uniqueUncalibratedFilterNames.count > 0 {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.yellow)
+            } else {
+                Image(systemName: "checkmark.circle").foregroundColor(.green)
+            }
         }
     }
 
     private var uniqueUncalibratedFilterNames: [String] {
-        let filters = files.compactMap { $0.filter }
+        let filters = files.compactMap { $0.filter.name }
         return Array(Set(filters)).sorted()
     }
 }

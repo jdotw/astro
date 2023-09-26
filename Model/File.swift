@@ -24,7 +24,6 @@ public extension File {
     @NSManaged var uuid: UUID
     @NSManaged var bookmark: Data
     @NSManaged var contentHash: String
-    @NSManaged var filter: String?
     @NSManaged var name: String
     @NSManaged var timestamp: Date
     @NSManaged var type: String
@@ -34,6 +33,7 @@ public extension File {
     @NSManaged var previewURL: URL? // Downsized and stretched PNG
     @NSManaged var session: Session?
     @NSManaged var target: Target?
+    @NSManaged var filter: Filter
     @NSManaged var rejected: Bool
     @NSManaged var width: Int32
     @NSManaged var height: Int32
