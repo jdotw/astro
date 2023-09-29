@@ -43,10 +43,34 @@ struct CalibrationSessionList: View {
     @State private var selectedSession: Set<CalibrationSession> = []
 
     var body: some View {
+        tableBody
+    }
+
+    var gridBody: some View {
+        ScrollView {
+            Grid {
+                ForEach(sessionsByType) { calSess in
+                    GridRow {
+                        switch calSess.type {
+                        case .calibration:
+                            Text(calSess.session.dateString)
+                            EmptyView()
+                        case .light:
+                            EmptyView()
+                            Text(calSess.session.dateString)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    var tableBody: some View {
         Table(sessionsByType) {
             TableColumn("Flats") { calibrationSession in
                 if calibrationSession.type == .calibration {
                     CalibrationFlatSessionView(session: calibrationSession.session)
+                        .background(Color.gray.opacity(0.5)) // Needed to make whole cell draggable
                         .dropDestination(for: URL.self) { items, _ in
                             let session = calibrationSession.session
                             var acceptDrop = false
@@ -63,8 +87,11 @@ struct CalibrationSessionList: View {
                                 }
                             }
                             let calibratedFilters = session.uniqueCalibrationFilterNames
+                            print("DROP: session.uniqueCalibrationFilterNames=\(calibratedFilters)")
                             for candidateSession in droppedSessions {
-                                candidateSession.files?.map { $0 as! File }.forEach { file in
+                                let candidateFiles = candidateSession.files?.map { $0 as! File }
+                                print("FILES: \(candidateFiles)")
+                                candidateFiles?.forEach { file in
                                     if calibratedFilters.contains(file.filter.name) {
                                         file.calibrationSession = session
                                     }
@@ -74,13 +101,13 @@ struct CalibrationSessionList: View {
                             return acceptDrop
                         }
                 } else {
-                    EmptyView()
+                    EmptyView().listRowInsets(.none)
                 }
             }
             TableColumn("Lights") { calibrationSession in
                 if calibrationSession.type == .light {
                     CalibrationLightSessionView(session: calibrationSession.session)
-                        .background(Color.gray.opacity(-1.0 * Double.infinity)) // Needed to make whole cell draggable
+                        .background(Color.gray.opacity(0.5)) // Needed to make whole cell draggable
                         .draggable(calibrationSession.session.objectID.uriRepresentation())
                 } else {
                     EmptyView()

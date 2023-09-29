@@ -33,7 +33,7 @@ struct UncalibratedFilterNamesView: View {
 
     var body: some View {
         HStack {
-            CalibrationFiltersView(session: session, orientation: .rightToLeft)
+            CalibrationFiltersView(session: session, orientation: .rightToLeft, fileType: "Light")
             let uniqueUncalibratedFilterNames = self.uniqueUncalibratedFilterNames
             if uniqueUncalibratedFilterNames.count > 0 {
                 Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.yellow)

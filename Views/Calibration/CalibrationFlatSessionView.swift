@@ -14,37 +14,7 @@ struct CalibrationFlatSessionView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(session.dateString)
-            CalibrationFilterNamesView(session: session)
+            CalibrationFiltersView(session: session, orientation: .leftToRight, fileType: "Flat")
         }
-    }
-}
-
-struct CalibrationFilterNamesView: View {
-    @ObservedObject var session: Session
-    @FetchRequest var files: FetchedResults<File>
-
-    init(session: Session) {
-        self.session = session
-        _files = FetchRequest(
-            sortDescriptors: [],
-            predicate: NSPredicate(format: "session = %@ AND type =[cd] 'Flat'", session),
-            animation: .default)
-    }
-
-    var body: some View {
-//        EmptyView()
-//        ForEach(uniqueFilterNames) { filter in
-//            switch filter {
-//            case "red":
-//                Image(systemName: "circle.fill").foregroundStyle(.red)
-//            }
-//        }
-        CalibrationFiltersView(session: session, orientation: .leftToRight)
-//        Text(uniqueFilterNames.joined(separator: ", "))
-    }
-
-    private var uniqueFilterNames: [String] {
-        let filters = files.compactMap { $0.filter.name }
-        return Array(Set(filters)).sorted()
     }
 }
