@@ -12,6 +12,40 @@ struct CalibrationSession {
     let session: Session
 }
 
+enum CalibrationTableItemType {
+    case session
+    case filter
+}
+
+struct CalibrationTableItem: Identifiable, Hashable {
+    static func == (lhs: CalibrationTableItem, rhs: CalibrationTableItem) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    let id: UUID
+    let type: CalibrationTableItemType
+    
+    let sessionType: SessionType
+    let session: Session
+    
+    let filter: Filter?
+    
+    let children: [CalibrationTableItem]?
+    
+    init(type: CalibrationTableItemType, sessionType: SessionType, session: Session, filter: Filter? = nil, children: [CalibrationTableItem]? = nil) {
+        self.id = UUID()
+        self.type = type
+        self.sessionType = sessionType
+        self.session = session
+        self.filter = filter
+        self.children = children
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
 enum SessionType: String {
     case calibration
     case light
@@ -39,13 +73,110 @@ struct CalibrationSessionList: View {
         predicate: NSPredicate(format: "ANY files.type =[cd] %@", "Light"),
         animation: .default)
     private var lightSessions: FetchedResults<Session>
-
-    @State private var selectedSession: Set<CalibrationSession> = []
-
-    var body: some View {
-        tableBody
+    
+    @State private var selectedItem: Set<UUID> = []
+    
+    @State private var tableItems: [CalibrationTableItem] = []
+    @State var isExpanded: [UUID: Bool] = [:]
+    
+    func createTableItems() {
+        tableItems = sessionsByType.map { calibrationSession in
+            let filtersArray = (calibrationSession.session.files?.allObjects as? [File])?.compactMap { file in
+                file.filter
+            }
+            let filters = Set(filtersArray ?? [])
+            return CalibrationTableItem(type: .session,
+                                        sessionType: calibrationSession.type,
+                                        session: calibrationSession.session,
+                                        children: filters.map { filter in
+                                            CalibrationTableItem(type: .filter,
+                                                                 sessionType: calibrationSession.type,
+                                                                 session: calibrationSession.session,
+                                                                 filter: filter)
+                                        })
+        }
     }
-
+    
+    private func binding(for key: UUID) -> Binding<Bool> {
+        return .init(
+            get: { self.isExpanded[key, default: true] },
+            set: { self.isExpanded[key] = $0 })
+    }
+    
+    var body: some View {
+        hierarchicalTableBody
+            .onAppear {
+                createTableItems()
+            }
+    }
+    
+    var hierarchicalTableBody: some View {
+        return Table(of: CalibrationTableItem.self, selection: $selectedItem) {
+            //        return Table(tableItems, children: \.children) {
+            TableColumn("Flat") { item in
+//                VStack {
+                let session = item.session
+                switch item.type {
+                case .session:
+                    switch item.sessionType {
+                    case .calibration:
+                        Text(session.dateString)
+                    default:
+                        EmptyView()
+                    }
+                case .filter:
+                    let filter = item.filter!
+                    switch item.sessionType {
+                    case .calibration:
+                        Text(filter.name)
+                    default:
+                        EmptyView()
+                    }
+                }
+//                }
+//                .draggable(item.session.objectID.uriRepresentation())
+            }
+            TableColumn("Light") { item in
+                VStack {
+                    switch item.type {
+                    case .session:
+                        let session = item.session
+                        switch item.sessionType {
+                        case .light:
+                            Text(session.dateString)
+                        default:
+                            EmptyView()
+                        }
+                    case .filter:
+                        let filter = item.filter!
+                        switch item.sessionType {
+                        case .light:
+                            Text(filter.name)
+                        default:
+                            EmptyView()
+                        }
+                    }
+                }
+//                .draggable(item.session.objectID.uriRepresentation())
+            }
+            
+        } rows: {
+            ForEach(tableItems) { item in
+                //                DisclosureTableRow(item, isExpanded: item.isExpanded) {
+                //                    ForEach(item.children) { child in
+                //                        TableRow(child)
+                //                    }
+                //                }
+                DisclosureTableRow(item, isExpanded: self.binding(for: item.id)) {
+                    ForEach(item.children ?? []) { child in
+                        TableRow(child)
+                    }
+                }
+            }
+        }
+        .tableColumnHeaders(.hidden)
+    }
+    
     var gridBody: some View {
         ScrollView {
             Grid {
@@ -64,7 +195,7 @@ struct CalibrationSessionList: View {
             }
         }
     }
-
+    
     var tableBody: some View {
         Table(sessionsByType) {
             TableColumn("Flats") { calibrationSession in
@@ -116,7 +247,7 @@ struct CalibrationSessionList: View {
         }
         .tableColumnHeaders(.hidden)
     }
-
+    
     var sessionsByType: [CalibrationSession] {
         var sessions = [CalibrationSession]()
         sessions.append(contentsOf: calibrationSessions.map { CalibrationSession(type: .calibration, session: $0) })
