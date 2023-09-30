@@ -155,7 +155,7 @@ struct CalibrationFiltersView: View {
             direction = .up
         }
         if filesForFilter.first(where: { file in
-            file.session?.dateString.compare(session.dateString) == .orderedDescending
+            file.session?.dateString.compare(session.dateString) != .orderedAscending
         }) != nil {
             if direction == .up {
                 direction = .both
