@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct CalibrationView: View {
-//    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.managedObjectContext) private var viewContext
+    @ObservedObject var session: Session
+
 //    @FetchRequest(
 //        sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: true)],
 //        predicate: NSPredicate(format: "SUBQUERY(files, $file, $file.type =[cd] 'Light' AND $file.calibrationSession = nil) .@count > 0"),
@@ -18,7 +20,7 @@ struct CalibrationView: View {
 //    @State private var selectedSessions: Set<URL> = []
 
     var body: some View {
-        Text("Detail")
+        Text(session.dateString)
 //        List(selection: $selectedSessions) {
 //            ForEach(uncalibratedSessions) { session in
 //                CalibrationCandidateSessionView(session: session)

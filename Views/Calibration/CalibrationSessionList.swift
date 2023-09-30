@@ -74,7 +74,9 @@ struct CalibrationSessionList: View {
         animation: .default)
     private var lightSessions: FetchedResults<Session>
     
-    @State private var selectedItem: Set<UUID> = []
+    @Binding var selectedSessionID: URL?
+    
+    @State private var selectedItemID: Set<UUID> = []
     
     @State private var tableItems: [CalibrationTableItem] = []
     @State var isExpanded: [UUID: Bool] = [:]
@@ -111,7 +113,7 @@ struct CalibrationSessionList: View {
     }
     
     var hierarchicalTableBody: some View {
-        return Table(of: CalibrationTableItem.self, selection: $selectedItem) {
+        return Table(of: CalibrationTableItem.self, selection: $selectedItemID) {
             //        return Table(tableItems, children: \.children) {
             TableColumn("Flat") { item in
 //                VStack {
@@ -175,6 +177,10 @@ struct CalibrationSessionList: View {
             }
         }
         .tableColumnHeaders(.hidden)
+        .onChange(of: selectedItemID) { _, newValue in
+            print("newValue: \(newValue)")
+            selectedSessionID = selectedSession?.id
+        }
     }
     
     var gridBody: some View {
@@ -255,6 +261,19 @@ struct CalibrationSessionList: View {
         return sessions.sorted {
             $0.session.dateString < $1.session.dateString
         }
+    }
+    
+    var selectedSession: Session? {
+        guard let selectedItemID = selectedItemID.first else { return nil }
+        for item in tableItems {
+            if item.id == selectedItemID { return item.session }
+            if let children = item.children {
+                for child in children {
+                    if child.id == selectedItemID { return child.session }
+                }
+            }
+        }
+        return nil
     }
 }
 

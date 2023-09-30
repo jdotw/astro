@@ -15,6 +15,7 @@ struct ContentView: View {
 
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
     @AppStorage("selectedSession") private var selectedSessionID: URL?
+    @AppStorage("selectedCalibrationSession") private var selectedCalibrationSessionID: URL?
     @AppStorage("selectedTarget") private var selectedTargetID: URL?
     @AppStorage("selectedFile") private var selectedFileID: URL?
     @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
@@ -36,7 +37,7 @@ struct ContentView: View {
                 case .files:
                     FileList(selectedFileID: $selectedFileID)
                 case .calibration:
-                    CalibrationSessionList()
+                    CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID)
                 }
             }
         } detail: {
@@ -63,7 +64,11 @@ struct ContentView: View {
                             Text("No files selected")
                         }
                     case .calibration:
-                        CalibrationView()
+                        if let selectedCalibrationSession {
+                            CalibrationView(session: selectedCalibrationSession)
+                        } else {
+                            Text("No session selected")
+                        }
                     }
                 }
                 .navigationDestination(for: File.self) { file in
@@ -132,6 +137,13 @@ extension ContentView {
         return selectedFileID.flatMap { id in
             let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
             return try? viewContext.existingObject(with: objectID!) as? File
+        }
+    }
+
+    var selectedCalibrationSession: Session? {
+        return selectedCalibrationSessionID.flatMap { id in
+            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
+            return try? viewContext.existingObject(with: objectID!) as? Session
         }
     }
 }
