@@ -15,6 +15,7 @@ enum CalibrationFiltersViewOrientation {
 enum CalibrationFilterLineDirection {
     case up
     case down
+    case both
     case none
 }
 
@@ -49,10 +50,18 @@ struct CalibrationFiltersView: View {
             case .leftToRight:
                 Path { path in
                     let offset = 10.0
-                    path.move(to: CGPoint(x: 0.0, y: geo.size.height * 0.5))
-                    path.addCurve(to: CGPoint(x: geo.size.width + offset, y: -4.0 * offset),
-                                  control1: CGPoint(x: geo.size.width + offset, y: geo.size.height * 0.5),
-                                  control2: CGPoint(x: geo.size.width + offset, y: geo.size.height * 0.5))
+                    if direction == .up || direction == .both {
+                        path.move(to: CGPoint(x: 0.0, y: geo.size.height * 0.5))
+                        path.addCurve(to: CGPoint(x: geo.size.width + offset, y: -4.0 * offset),
+                                      control1: CGPoint(x: geo.size.width + offset, y: geo.size.height * 0.5),
+                                      control2: CGPoint(x: geo.size.width + offset, y: geo.size.height * 0.5))
+                    }
+                    if direction == .down || direction == .both {
+                        path.move(to: CGPoint(x: 0.0, y: geo.size.height * 0.5))
+                        path.addCurve(to: CGPoint(x: geo.size.width + offset, y: 4.0 * offset),
+                                      control1: CGPoint(x: geo.size.width + offset, y: geo.size.height * 0.5),
+                                      control2: CGPoint(x: geo.size.width + offset, y: geo.size.height * 0.5))
+                    }
                 }
                 .stroke(style: .init(lineWidth: 1, lineCap: .round, lineJoin: .round))
                 .foregroundColor(.white.opacity(self.session.hasFilesWithFilter(filter) ? 1.0 : 0.2))
@@ -82,21 +91,26 @@ struct CalibrationFiltersView: View {
     var body: some View {
         VStack(alignment: self.vStackAlignment) {
             ForEach(self.sortedFilters) { filter in
-                let filesForFilter = self.session.filesWithFilter(filter)
                 HStack {
                     switch self.orientation {
                     case .leftToRight:
+                        let filesForFilter = self.session.calibratesFilesWithFilter(filter)
                         self.filterName(filter)
+                        Text("(\(self.sortOrder(forFilter: filter)))")
                         Spacer()
                         self.filterColor(filter)
                         ViewThatFits { // Ensures spacer will expand
                             GeometryReader { geo in
-                                self.line(filter, direction: .up)
+                                self.line(filter, direction: self.lineDirection(forFilesCalibratedWithFilter: filesForFilter))
                                     .frame(width: geo.size.height)
-                                    .opacity(filesForFilter.hasCalibrationSession ? 1.0 : 0.0)
+                                    .opacity(filesForFilter.count > 0 ? 1.0 : 0.0)
+//                                self.line(filter, direction: .down)
+//                                    .frame(width: geo.size.height)
+//                                    .opacity(filesForFilter.hasCalibrationSession ? 1.0 : 0.0)
                             }
                         }.frame(maxWidth: 20)
                     case .rightToLeft:
+                        let filesForFilter = self.session.filesWithFilter(filter)
                         ViewThatFits { // Ensures spacer will expand
                             GeometryReader { geo in
                                 self.line(filter, direction: self.lineDirection(forFilesInFilter: filesForFilter))
@@ -108,6 +122,7 @@ struct CalibrationFiltersView: View {
                         Spacer()
                         HStack {
                             self.filterName(filter)
+                            Text("(\(self.sortOrder(forFilter: filter)))")
                             if let calSess = filesForFilter.calibrationSession {
                                 Text("(\(calSess.dateString))")
                             }
@@ -132,6 +147,25 @@ struct CalibrationFiltersView: View {
         }
     }
 
+    func lineDirection(forFilesCalibratedWithFilter filesForFilter: [File]) -> CalibrationFilterLineDirection {
+        var direction: CalibrationFilterLineDirection = .none
+        if filesForFilter.first(where: { file in
+            file.session?.dateString.compare(session.dateString) == .orderedAscending
+        }) != nil {
+            direction = .up
+        }
+        if filesForFilter.first(where: { file in
+            file.session?.dateString.compare(session.dateString) == .orderedDescending
+        }) != nil {
+            if direction == .up {
+                direction = .both
+            } else {
+                direction = .down
+            }
+        }
+        return direction
+    }
+
     var vStackAlignment: HorizontalAlignment {
         switch self.orientation {
         case .leftToRight:
@@ -152,10 +186,12 @@ struct CalibrationFiltersView: View {
         var score = 0
         let filesInSession = self.session.filesWithFilter(filter)
         if let calSession = filesInSession.calibrationSession {
-            if calSession.dateString.compare(self.session.dateString) == .orderedAscending {
-                score = 100 // Calibrated by earlier session 100-199
+            if calSession.dateString.compare(self.session.dateString) != .orderedDescending {
+                score = 100 // Calibrated by earlier session (or same date) 100-199
+                print("Comparing calSession.dateString=\(calSession.dateString) to session.dateString=\(self.session.dateString) got .orderedAscending (score 100)")
             } else {
                 score = 300 // Calibrated by later session 300-399
+                print("Comparing calSession.dateString=\(calSession.dateString) to session.dateString=\(self.session.dateString) got != .orderedAscending (score 300)")
             }
         } else {
             score = 200 // Not calibrated 200-299
@@ -240,6 +276,11 @@ extension Filter {
 extension Session {
     func filesWithFilter(_ filter: Filter) -> [File] {
         guard let files = files?.allObjects as? [File] else { return [] }
+        return files.filter { $0.filter == filter }
+    }
+
+    func calibratesFilesWithFilter(_ filter: Filter) -> [File] {
+        guard let files = calibratesFiles?.allObjects as? [File] else { return [] }
         return files.filter { $0.filter == filter }
     }
 
