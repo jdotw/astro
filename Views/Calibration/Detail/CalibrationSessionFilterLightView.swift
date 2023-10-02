@@ -17,7 +17,7 @@ enum CalibrationSessionFilterLightViewOverlay: String, CaseIterable, Identifiabl
 struct CalibrationSessionFilterLightView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var session: Session
-    var filter: Filter?
+    var filter: Filter
 
     @State private var histogramImage: NSImage = .init()
     @State private var showStarRects: Bool = false
@@ -26,106 +26,135 @@ struct CalibrationSessionFilterLightView: View {
     @State private var overlay: CalibrationSessionFilterLightViewOverlay = .earlier
     @State private var showOverlay: Bool = true
 
+    @State private var earlierCalibrationSessionID: String = ""
+    @State private var laterCalibrationSessionID: String = ""
+
     @FocusState private var focused: Bool
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: true)])
     private var sessions: FetchedResults<Session>
 
+    @FetchRequest private var earlierCalibrationSessions: FetchedResults<Session>
+    @FetchRequest private var laterCalibrationSessions: FetchedResults<Session>
+
+    init(session: Session, filter: Filter) {
+        self.session = session
+        self.filter = filter
+
+        let earlierPredicate = NSPredicate(format: "dateString <= %@ AND SUBQUERY(files, $file, $file.type =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, "Flat", filter)
+        let laterPredicate = NSPredicate(format: "dateString > %@ AND SUBQUERY(files, $file, $file.type =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, "Flat", filter)
+        _earlierCalibrationSessions = FetchRequest(
+            entity: Session.entity(),
+            sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
+            predicate: earlierPredicate)
+        _laterCalibrationSessions = FetchRequest(
+            entity: Session.entity(),
+            sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: true)],
+            predicate: laterPredicate)
+    }
+
     var body: some View {
         VStack {
-            Text("\(session.dateString) - LIGHTS \(filter?.name ?? "no filter")")
+            Text("\(session.dateString) - LIGHTS \(filter.name)")
             HStack {
-                ZStack {
-                    if let earlierCandidateSession = earlierCandidateSession,
-                       let file = candidateFlat(inSession: earlierCandidateSession)
-                    {
-                        FilteredImage(file: file, autoFlipImage: false, histogramImage: $earlierHistogramImage, showStarRects: $showStarRects)
-                            .opacity(showOverlay ? 1.0 : 0.0)
-                    } else {
-                        Text("No earlier calibration session found")
+                VStack {
+                    ZStack {
+                        if let earlierCandidateSession = earlierCandidateSession,
+                           let file = candidateFlat(inSession: earlierCandidateSession)
+                        {
+                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $earlierHistogramImage, showStarRects: $showStarRects)
+                                .opacity(showOverlay ? 1.0 : 0.0)
+                        } else {
+                            Text("No earlier calibration session found")
+                        }
+                        if let file = candidateFile {
+                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $histogramImage, showStarRects: $showStarRects)
+                                .opacity(showOverlay ? 0.2 : 1.0)
+                        } else {
+                            Text("No candidate file found")
+                        }
                     }
-                    if let file = candidateFile {
-                        FilteredImage(file: file, autoFlipImage: false, histogramImage: $histogramImage, showStarRects: $showStarRects)
-                            .opacity(showOverlay ? 0.2 : 1.0)
-                    } else {
-                        Text("No candidate file found")
-                    }
-                }
-                ZStack {
-                    if let laterCandidateSession = laterCandidateSession,
-                       let file = candidateFlat(inSession: laterCandidateSession)
-                    {
-                        FilteredImage(file: file, autoFlipImage: false, histogramImage: $laterHistogramImage, showStarRects: $showStarRects)
-                            .opacity(showOverlay ? 1.0 : 0.0)
-                    } else {
-                        Text("No later calibration session found")
-                    }
-                    if let file = candidateFile {
-                        FilteredImage(file: file, autoFlipImage: false, histogramImage: $histogramImage, showStarRects: $showStarRects)
-                            .opacity(showOverlay ? 0.2 : 1.0)
-                    } else {
-                        Text("No candidate file found")
+                    if earlierCalibrationSessions.count > 0 {
+                        Picker("Session", selection: $earlierCalibrationSessionID) {
+                            ForEach(earlierCalibrationSessions, id: \.id.absoluteString) { session in
+                                Text(session.dateString)
+                            }
+                        }
+                        .focusable(true)
                     }
                 }
-
-            }.focusable(true)
+                .focusable(true)
+                VStack {
+                    ZStack {
+                        if let laterCandidateSession = laterCandidateSession,
+                           let file = candidateFlat(inSession: laterCandidateSession)
+                        {
+                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $laterHistogramImage, showStarRects: $showStarRects)
+                                .opacity(showOverlay ? 1.0 : 0.0)
+                        } else {
+                            Text("No later calibration session found")
+                        }
+                        if let file = candidateFile {
+                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $histogramImage, showStarRects: $showStarRects)
+                                .opacity(showOverlay ? 0.2 : 1.0)
+                        } else {
+                            Text("No candidate file found")
+                        }
+                    }
+                    if laterCalibrationSessions.count > 0 {
+                        Picker("Session", selection: $laterCalibrationSessionID) {
+                            ForEach(laterCalibrationSessions, id: \.id.absoluteString) { session in
+                                Text(session.dateString)
+                            }
+                        }
+                        .focusable(true)
+                    }
+                }
+            }
         }
         .toolbar(content: {
             Toggle("Show Overlay", isOn: $showOverlay)
                 .keyboardShortcut(.space, modifiers: [])
 
         })
+        .task {
+            updateSessionPickers()
+        }
+        .onChange(of: session) { _, _ in
+            updateSessionPickers()
+        }
+    }
+
+    func updateSessionPickers() {
+        earlierCalibrationSessionID = earlierCalibrationSessions.first?.id.absoluteString ?? ""
+        laterCalibrationSessionID = laterCalibrationSessions.first?.id.absoluteString ?? ""
     }
 
     var candidateFile: File? {
-        guard let filter, let files = session.files?.allObjects as? [File] else { return nil }
+        guard let files = session.files?.allObjects as? [File] else { return nil }
         return files.first { file in
             file.filter == filter
         }
     }
 
     func candidateFlat(inSession candidateSession: Session) -> File? {
-        guard let filter, let files = candidateSession.files?.allObjects as? [File] else { return nil }
+        guard let files = candidateSession.files?.allObjects as? [File] else { return nil }
         return files.first { file in
             file.filter == filter && file.type.lowercased() == "flat"
         }
     }
 
     var earlierCandidateSession: Session? {
-        guard let filter else { return nil }
-        let sessions = sessions.compactMap { $0 }
-        guard let index = sessions.firstIndex(of: session) else { return nil }
-        for (i, candidate) in sessions[sessions.startIndex ..< index].reversed().enumerated() {
-            print("CANDIDATE (\(session.dateString): i=\(i) dateString=\(candidate.dateString)")
-            if let candidateFiles = candidate.files?.allObjects as? [File],
-               let file = candidateFiles.first(where: { file in
-                   file.type.lowercased() == "flat" && file.filter == filter
-               })
-            {
-                print("FOUND CANDIDATE \(candidate.dateString) - FILE: \(file)")
-                return candidate
-            }
+        earlierCalibrationSessions.first { session in
+            session.id.absoluteString == earlierCalibrationSessionID
         }
-        return nil
     }
 
     var laterCandidateSession: Session? {
-        guard let filter else { return nil }
-        let sessions = sessions.compactMap { $0 }
-        guard let index = sessions.firstIndex(of: session) else { return nil }
-        for (i, candidate) in sessions[index...].enumerated() {
-            print("LATER CANDIDATE (\(session.dateString): i=\(i) dateString=\(candidate.dateString)")
-            if let candidateFiles = candidate.files?.allObjects as? [File],
-               let file = candidateFiles.first(where: { file in
-                   file.type.lowercased() == "flat" && file.filter == filter
-               })
-            {
-                print("FOUND LATER CANDIDATE \(candidate.dateString) - FILE: \(file)")
-                return candidate
-            }
+        laterCalibrationSessions.first { session in
+            session.id.absoluteString == laterCalibrationSessionID
         }
-        return nil
     }
 }
 

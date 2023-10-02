@@ -21,10 +21,14 @@ struct CalibrationSessionFilterView: View {
     }
 
     var body: some View {
-        if isFlat {
-            CalibrationSessionFilterFlatsView(session: session, filter: filter)
+        if let filter {
+            if isFlat {
+                CalibrationSessionFilterFlatsView(session: session, filter: filter)
+            } else {
+                CalibrationSessionFilterLightView(session: session, filter: filter)
+            }
         } else {
-            CalibrationSessionFilterLightView(session: session, filter: filter)
+            Text("No Filter")
         }
     }
 }
