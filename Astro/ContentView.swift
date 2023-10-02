@@ -16,6 +16,7 @@ struct ContentView: View {
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
     @AppStorage("selectedSession") private var selectedSessionID: URL?
     @AppStorage("selectedCalibrationSession") private var selectedCalibrationSessionID: URL?
+    @AppStorage("selectedCalibrationFilter") private var selectedCalibrationFilterID: URL?
     @AppStorage("selectedTarget") private var selectedTargetID: URL?
     @AppStorage("selectedFile") private var selectedFileID: URL?
     @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
@@ -37,7 +38,7 @@ struct ContentView: View {
                 case .files:
                     FileList(selectedFileID: $selectedFileID)
                 case .calibration:
-                    CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID)
+                    CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID, selectedFilterID: $selectedCalibrationFilterID)
                 }
             }
         } detail: {
@@ -65,7 +66,7 @@ struct ContentView: View {
                         }
                     case .calibration:
                         if let selectedCalibrationSession {
-                            CalibrationView(session: selectedCalibrationSession)
+                            CalibrationView(session: selectedCalibrationSession, filter: selectedCalibrationFilter)
                         } else {
                             Text("No session selected")
                         }
@@ -144,6 +145,13 @@ extension ContentView {
         return selectedCalibrationSessionID.flatMap { id in
             let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
             return try? viewContext.existingObject(with: objectID!) as? Session
+        }
+    }
+
+    var selectedCalibrationFilter: Filter? {
+        return selectedCalibrationFilterID.flatMap { id in
+            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
+            return try? viewContext.existingObject(with: objectID!) as? Filter
         }
     }
 }

@@ -75,7 +75,8 @@ struct CalibrationSessionList: View {
     private var lightSessions: FetchedResults<Session>
     
     @Binding var selectedSessionID: URL?
-    
+    @Binding var selectedFilterID: URL?
+
     @State private var selectedItemID: Set<UUID> = []
     
     @State private var tableItems: [CalibrationTableItem] = []
@@ -177,9 +178,9 @@ struct CalibrationSessionList: View {
             }
         }
         .tableColumnHeaders(.hidden)
-        .onChange(of: selectedItemID) { _, newValue in
-            print("newValue: \(newValue)")
+        .onChange(of: selectedItemID) { _, _ in
             selectedSessionID = selectedSession?.id
+            selectedFilterID = selectedFilter?.id
         }
     }
     
@@ -224,10 +225,8 @@ struct CalibrationSessionList: View {
                                 }
                             }
                             let calibratedFilters = session.uniqueCalibrationFilterNames
-                            print("DROP: session.uniqueCalibrationFilterNames=\(calibratedFilters)")
                             for candidateSession in droppedSessions {
                                 let candidateFiles = candidateSession.files?.map { $0 as! File }
-                                print("FILES: \(candidateFiles)")
                                 candidateFiles?.forEach { file in
                                     if calibratedFilters.contains(file.filter.name) {
                                         file.calibrationSession = session
@@ -270,6 +269,19 @@ struct CalibrationSessionList: View {
             if let children = item.children {
                 for child in children {
                     if child.id == selectedItemID { return child.session }
+                }
+            }
+        }
+        return nil
+    }
+    
+    var selectedFilter: Filter? {
+        guard let selectedItemID = selectedItemID.first else { return nil }
+        for item in tableItems {
+            if item.id == selectedItemID { return nil } // Session matches, not a filter
+            if let children = item.children {
+                for child in children {
+                    if child.id == selectedItemID { return child.filter }
                 }
             }
         }

@@ -17,6 +17,10 @@
 		100AC98D2A6BEF57009E6CBA /* ImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100AC98C2A6BEF57009E6CBA /* ImportTests.swift */; };
 		100AC9902A6BF388009E6CBA /* Date+FITSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108DD7EF2A5AA907002A7549 /* Date+FITSTests.swift */; };
 		100AC9922A6BF399009E6CBA /* Date+SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038709A2A5E24F200064EF1 /* Date+SessionTests.swift */; };
+		101A382E2AC8DFB7008DBB4C /* CalibrationSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A382D2AC8DFB7008DBB4C /* CalibrationSessionView.swift */; };
+		101A38302AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A382F2AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift */; };
+		101A38322AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */; };
+		101A38342AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A38332AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift */; };
 		102D542E2A63FAF300389791 /* FileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102D542D2A63FAF300389791 /* FileBrowser.swift */; };
 		103870992A5E246800064EF1 /* Date+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103870982A5E246800064EF1 /* Date+Session.swift */; };
 		1038709D2A5E4F4100064EF1 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038709C2A5E4F4100064EF1 /* SessionView.swift */; };
@@ -113,6 +117,10 @@
 		100AC9882A6B6F60009E6CBA /* FileImportControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImportControllerTests.swift; sourceTree = "<group>"; };
 		100AC98A2A6BEEE5009E6CBA /* 20230629 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = 20230629; sourceTree = "<group>"; };
 		100AC98C2A6BEF57009E6CBA /* ImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportTests.swift; sourceTree = "<group>"; };
+		101A382D2AC8DFB7008DBB4C /* CalibrationSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionView.swift; sourceTree = "<group>"; };
+		101A382F2AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionFilterView.swift; sourceTree = "<group>"; };
+		101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionFilterFlatView.swift; sourceTree = "<group>"; };
+		101A38332AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionFilterLightView.swift; sourceTree = "<group>"; };
 		101B308E2A5912430094DDCF /* Astro.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Astro.xctestplan; sourceTree = "<group>"; };
 		102D542D2A63FAF300389791 /* FileBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowser.swift; sourceTree = "<group>"; };
 		103870982A5E246800064EF1 /* Date+Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Session.swift"; sourceTree = "<group>"; };
@@ -247,6 +255,18 @@
 			path = Image;
 			sourceTree = "<group>";
 		};
+		101A382C2AC8DF7C008DBB4C /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				1089AA642AB6843D007D4E6B /* CalibrationView.swift */,
+				101A382D2AC8DFB7008DBB4C /* CalibrationSessionView.swift */,
+				101A382F2AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift */,
+				101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */,
+				101A38332AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift */,
+			);
+			path = Detail;
+			sourceTree = "<group>";
+		};
 		106702412A66A96900FD2DA6 /* FITS */ = {
 			isa = PBXGroup;
 			children = (
@@ -273,8 +293,8 @@
 				1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */,
 				10D5AA5E2ABDB4A20031F63A /* CalibrationFlatSessionView.swift */,
 				10D5AA5C2ABDB1B90031F63A /* CalibrationLightSessionView.swift */,
-				1089AA642AB6843D007D4E6B /* CalibrationView.swift */,
 				10903D5B2ABFD2CB00065842 /* CalibrationFiltersView.swift */,
+				101A382C2AC8DF7C008DBB4C /* Detail */,
 			);
 			path = Calibration;
 			sourceTree = "<group>";
@@ -666,12 +686,14 @@
 				1005194A2AA421AC00C25AF6 /* FileMetadataInspectorPane.swift in Sources */,
 				10B792562A621F4800291B6D /* FileImportContentView.swift in Sources */,
 				106BD33F2A6CCF9A00DE947D /* FIlteredImage.swift in Sources */,
+				101A38342AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift in Sources */,
 				108F82242A60DB5E00061511 /* TargetView.swift in Sources */,
 				103E22562AA2BF7B00B35FA6 /* StretchFilter.swift in Sources */,
 				10A85CC32A9EAD50001196E0 /* FileStatistics.swift in Sources */,
 				109D2DCE2A5ACA370024BBBD /* URL+FileType.swift in Sources */,
 				10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */,
 				10F6468A2A62B8D200DE27FE /* FileImporter.swift in Sources */,
+				101A38322AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift in Sources */,
 				100577492A7DF3AF000B0D2B /* FileTable.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
 				109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */,
@@ -693,6 +715,7 @@
 				1005194F2AA42C6F00C25AF6 /* File+Rotation.swift in Sources */,
 				103E22582AA2BF8400B35FA6 /* Stretch.metal in Sources */,
 				10D833132A5F758000C63083 /* CategoryList.swift in Sources */,
+				101A382E2AC8DFB7008DBB4C /* CalibrationSessionView.swift in Sources */,
 				102D542E2A63FAF300389791 /* FileBrowser.swift in Sources */,
 				10D8331B2A5F7D1600C63083 /* FileList.swift in Sources */,
 				10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */,
@@ -702,6 +725,7 @@
 				1092FB292AB68B1700CD69BD /* CalibrationSessionList.swift in Sources */,
 				1096BDF02A9AD3E500420F4C /* FileProcessOperation.swift in Sources */,
 				10F646852A629FCA00DE27FE /* AverageStacking.metal in Sources */,
+				101A38302AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift in Sources */,
 				103CF3222A8C3D5D0051F593 /* StarRectsView.swift in Sources */,
 				10D5AA5D2ABDB1B90031F63A /* CalibrationLightSessionView.swift in Sources */,
 				10D5AA5F2ABDB4A20031F63A /* CalibrationFlatSessionView.swift in Sources */,

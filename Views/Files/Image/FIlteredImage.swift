@@ -25,6 +25,8 @@ struct FilteredImage: View {
 
     var applyToneCurve: Bool = false
 
+    var autoFlipImage: Bool = true
+
     @State private var image: NSImage?
     @State private var unstretchedImage: CGImage!
     @State private var stretchedImage: CGImage!
@@ -189,7 +191,7 @@ struct FilteredImage: View {
     var body: some View {
         VStack {
             StarRectsView(file: file, showStarRects: $showStarRects, image: image)
-                .rotationEffect(.degrees(file.pierSideRotationDegrees))
+                .rotationEffect(autoFlipImage ? .degrees(file.pierSideRotationDegrees) : .zero)
         }
         .onChange(of: exposureValue) {
             applyFilters()
