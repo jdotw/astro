@@ -38,6 +38,9 @@ struct CalibrationSessionFilterLightView: View {
     @FetchRequest private var earlierCalibrationSessions: FetchedResults<Session>
     @FetchRequest private var laterCalibrationSessions: FetchedResults<Session>
 
+    @AppStorage("calibrationLightTargetBackground") private var imageTargetBackground: Double = 0.25
+    @AppStorage("calibrationFlatTargetBackground") private var flatTargetBackground: Double = 0.25
+
     init(session: Session, filter: Filter) {
         self.session = session
         self.filter = filter
@@ -63,13 +66,13 @@ struct CalibrationSessionFilterLightView: View {
                         if let earlierCandidateSession = earlierCandidateSession,
                            let file = candidateFlat(inSession: earlierCandidateSession)
                         {
-                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $earlierHistogramImage, showStarRects: $showStarRects)
+                            FilteredImage(file: file, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $earlierHistogramImage, showStarRects: $showStarRects)
                                 .opacity(showOverlay ? 1.0 : 0.0)
                         } else {
                             Text("No earlier calibration session found")
                         }
                         if let file = candidateFile {
-                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $histogramImage, showStarRects: $showStarRects)
+                            FilteredImage(file: file, autoFlipImage: false, targetBackground: imageTargetBackground, histogramImage: $histogramImage, showStarRects: $showStarRects)
                                 .opacity(showOverlay ? 0.2 : 1.0)
                         } else {
                             Text("No candidate file found")
@@ -90,13 +93,13 @@ struct CalibrationSessionFilterLightView: View {
                         if let laterCandidateSession = laterCandidateSession,
                            let file = candidateFlat(inSession: laterCandidateSession)
                         {
-                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $laterHistogramImage, showStarRects: $showStarRects)
+                            FilteredImage(file: file, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $laterHistogramImage, showStarRects: $showStarRects)
                                 .opacity(showOverlay ? 1.0 : 0.0)
                         } else {
                             Text("No later calibration session found")
                         }
                         if let file = candidateFile {
-                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $histogramImage, showStarRects: $showStarRects)
+                            FilteredImage(file: file, autoFlipImage: false, targetBackground: imageTargetBackground, histogramImage: $histogramImage, showStarRects: $showStarRects)
                                 .opacity(showOverlay ? 0.2 : 1.0)
                         } else {
                             Text("No candidate file found")
@@ -114,9 +117,26 @@ struct CalibrationSessionFilterLightView: View {
             }
         }
         .toolbar(content: {
-            Toggle("Show Overlay", isOn: $showOverlay)
-                .keyboardShortcut(.space, modifiers: [])
-
+            ToolbarItemGroup {
+                HStack {
+                    Text("Image Stretch")
+                    Slider(value: $imageTargetBackground, in: 0.0 ... 1.0)
+                        .controlSize(.small)
+                        .frame(width: 100)
+                    //                .padding(.trailing)
+                }
+                HStack {
+                    Text("Flat Stretch")
+                    Slider(value: $flatTargetBackground, in: 0.0 ... 1.0, label: { Text("Flat Stretch") })
+                        .controlSize(.small)
+                        .frame(width: 100)
+                    //                .padding(.trailing)
+                }
+            }
+            ToolbarItemGroup {
+                Toggle("Show Overlay", isOn: $showOverlay)
+                    .keyboardShortcut(.space, modifiers: [])
+            }
         })
         .task {
             updateSessionPickers()

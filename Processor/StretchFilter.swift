@@ -11,8 +11,9 @@ class StretchFilter: CIFilter {
     let kernel: CIColorKernel
     var inputImage: CIImage
     var statistics: FileStatistics
+    var targetBackground: Double
 
-    init(inputImage: CIImage, statistics: FileStatistics) {
+    init(inputImage: CIImage, statistics: FileStatistics, targetBackground: Double = 0.25) {
         guard let url = Bundle.main.url(forResource: "default",
                                         withExtension: "metallib")
         else {
@@ -29,6 +30,7 @@ class StretchFilter: CIFilter {
         }
         self.inputImage = inputImage
         self.statistics = statistics
+        self.targetBackground = targetBackground
         super.init()
     }
 
@@ -59,8 +61,7 @@ class StretchFilter: CIFilter {
         // values are relevant to the pixel data in the shader
         let shadowClipConst = Float(-1.25)
         let shadowClip = statistics.median + (shadowClipConst * statistics.avgMedianDeviation)
-        let targetBG = Float(0.25)
-        let midtone = mtf(midtone: targetBG, x: statistics.median - shadowClip)
+        let midtone = mtf(midtone: Float(targetBackground), x: statistics.median - shadowClip)
         let image = kernel.apply(
             extent: inputImage.extent,
             arguments: [inputImage, midtone, shadowClip])

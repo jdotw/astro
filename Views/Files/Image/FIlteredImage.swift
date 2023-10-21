@@ -27,6 +27,8 @@ struct FilteredImage: View {
 
     var autoFlipImage: Bool = true
 
+    var targetBackground: Double = 0.25
+
     @State private var image: NSImage?
     @State private var unstretchedImage: CGImage!
     @State private var stretchedImage: CGImage!
@@ -44,7 +46,7 @@ struct FilteredImage: View {
         guard let statistics = file.statistics else {
             return nil
         }
-        let filter = StretchFilter(inputImage: inputImage, statistics: statistics)
+        let filter = StretchFilter(inputImage: inputImage, statistics: statistics, targetBackground: targetBackground)
         return filter.outputImage
     }
 
@@ -219,6 +221,9 @@ struct FilteredImage: View {
         }
         .onChange(of: file) {
             loadImage()
+        }
+        .onChange(of: targetBackground) {
+            applyFilters()
         }
         .task {
             loadImage()
