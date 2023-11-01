@@ -16,6 +16,7 @@ struct ContentView: View {
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
     @AppStorage("selectedSession") private var selectedSessionID: URL?
     @AppStorage("selectedCalibrationSession") private var selectedCalibrationSessionID: URL?
+    @AppStorage("selectedCalibrationSessionType") private var selectedCalibrationSessionType: SessionType?
     @AppStorage("selectedCalibrationFilter") private var selectedCalibrationFilterID: URL?
     @AppStorage("selectedTarget") private var selectedTargetID: URL?
     @AppStorage("selectedFile") private var selectedFileID: URL?
@@ -38,7 +39,7 @@ struct ContentView: View {
                 case .files:
                     FileList(selectedFileID: $selectedFileID)
                 case .calibration:
-                    CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID, selectedFilterID: $selectedCalibrationFilterID)
+                    CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID, selectedFilterID: $selectedCalibrationFilterID, selectedSessionType: $selectedCalibrationSessionType)
                 }
             }
         } detail: {
@@ -66,7 +67,7 @@ struct ContentView: View {
                         }
                     case .calibration:
                         if let selectedCalibrationSession {
-                            CalibrationView(session: selectedCalibrationSession, filter: selectedCalibrationFilter)
+                            CalibrationView(session: selectedCalibrationSession, filter: selectedCalibrationFilter, type: selectedCalibrationSessionType ?? .light)
                         } else {
                             Text("No session selected")
                         }

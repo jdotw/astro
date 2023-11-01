@@ -11,12 +11,13 @@ struct CalibrationView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var session: Session
     var filter: Filter?
+    var type: SessionType
 
     var body: some View {
         if let filter {
-            CalibrationSessionFilterView(session: session, filter: filter)
+            CalibrationSessionFilterView(session: session, filter: filter, type: type)
         } else {
-            CalibrationSessionView(session: session)
+            CalibrationSessionView(session: session, type: type)
         }
     }
 }

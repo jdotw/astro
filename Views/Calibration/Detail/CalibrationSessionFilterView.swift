@@ -11,20 +11,14 @@ struct CalibrationSessionFilterView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var session: Session
     var filter: Filter?
-
-    var isFlat: Bool {
-        guard let files = session.files?.allObjects as? [File] else { return false }
-        print("FILES: ", files)
-        return files.first { file in
-            file.type.lowercased() == "flat"
-        } != nil
-    }
+    var type: SessionType
 
     var body: some View {
         if let filter {
-            if isFlat {
+            switch type {
+            case .calibration:
                 CalibrationSessionFilterFlatsView(session: session, filter: filter)
-            } else {
+            case .light:
                 CalibrationSessionFilterLightView(session: session, filter: filter)
             }
         } else {
