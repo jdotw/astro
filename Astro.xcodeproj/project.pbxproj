@@ -19,6 +19,9 @@
 		100AC9922A6BF399009E6CBA /* Date+SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038709A2A5E24F200064EF1 /* Date+SessionTests.swift */; };
 		100D900B2AE48D2200B2F648 /* CalibrationSessionListFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100D900A2AE48D2200B2F648 /* CalibrationSessionListFilterView.swift */; };
 		100D900D2AE4A39900B2F648 /* CalibrationSessionListSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100D900C2AE4A39900B2F648 /* CalibrationSessionListSessionView.swift */; };
+		100D90102AF2084800B2F648 /* ImageProcessorContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100D900F2AF2084800B2F648 /* ImageProcessorContentView.swift */; };
+		100D90142AF209E300B2F648 /* StackingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100D90132AF209E300B2F648 /* StackingOperation.swift */; };
+		100D90162AF20A2B00B2F648 /* CombinedProcessingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100D90152AF20A2B00B2F648 /* CombinedProcessingOperation.swift */; };
 		101A382E2AC8DFB7008DBB4C /* CalibrationSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A382D2AC8DFB7008DBB4C /* CalibrationSessionView.swift */; };
 		101A38302AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A382F2AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift */; };
 		101A38322AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */; };
@@ -118,6 +121,9 @@
 		100AC98C2A6BEF57009E6CBA /* ImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportTests.swift; sourceTree = "<group>"; };
 		100D900A2AE48D2200B2F648 /* CalibrationSessionListFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionListFilterView.swift; sourceTree = "<group>"; };
 		100D900C2AE4A39900B2F648 /* CalibrationSessionListSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionListSessionView.swift; sourceTree = "<group>"; };
+		100D900F2AF2084800B2F648 /* ImageProcessorContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProcessorContentView.swift; sourceTree = "<group>"; };
+		100D90132AF209E300B2F648 /* StackingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackingOperation.swift; sourceTree = "<group>"; };
+		100D90152AF20A2B00B2F648 /* CombinedProcessingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinedProcessingOperation.swift; sourceTree = "<group>"; };
 		101A382D2AC8DFB7008DBB4C /* CalibrationSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionView.swift; sourceTree = "<group>"; };
 		101A382F2AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionFilterView.swift; sourceTree = "<group>"; };
 		101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionFilterFlatView.swift; sourceTree = "<group>"; };
@@ -253,6 +259,32 @@
 			path = Image;
 			sourceTree = "<group>";
 		};
+		100D900E2AF2080900B2F648 /* Process */ = {
+			isa = PBXGroup;
+			children = (
+				100D900F2AF2084800B2F648 /* ImageProcessorContentView.swift */,
+			);
+			path = Process;
+			sourceTree = "<group>";
+		};
+		100D90112AF209B900B2F648 /* Stretch */ = {
+			isa = PBXGroup;
+			children = (
+				103E22552AA2BF7B00B35FA6 /* StretchFilter.swift */,
+				103E22572AA2BF8400B35FA6 /* Stretch.metal */,
+			);
+			path = Stretch;
+			sourceTree = "<group>";
+		};
+		100D90122AF209CD00B2F648 /* Stacking */ = {
+			isa = PBXGroup;
+			children = (
+				10F646842A629FCA00DE27FE /* AverageStacking.metal */,
+				10F646862A629FED00DE27FE /* AverageStackingFilter.swift */,
+			);
+			path = Stacking;
+			sourceTree = "<group>";
+		};
 		101A382C2AC8DF7C008DBB4C /* Detail */ = {
 			isa = PBXGroup;
 			children = (
@@ -336,7 +368,7 @@
 				10C55BA62AAD62E9000BBC5E /* TargetExport */,
 				10F646882A62B8A800DE27FE /* FileImport */,
 				1096BDEE2A9AD3CE00420F4C /* FileProcessor */,
-				10F646812A623D4C00DE27FE /* Processor */,
+				10F646812A623D4C00DE27FE /* Processors */,
 				10D833282A6000B300C63083 /* Views */,
 				10F6468D2A62BBA800DE27FE /* Extensions */,
 				10B5CC702A55801100A36387 /* FITS */,
@@ -410,6 +442,7 @@
 		10D833282A6000B300C63083 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				100D900E2AF2080900B2F648 /* Process */,
 				1089AA632AB6842D007D4E6B /* Calibration */,
 				100519462AA4218800C25AF6 /* Inspectors */,
 				106D0FA52A7DE3A1003015EA /* Toolbar */,
@@ -502,16 +535,16 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		10F646812A623D4C00DE27FE /* Processor */ = {
+		10F646812A623D4C00DE27FE /* Processors */ = {
 			isa = PBXGroup;
 			children = (
 				10F646822A623D5900DE27FE /* ImageProcessor.swift */,
-				103E22552AA2BF7B00B35FA6 /* StretchFilter.swift */,
-				103E22572AA2BF8400B35FA6 /* Stretch.metal */,
-				10F646842A629FCA00DE27FE /* AverageStacking.metal */,
-				10F646862A629FED00DE27FE /* AverageStackingFilter.swift */,
+				100D90132AF209E300B2F648 /* StackingOperation.swift */,
+				100D90152AF20A2B00B2F648 /* CombinedProcessingOperation.swift */,
+				100D90122AF209CD00B2F648 /* Stacking */,
+				100D90112AF209B900B2F648 /* Stretch */,
 			);
-			path = Processor;
+			path = Processors;
 			sourceTree = "<group>";
 		};
 		10F646882A62B8A800DE27FE /* FileImport */ = {
@@ -695,6 +728,7 @@
 				100577492A7DF3AF000B0D2B /* FileTable.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
 				109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */,
+				100D90102AF2084800B2F648 /* ImageProcessorContentView.swift in Sources */,
 				106D0FA72A7DE3C0003015EA /* FileListModePicker.swift in Sources */,
 				10C55BAB2AAD6561000BBC5E /* TargetExport.swift in Sources */,
 				103B8A622A65F44500B526C7 /* CGImage+Resize.swift in Sources */,
@@ -732,8 +766,10 @@
 				1089AA622AB53B78007D4E6B /* TargetExportController.swift in Sources */,
 				10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */,
 				1005194D2AA4267B00C25AF6 /* FileMetadata.swift in Sources */,
+				100D90142AF209E300B2F648 /* StackingOperation.swift in Sources */,
 				10F646872A629FED00DE27FE /* AverageStackingFilter.swift in Sources */,
 				109D2DCA2A5AC5ED0024BBBD /* FileHandle+FITS.swift in Sources */,
+				100D90162AF20A2B00B2F648 /* CombinedProcessingOperation.swift in Sources */,
 				108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */,
 				108F82262A60DE0000061511 /* FileViewer.swift in Sources */,
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,

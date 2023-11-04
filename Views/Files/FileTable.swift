@@ -24,7 +24,7 @@ struct FileTable: View {
     @State private var sortOrder: [KeyPathComparator<File>]
     @Binding var navStackPath: [File]
 
-    @ObservedObject var imageProcessor: ImageProcessor = .init()
+//    @ObservedObject var imageProcessor: ImageProcessor = .init()
     @State private var processedImage: NSImage?
     @Environment(\.managedObjectContext) private var viewContext
 
@@ -37,6 +37,7 @@ struct FileTable: View {
     }
 
     func processSelected() {
+        
 //        imageProcessor.setFiles(Set(selectedFiles))
 //        imageProcessor.processFrames { image in
 //            let rep = NSCIImageRep(ciImage: image)

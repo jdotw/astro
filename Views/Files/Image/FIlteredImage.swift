@@ -11,6 +11,7 @@ import SwiftUI
 
 struct FilteredImage: View {
     var file: File
+    var inputImage: CGImage?
 
     var exposureValue: Double = 0.0
     var gammaValue: Double = 1.0
@@ -38,7 +39,11 @@ struct FilteredImage: View {
     @Binding var showStarRects: Bool
 
     func loadImage() {
-        unstretchedImage = file.cgImage
+        if let inputImage {
+            unstretchedImage = inputImage
+        } else {
+            unstretchedImage = file.cgImage
+        }
         applyFilters()
     }
 

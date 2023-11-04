@@ -93,6 +93,7 @@ struct ContentView: View {
                 navStackPath = []
             }
         }
+        
     }
 
     private func importFiles() {

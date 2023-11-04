@@ -41,6 +41,11 @@ struct CalibrationSessionFilterLightView: View {
     @AppStorage("calibrationLightTargetBackground") private var imageTargetBackground: Double = 0.25
     @AppStorage("calibrationFlatTargetBackground") private var flatTargetBackground: Double = 0.25
 
+    @State private var earlierStackedFlatFrame: CGImage?
+    @State private var laterStackedFlatFrame: CGImage?
+
+    @State private var imageProcessingQueue: OperationQueue = .init()
+
     init(session: Session, filter: Filter) {
         self.session = session
         self.filter = filter
@@ -63,11 +68,13 @@ struct CalibrationSessionFilterLightView: View {
             HStack {
                 VStack {
                     ZStack {
-                        if let earlierCandidateSession = earlierCandidateSession,
-                           let file = candidateFlat(inSession: earlierCandidateSession)
+                        if let earlierCandidateSession,
+                           let file = candidateFlat(inSession: earlierCandidateSession),
+                           let earlierStackedFlatFrame
                         {
-                            FilteredImage(file: file, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $earlierHistogramImage, showStarRects: $showStarRects)
+                            FilteredImage(file: file, inputImage: earlierStackedFlatFrame, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $earlierHistogramImage, showStarRects: $showStarRects)
                                 .opacity(showOverlay ? 1.0 : 0.0)
+
                         } else {
                             Text("No earlier calibration session found")
                         }
@@ -93,8 +100,10 @@ struct CalibrationSessionFilterLightView: View {
                         if let laterCandidateSession = laterCandidateSession,
                            let file = candidateFlat(inSession: laterCandidateSession)
                         {
-                            FilteredImage(file: file, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $laterHistogramImage, showStarRects: $showStarRects)
-                                .opacity(showOverlay ? 1.0 : 0.0)
+                            if let laterStackedFlatFrame {
+                                FilteredImage(file: file, inputImage: laterStackedFlatFrame, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $laterHistogramImage, showStarRects: $showStarRects)
+                                    .opacity(showOverlay ? 1.0 : 0.0)
+                            }
                         } else {
                             Text("No later calibration session found")
                         }
@@ -140,9 +149,40 @@ struct CalibrationSessionFilterLightView: View {
         })
         .task {
             updateSessionPickers()
+            stackFlatFrames()
         }
         .onChange(of: session) { _, _ in
             updateSessionPickers()
+            stackFlatFrames()
+        }
+        .onChange(of: filter) {
+            stackFlatFrames()
+        }
+    }
+
+    func stackFlatFrames() {
+        if let laterCandidateSession {
+            let files = candidateFlats(inSession: laterCandidateSession)
+            let op = StackingOperation(files: files) { image in
+                let ctx = CIContext(options: [.useSoftwareRenderer: false])
+                let cgImage = ctx.createCGImage(image, from: image.extent)
+                self.laterStackedFlatFrame = cgImage
+            }
+            imageProcessingQueue.addOperation(op)
+        } else {
+            laterStackedFlatFrame = nil
+        }
+
+        if let earlierCandidateSession {
+            let files = candidateFlats(inSession: earlierCandidateSession)
+            let op = StackingOperation(files: files) { image in
+                let ctx = CIContext(options: [.useSoftwareRenderer: false])
+                let cgImage = ctx.createCGImage(image, from: image.extent)
+                self.earlierStackedFlatFrame = cgImage
+            }
+            imageProcessingQueue.addOperation(op)
+        } else {
+            earlierStackedFlatFrame = nil
         }
     }
 
@@ -155,6 +195,17 @@ struct CalibrationSessionFilterLightView: View {
         guard let files = session.files?.allObjects as? [File] else { return nil }
         return files.first { file in
             file.filter == filter
+        }
+    }
+
+    func candidateFlats(inSession candidateSession: Session) -> [File] {
+        guard let files = candidateSession.files?.allObjects as? [File] else { return [] }
+        return files.compactMap { file in
+            if file.filter == filter && file.type.lowercased() == "flat" {
+                return file
+            } else {
+                return nil
+            }
         }
     }
 
