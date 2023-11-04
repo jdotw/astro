@@ -25,10 +25,10 @@ extension FileBrowserViewMode {
         switch self {
         case .approve:
             return ("Approve", "checkmark.circle")
-        case .table:
-            return ("Table", "tablecells")
         case .grid:
-            return ("Grid", "photo")
+            return ("Grid", "photo.on.rectangle.angled")
+        case .table:
+            return ("Table", "list.dash")
         }
     }
 
