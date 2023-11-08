@@ -126,10 +126,18 @@ struct CalibrationSessionList: View {
     @State private var selectedItem: Set<CalibrationTableItem> = []
 
     @State var isExpanded: [URL: Bool] = [:]
+    @AppStorage("hideCalibrationSessions") private var hideCalibrated: Bool = false
 
     private func binding(for key: URL) -> Binding<Bool> {
+        let item = CalibrationTableItem(url: key, context: viewContext)
         return .init(
-            get: { self.isExpanded[key, default: true] },
+            get: {
+                var isExpandedByDefault = true
+                if hideCalibrated, let item {
+                    isExpandedByDefault = item.sessionType == .calibration || item.session.hasUncalibratedFiles
+                }
+                return self.isExpanded[key, default: isExpandedByDefault]
+            },
             set: { self.isExpanded[key] = $0 })
     }
 
@@ -143,6 +151,7 @@ struct CalibrationSessionList: View {
                     }
                     try! viewContext.save()
                 }
+                Toggle("Hide Calibrated Sessions", isOn: $hideCalibrated)
             })
     }
 
@@ -174,20 +183,31 @@ struct CalibrationSessionList: View {
                     let destinationSession = item.session
                     var acceptDrop = false
                     var droppedItems = [CalibrationTableItem]()
+                    print("DROPPED URLS (\(droppedURLs.count)): ", droppedURLs)
                     for url in droppedURLs {
-                        guard let item = CalibrationTableItem(url: url, context: viewContext) else { continue }
+                        print("URL: ", url)
+                        guard let item = CalibrationTableItem(url: url, context: viewContext) else {
+                            print("DID NOT FIND ITEM")
+                            continue
+                        }
+                        print("FOUND ITEM: ", item)
                         droppedItems.append(item)
                     }
                     let calibratedFilters = destinationSession.uniqueCalibrationFilterNames
+                    print("DROPPED ITEMS: ", droppedItems)
                     for droppedItem in droppedItems {
                         var candidateFiles = droppedItem.session.files?.compactMap { $0 as? File }
                         if droppedItem.type == .filter {
                             candidateFiles = candidateFiles?.filter { $0.filter == droppedItem.filter }
                         }
+                        print("DESTINATION FILTERS: ", calibratedFilters)
                         candidateFiles?.forEach { file in
                             if calibratedFilters.contains(file.filter.name) {
                                 file.calibrationSession = destinationSession
                                 acceptDrop = true
+                                print("MATCHED SOURCE FILE: ", file)
+                            } else {
+                                print("DID NOT MATCH SOURCE FILE: ", file)
                             }
                         }
                     }
@@ -204,7 +224,6 @@ struct CalibrationSessionList: View {
                         switch item.sessionType {
                         case .light:
                             CalibrationSessionListSessionView(session: session, sessionType: .light)
-                                .draggable(item.session.objectID.uriRepresentation())
                         default:
                             EmptyView()
                         }
@@ -213,12 +232,12 @@ struct CalibrationSessionList: View {
                         switch item.sessionType {
                         case .light:
                             CalibrationSessionListFilterView(session: item.session, filter: filter, sessionType: .light)
-                                .draggable(item.id)
                         default:
                             EmptyView()
                         }
                     }
                 }
+                .draggable(item.id)
             }
 
         } rows: {
@@ -277,6 +296,9 @@ struct CalibrationSessionList: View {
         var sessions = [CalibrationSession]()
         sessions.append(contentsOf: calibrationSessions.map { CalibrationSession(type: .calibration, session: $0) })
         sessions.append(contentsOf: lightSessions.map { CalibrationSession(type: .light, session: $0) })
+//        if hideCalibrated {
+//            sessions = sessions.filter { $0.type == .calibration || $0.session.hasUncalibratedFiles }
+//        }
         return sessions.sorted {
             $0.session.dateString < $1.session.dateString
         }
@@ -339,5 +361,14 @@ extension Session {
     func filesWithFilter(_ filter: Filter) -> [File] {
         guard let files = files?.allObjects as? [File] else { return [] }
         return files.filter { $0.filter == filter }
+    }
+
+    var uncalibratedFiles: [File] {
+        guard let files = files?.allObjects as? [File] else { return [] }
+        return files.filter { $0.calibrationSession == nil }
+    }
+
+    var hasUncalibratedFiles: Bool {
+        uncalibratedFiles.count > 0
     }
 }

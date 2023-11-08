@@ -37,7 +37,6 @@ struct FileTable: View {
     }
 
     func processSelected() {
-        
 //        imageProcessor.setFiles(Set(selectedFiles))
 //        imageProcessor.processFrames { image in
 //            let rep = NSCIImageRep(ciImage: image)
@@ -68,6 +67,16 @@ struct FileTable: View {
 
                 TableColumn("Filter", value: \.filter.name) { file in
                     Text(file.filter.name.localizedCapitalized)
+                }
+                .width(min: 50)
+                .defaultVisibility(columns.contains(.filter) ? .visible : .hidden)
+
+                TableColumn("Calibrated", value: \.filter.name) { file in
+                    if file.calibrationSession == nil {
+                        Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.yellow)
+                    } else {
+                        Image(systemName: "checkmark.circle")
+                    }
                 }
                 .width(min: 50)
                 .defaultVisibility(columns.contains(.filter) ? .visible : .hidden)

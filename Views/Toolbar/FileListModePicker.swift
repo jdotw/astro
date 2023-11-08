@@ -12,11 +12,15 @@ struct FileBrowserModePicker: View {
 
     var body: some View {
         Picker("Display Mode", selection: $mode) {
-            ForEach(FileBrowserViewMode.allCases) { viewMode in
+            ForEach(sortedModes) { viewMode in
                 viewMode.label
             }
         }
         .pickerStyle(SegmentedPickerStyle())
+    }
+
+    var sortedModes: [FileBrowserViewMode] {
+        return [.approve, .grid, .table]
     }
 }
 
