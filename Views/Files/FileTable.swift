@@ -36,6 +36,30 @@ struct FileTable: View {
         _sortOrder = State(initialValue: source.defaultSortOrder)
     }
 
+    func pixInsight(_ script: String) -> String {
+        let task = Process()
+        let pipe = Pipe()
+
+        task.standardOutput = pipe
+        task.standardError = pipe
+        task.launchPath = "/Applications/PixInsight/PixInsight.app/Contents/MacOS/PixInsight"
+        task.arguments = ["-n", "-r=\"\(script)\"", "--automation-mode", "--force-exit"]
+//        task.arguments = ["-c", "/Applications/PixInsight/PixInsight.app/Contents/MacOS/PixInsight"]
+//        task.arguments = ["/Users/jwilson/Desktop/runPI.sh"]
+//        task.launchPath = "/bin/zsh"
+        task.standardInput = nil
+        task.currentDirectoryURL = FileManager.default.homeDirectoryForCurrentUser
+        task.environment = ProcessInfo.processInfo.environment
+        print("ENV: ", task.environment)
+
+        task.launch()
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)!
+
+        return output
+    }
+
     func processSelected() {
 //        imageProcessor.setFiles(Set(selectedFiles))
 //        imageProcessor.processFrames { image in
@@ -44,6 +68,10 @@ struct FileTable: View {
 //            nsImage.addRepresentation(rep)
 //            processedImage = nsImage
 //        }
+
+        // Example usage:
+        let output = pixInsight("/Users/jwilson/Desktop/integrate-flats.scp")
+        print("OUTPUT: ", output)
     }
 
     var body: some View {
