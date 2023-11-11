@@ -142,6 +142,7 @@
 		1062D7692A981B2300466086 /* File+RegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+RegionTests.swift"; sourceTree = "<group>"; };
 		106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlteredImage.swift; sourceTree = "<group>"; };
 		106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListModePicker.swift; sourceTree = "<group>"; };
+		107144FC2AFF0C790049E580 /* AstroRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AstroRelease.entitlements; sourceTree = "<group>"; };
 		1075E0CF2A7F30D100AF344A /* FileApproval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileApproval.swift; sourceTree = "<group>"; };
 		1089AA612AB53B78007D4E6B /* TargetExportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportController.swift; sourceTree = "<group>"; };
 		1089AA642AB6843D007D4E6B /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationView.swift; sourceTree = "<group>"; };
@@ -393,6 +394,7 @@
 		10C432232A50F80F00E620DF /* Astro */ = {
 			isa = PBXGroup;
 			children = (
+				107144FC2AFF0C790049E580 /* AstroRelease.entitlements */,
 				10C432242A50F80F00E620DF /* AstroApp.swift */,
 				10C432282A50F81000E620DF /* Assets.xcassets */,
 				10C4322D2A50F81000E620DF /* Persistence.swift */,
@@ -948,7 +950,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Astro/Preview Content\"";
 				DEVELOPMENT_TEAM = L2FNT8KD94;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -972,14 +974,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Astro/Astro.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Astro/AstroRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Astro/Preview Content\"";
 				DEVELOPMENT_TEAM = L2FNT8KD94;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
