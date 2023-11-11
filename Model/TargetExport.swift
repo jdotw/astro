@@ -103,7 +103,6 @@ extension TargetExportRequestFileStatus: Comparable {
 class TargetExportRequestFile: Identifiable {
     let id = UUID()
     let source: File
-    let destination: URL!
     var error: Error?
     var status: TargetExportRequestFileStatus
 
@@ -111,22 +110,5 @@ class TargetExportRequestFile: Identifiable {
         self.source = source
         self.status = .pending
         self.error = nil
-        do {
-            self.destination = try URL(exportURLForSource: source, atBase: baseURL)
-        } catch {
-            self.error = error
-            self.status = .failed
-            self.destination = nil
-        }
-    }
-}
-
-extension URL {
-    init(exportURLForSource source: File, atBase baseURL: URL) throws {
-        let filterName = source.filter.name.localizedCapitalized
-        let filterURL = baseURL.appendingPathComponent(filterName)
-        try FileManager.default.createDirectory(at: filterURL, withIntermediateDirectories: true, attributes: nil)
-        let destination = filterURL.appendingPathComponent(source.name)
-        self = destination
     }
 }
