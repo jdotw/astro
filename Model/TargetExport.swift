@@ -32,6 +32,8 @@ public extension TargetExportRequest {
     @NSManaged var bookmark: Data
     @NSManaged var target: Target
     @NSManaged var completed: Bool
+    @NSManaged var error: String?
+    @NSManaged var reference: File?
 }
 
 extension TargetExportRequest: Identifiable {
@@ -44,7 +46,10 @@ extension TargetExportRequest {
     func buildFileList(forDestination destinationURL: URL) throws -> [TargetExportRequestFile] {
         var exportableFiles = [TargetExportRequestFile]()
         for file in target.files?.allObjects as! [File] {
-            let exportable = TargetExportRequestFile(source: file, atBaseURL: destinationURL)
+            let exportable = TargetExportRequestFile(source: file,
+                                                     type: file.type.lowercased() == "flat" ? .flat : .light,
+                                                     status: .original,
+                                                     url: nil)
             exportableFiles.append(exportable)
         }
         return exportableFiles
@@ -85,13 +90,30 @@ enum TargetExportRequestError: Error {
     case unknown
     case failedToResolveDestinationBookmark(URL)
     case failedToStartAccessingDestinationURL
+    case noReferenceFile
 }
 
-enum TargetExportRequestFileStatus: Int {
+enum TargetExportRequestFileProgress: Int {
     case failed = 0
     case exporting = 1
     case pending = 2
     case exported = 3
+}
+
+enum TargetExportRequestFileType: Int {
+    case unknown
+    case light
+    case flat
+    case dark
+    case bias
+}
+
+enum TargetExportRequestFileStatus: Int {
+    case unknown
+    case original
+    case calibrated
+    case registered
+    case master
 }
 
 extension TargetExportRequestFileStatus: Comparable {
@@ -102,13 +124,23 @@ extension TargetExportRequestFileStatus: Comparable {
 
 class TargetExportRequestFile: Identifiable {
     let id = UUID()
-    let source: File
+    let source: File?
     var error: Error?
+    let url: URL?
+    var progress: TargetExportRequestFileProgress
     var status: TargetExportRequestFileStatus
+    var type: TargetExportRequestFileType
 
-    init(source: File, atBaseURL baseURL: URL) {
+    init(source: File?,
+         type: TargetExportRequestFileType,
+         status: TargetExportRequestFileStatus,
+         url: URL?)
+    {
         self.source = source
-        self.status = .pending
+        self.progress = .pending
+        self.type = type
+        self.status = status
         self.error = nil
+        self.url = url
     }
 }

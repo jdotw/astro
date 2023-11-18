@@ -44,13 +44,9 @@ struct FileTable: View {
         task.standardError = pipe
         task.launchPath = "/Applications/PixInsight/PixInsight.app/Contents/MacOS/PixInsight"
         task.arguments = ["-n", "-r=\"\(script)\"", "--automation-mode", "--force-exit"]
-//        task.arguments = ["-c", "/Applications/PixInsight/PixInsight.app/Contents/MacOS/PixInsight"]
-//        task.arguments = ["/Users/jwilson/Desktop/runPI.sh"]
-//        task.launchPath = "/bin/zsh"
         task.standardInput = nil
         task.currentDirectoryURL = FileManager.default.homeDirectoryForCurrentUser
         task.environment = ProcessInfo.processInfo.environment
-        print("ENV: ", task.environment)
 
         task.launch()
 
@@ -69,9 +65,20 @@ struct FileTable: View {
 //            processedImage = nsImage
 //        }
 
-        // Example usage:
-        let output = pixInsight("/Users/jwilson/Desktop/integrate-flats.scp")
-        print("OUTPUT: ", output)
+//        let output = pixInsight("/Users/jwilson/Desktop/integrate-flats.scp")
+//        print("OUTPUT: ", output)
+
+        var selectedFiles: [File]!
+        if selectedFileIDs.count > 0 {
+            selectedFiles = files.filter { selectedFileIDs.contains($0.id) }
+        } else {
+            selectedFiles = files.map { $0 }
+        }
+//        let op = PixInsightIntegrationOperation(files: selectedFiles)
+//        ExternalProcessingOperationQueue.shared.addOperation(op)
+
+        let op = PixInsightPreProcessingOperation(files: selectedFiles)
+        ExternalProcessingOperationQueue.shared.addOperation(op)
     }
 
     var body: some View {

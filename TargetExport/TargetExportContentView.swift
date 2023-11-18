@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TargetExportContentView: View {
     var exportRequest: TargetExportRequest
-    @StateObject var controller = TargetExportController()
+    @ObservedObject var controller = TargetExportController.shared
     @State var error: Error?
 
     @State private var selectedFileID: TargetExportRequestFile.ID?
@@ -57,7 +57,7 @@ struct TargetExportContentView: View {
                 if controller.files.count > 0 {
                     Table(controller.files, selection: $selectedFileID, sortOrder: $resultsSortOrder) {
                         TableColumn("", value: \.status) {
-                            switch $0.status {
+                            switch $0.progress {
                             case .exported:
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
@@ -73,28 +73,13 @@ struct TargetExportContentView: View {
                                 Image(systemName: "doc.badge.clock.fill")
                             }
                         }.width(20)
-                        TableColumn("File", value: \.source.name)
+                        TableColumn("File") {
+                            Text($0.source?.name ?? "")
+                        }
                         TableColumn("Error") {
                             Text($0.error?.localizedDescription ?? "")
                         }
                     }
-                }
-            }
-        }
-        .task {
-            if exportRequest.completed == false {
-                do {
-                    try
-                        controller.performExport(request: exportRequest) {
-                            exportRequest.completed = true
-                            do {
-                                try viewContext.save()
-                            } catch {
-                                self.error = error
-                            }
-                        }
-                } catch {
-                    self.error = error
                 }
             }
         }
