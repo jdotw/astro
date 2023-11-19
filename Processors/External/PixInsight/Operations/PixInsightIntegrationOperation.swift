@@ -7,25 +7,48 @@
 
 import Foundation
 
+enum PixInsightIntegrationMode {
+    case flats
+    case lights
+}
+
 class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
     let files: [File]
     let fileURLs: [URL]
     var error: Error?
     var outputURL: URL?
+    var mode: PixInsightIntegrationMode = .lights
 
     required init(files: [File]) {
         self.files = files
         self.fileURLs = []
     }
 
-    init(fileURLs: [URL]) {
-        self.files = []
-        self.fileURLs = fileURLs
+    init(files: [File], mode: PixInsightIntegrationMode) {
+        self.files = files
+        self.fileURLs = []
+        self.mode = mode
         super.init()
     }
 
+    init(fileURLs: [URL], mode: PixInsightIntegrationMode) {
+        self.files = []
+        self.fileURLs = fileURLs
+        self.mode = mode
+        super.init()
+    }
+
+    private var jsScriptTemplateName: String {
+        switch mode {
+        case .flats:
+            return "PixInsightFlatsIntegrationScriptTemplate"
+        case .lights:
+            return "PixInsightLightsIntegrationScriptTemplate"
+        }
+    }
+
     private var jsScript: String? {
-        guard let templateURL = Bundle.main.url(forResource: "PixInsightIntegrationScriptTemplate", withExtension: "js"),
+        guard let templateURL = Bundle.main.url(forResource: jsScriptTemplateName, withExtension: "js"),
               let template = try? String(contentsOf: templateURL)
         else { return nil }
 

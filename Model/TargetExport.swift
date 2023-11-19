@@ -46,6 +46,9 @@ extension TargetExportRequest {
     func buildFileList(forDestination destinationURL: URL) throws -> [TargetExportRequestFile] {
         var exportableFiles = [TargetExportRequestFile]()
         for file in target.files?.allObjects as! [File] {
+            if file.isDeleted {
+                continue
+            }
             let exportable = TargetExportRequestFile(source: file,
                                                      type: file.type.lowercased() == "flat" ? .flat : .light,
                                                      status: .original,

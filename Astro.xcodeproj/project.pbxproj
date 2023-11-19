@@ -35,6 +35,8 @@
 		103B8A622A65F44500B526C7 /* CGImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103B8A612A65F44500B526C7 /* CGImage+Resize.swift */; };
 		103B8A642A65F4A600B526C7 /* CGImage+Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103B8A632A65F4A600B526C7 /* CGImage+Filter.swift */; };
 		103CF3222A8C3D5D0051F593 /* StarRectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103CF3212A8C3D5D0051F593 /* StarRectsView.swift */; };
+		103D6CAE2B098D34006F9806 /* TargetExportController+Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103D6CAD2B098D34006F9806 /* TargetExportController+Tests.swift */; };
+		103D6CBA2B099CCE006F9806 /* PixInsightLightsIntegrationScriptTemplate.js in Resources */ = {isa = PBXBuildFile; fileRef = 103D6CB92B099CCE006F9806 /* PixInsightLightsIntegrationScriptTemplate.js */; };
 		103E22562AA2BF7B00B35FA6 /* StretchFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103E22552AA2BF7B00B35FA6 /* StretchFilter.swift */; };
 		103E22582AA2BF8400B35FA6 /* Stretch.metal in Sources */ = {isa = PBXBuildFile; fileRef = 103E22572AA2BF8400B35FA6 /* Stretch.metal */; };
 		1062D76A2A981BD100466086 /* File+RegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1062D7692A981B2300466086 /* File+RegionTests.swift */; };
@@ -46,8 +48,7 @@
 		107145092B004D2C0049E580 /* PixInsightIntegrationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107145082B004D2C0049E580 /* PixInsightIntegrationOperation.swift */; };
 		1071450B2B004DED0049E580 /* ExternalProcessingOperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1071450A2B004DED0049E580 /* ExternalProcessingOperationQueue.swift */; };
 		1071450D2B004FEF0049E580 /* PixInsightScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1071450C2B004FEF0049E580 /* PixInsightScript.swift */; };
-		1071450F2B0054380049E580 /* PixInsightIntegrationScriptTemplate.js in Resources */ = {isa = PBXBuildFile; fileRef = 1071450E2B0054380049E580 /* PixInsightIntegrationScriptTemplate.js */; };
-		107145112B005BDD0049E580 /* PixInsightPreProcessingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107145102B005BDD0049E580 /* PixInsightPreProcessingOperation.swift */; };
+		1071450F2B0054380049E580 /* PixInsightFlatsIntegrationScriptTemplate.js in Resources */ = {isa = PBXBuildFile; fileRef = 1071450E2B0054380049E580 /* PixInsightFlatsIntegrationScriptTemplate.js */; };
 		107145132B005CCB0049E580 /* TargetBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107145122B005CCB0049E580 /* TargetBatch.swift */; };
 		107145172B006B370049E580 /* PixInsightCalibrationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107145162B006B370049E580 /* PixInsightCalibrationOperation.swift */; };
 		107145192B006B4A0049E580 /* PixInsightCalibrationScriptTemplate.js in Resources */ = {isa = PBXBuildFile; fileRef = 107145182B006B4A0049E580 /* PixInsightCalibrationScriptTemplate.js */; };
@@ -153,6 +154,8 @@
 		103B8A612A65F44500B526C7 /* CGImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+Resize.swift"; sourceTree = "<group>"; };
 		103B8A632A65F4A600B526C7 /* CGImage+Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+Filter.swift"; sourceTree = "<group>"; };
 		103CF3212A8C3D5D0051F593 /* StarRectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRectsView.swift; sourceTree = "<group>"; };
+		103D6CAD2B098D34006F9806 /* TargetExportController+Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TargetExportController+Tests.swift"; sourceTree = "<group>"; };
+		103D6CB92B099CCE006F9806 /* PixInsightLightsIntegrationScriptTemplate.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = PixInsightLightsIntegrationScriptTemplate.js; sourceTree = "<group>"; };
 		103E22552AA2BF7B00B35FA6 /* StretchFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StretchFilter.swift; sourceTree = "<group>"; };
 		103E22572AA2BF8400B35FA6 /* Stretch.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Stretch.metal; sourceTree = "<group>"; };
 		1062D7692A981B2300466086 /* File+RegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+RegionTests.swift"; sourceTree = "<group>"; };
@@ -165,8 +168,7 @@
 		107145082B004D2C0049E580 /* PixInsightIntegrationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightIntegrationOperation.swift; sourceTree = "<group>"; };
 		1071450A2B004DED0049E580 /* ExternalProcessingOperationQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalProcessingOperationQueue.swift; sourceTree = "<group>"; };
 		1071450C2B004FEF0049E580 /* PixInsightScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightScript.swift; sourceTree = "<group>"; };
-		1071450E2B0054380049E580 /* PixInsightIntegrationScriptTemplate.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = PixInsightIntegrationScriptTemplate.js; sourceTree = "<group>"; };
-		107145102B005BDD0049E580 /* PixInsightPreProcessingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightPreProcessingOperation.swift; sourceTree = "<group>"; };
+		1071450E2B0054380049E580 /* PixInsightFlatsIntegrationScriptTemplate.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = PixInsightFlatsIntegrationScriptTemplate.js; sourceTree = "<group>"; };
 		107145122B005CCB0049E580 /* TargetBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetBatch.swift; sourceTree = "<group>"; };
 		107145162B006B370049E580 /* PixInsightCalibrationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightCalibrationOperation.swift; sourceTree = "<group>"; };
 		107145182B006B4A0049E580 /* PixInsightCalibrationScriptTemplate.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = PixInsightCalibrationScriptTemplate.js; sourceTree = "<group>"; };
@@ -371,10 +373,10 @@
 			isa = PBXGroup;
 			children = (
 				107145082B004D2C0049E580 /* PixInsightIntegrationOperation.swift */,
-				1071450E2B0054380049E580 /* PixInsightIntegrationScriptTemplate.js */,
+				1071450E2B0054380049E580 /* PixInsightFlatsIntegrationScriptTemplate.js */,
+				103D6CB92B099CCE006F9806 /* PixInsightLightsIntegrationScriptTemplate.js */,
 				107145162B006B370049E580 /* PixInsightCalibrationOperation.swift */,
 				107145182B006B4A0049E580 /* PixInsightCalibrationScriptTemplate.js */,
-				107145102B005BDD0049E580 /* PixInsightPreProcessingOperation.swift */,
 				10148DF22B083EEC00C4C051 /* PixInsightRegistrationOperation.swift */,
 				10148DF42B08428A00C4C051 /* PixInsightRegistrationScriptTemplate.js */,
 			);
@@ -509,6 +511,7 @@
 				10C55BA72AAD6331000BBC5E /* TargetExportContentView.swift */,
 				1089AA612AB53B78007D4E6B /* TargetExportController.swift */,
 				1071451A2B01AC340049E580 /* TargetExportOperation.swift */,
+				103D6CAD2B098D34006F9806 /* TargetExportController+Tests.swift */,
 			);
 			path = TargetExport;
 			sourceTree = "<group>";
@@ -754,6 +757,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				103D6CBA2B099CCE006F9806 /* PixInsightLightsIntegrationScriptTemplate.js in Resources */,
 				100AC98B2A6BEEF0009E6CBA /* 20230629 in Resources */,
 				10D833332A6001AA00C63083 /* Ekos.fits in Resources */,
 				10D833342A6001AA00C63083 /* SGPro.fit in Resources */,
@@ -761,7 +765,7 @@
 				107145192B006B4A0049E580 /* PixInsightCalibrationScriptTemplate.js in Resources */,
 				10148DF52B08428A00C4C051 /* PixInsightRegistrationScriptTemplate.js in Resources */,
 				10C432292A50F81000E620DF /* Assets.xcassets in Resources */,
-				1071450F2B0054380049E580 /* PixInsightIntegrationScriptTemplate.js in Resources */,
+				1071450F2B0054380049E580 /* PixInsightFlatsIntegrationScriptTemplate.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -862,7 +866,6 @@
 				108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */,
 				108F82262A60DE0000061511 /* FileViewer.swift in Sources */,
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,
-				107145112B005BDD0049E580 /* PixInsightPreProcessingOperation.swift in Sources */,
 				10F6468C2A62B8EB00DE27FE /* FITSFileImporter.swift in Sources */,
 				10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */,
 			);
@@ -874,6 +877,7 @@
 			files = (
 				10AABE8E2A6A99B5000443B8 /* URL+FileTypeTests.swift in Sources */,
 				100AC9902A6BF388009E6CBA /* Date+FITSTests.swift in Sources */,
+				103D6CAE2B098D34006F9806 /* TargetExportController+Tests.swift in Sources */,
 				100AC9892A6B6F60009E6CBA /* FileImportControllerTests.swift in Sources */,
 				100AC98D2A6BEF57009E6CBA /* ImportTests.swift in Sources */,
 				109D2DC82A5AC5430024BBBD /* FITSHeaderKeywordTests.swift in Sources */,

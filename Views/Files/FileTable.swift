@@ -68,17 +68,17 @@ struct FileTable: View {
 //        let output = pixInsight("/Users/jwilson/Desktop/integrate-flats.scp")
 //        print("OUTPUT: ", output)
 
-        var selectedFiles: [File]!
-        if selectedFileIDs.count > 0 {
-            selectedFiles = files.filter { selectedFileIDs.contains($0.id) }
-        } else {
-            selectedFiles = files.map { $0 }
-        }
+//        var selectedFiles: [File]!
+//        if selectedFileIDs.count > 0 {
+//            selectedFiles = files.filter { selectedFileIDs.contains($0.id) }
+//        } else {
+//            selectedFiles = files.map { $0 }
+//        }
 //        let op = PixInsightIntegrationOperation(files: selectedFiles)
 //        ExternalProcessingOperationQueue.shared.addOperation(op)
 
-        let op = PixInsightPreProcessingOperation(files: selectedFiles)
-        ExternalProcessingOperationQueue.shared.addOperation(op)
+//        let op = PixInsightPreProcessingOperation(files: selectedFiles)
+//        ExternalProcessingOperationQueue.shared.addOperation(op)
     }
 
     var body: some View {

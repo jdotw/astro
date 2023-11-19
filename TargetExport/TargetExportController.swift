@@ -84,8 +84,13 @@ class TargetExportController: ObservableObject {
         guard let reference = request.reference ?? calibratedFiles.first?.source else {
             throw TargetExportRequestError.noReferenceFile
         }
-        try register(files: calibratedFiles, usingReference: reference, at: request.url)
+        let registeredFilesByFilter = try register(files: calibratedFiles,
+                                                   usingReference: reference,
+                                                   at: request.url)
+        try integrate(filesByFilter: registeredFilesByFilter, at: request.url)
     }
+
+    // MARK: Export
 
     private func exportFiles(inBatch batch: TargetExportFileBatch, to url: URL) throws {
         try batch.uniqueFilters.forEach { filter in
@@ -121,7 +126,7 @@ class TargetExportController: ObservableObject {
 
             //  - Integrated calibration frames
             guard let flatsFiles = batch.flatFilesByFilter[filter] else { return }
-            let integrationOp = PixInsightIntegrationOperation(files: flatsFiles)
+            let integrationOp = PixInsightIntegrationOperation(files: flatsFiles, mode: .flats)
             print("INTEGRATING FLATS for \(filter.name) in batch \(String(describing: batch.path)) using \(flatsFiles.count) flat files")
             integrationOp.main()
             guard let integrationOutputURL = integrationOp.outputURL else { return }
@@ -171,17 +176,21 @@ class TargetExportController: ObservableObject {
         }
     }
 
-    func register(files: [TargetExportRequestFile], usingReference reference: File, at url: URL) throws {
+    // MARK: Registration
+
+    func register(files: [TargetExportRequestFile], usingReference reference: File, at url: URL) throws -> [Filter: [TargetExportRequestFile]] {
         let fileURLs = files.compactMap { $0.url }
         guard let calibratedReference = files.first(where: { $0.source?.id == reference.id }),
               let calibratedReferenceURL = calibratedReference.url
-        else { return }
+        else { return [:] }
         let op = PixInsightRegistrationOperation(fileURLs: fileURLs,
                                                  referenceFileURL: calibratedReferenceURL)
 
         op.main()
         let registeredDestination = url.appending(path: "Registered")
         try FileManager.default.createDirectory(at: registeredDestination, withIntermediateDirectories: false)
+
+        var registeredFilesByFilter = [Filter: [TargetExportRequestFile]]()
 
         try files.forEach { file in
             guard let sourceFile = file.source,
@@ -194,7 +203,67 @@ class TargetExportController: ObservableObject {
                 try FileManager.default.createDirectory(at: filterDestinationURL, withIntermediateDirectories: false)
             }
             let destinationURL = filterDestinationURL.appending(path: fileURL.lastPathComponent)
-            try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
+
+            if FileManager.default.fileExists(atPath: sourceURL.path(percentEncoded: false)) {
+                try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
+
+                // Create record of file
+                let registeredFile = TargetExportRequestFile(source: sourceFile,
+                                                             type: .light,
+                                                             status: .registered,
+                                                             url: destinationURL)
+                DispatchQueue.main.sync {
+                    self.files.append(registeredFile)
+                    registeredFile.progress = .exported
+                }
+                registeredFilesByFilter[sourceFile.filter, default: []].append(registeredFile)
+            } else {
+                // File failed to be registered
+                // It was in the original data set, but was not
+                // found in the output of the registration op
+            }
+        }
+
+        return registeredFilesByFilter
+    }
+
+    // MARK: - Integration
+
+    func fileNameTimestamp(forDate date: Date?) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        if let date {
+            return dateFormatter.string(from: date)
+        } else {
+            return "unknown"
+        }
+    }
+
+    func integratedFileName(forFiles files: [TargetExportRequestFile], filter: Filter) -> String {
+        let sortedFiles = files.sorted { a, b in
+            a.source?.timestamp ?? Date() < b.source?.timestamp ?? Date()
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        dateFormatter.timeStyle = .none
+        let earliestDateString = fileNameTimestamp(forDate: sortedFiles.first?.source?.timestamp)
+        let latestDateString = fileNameTimestamp(forDate: sortedFiles.last?.source?.timestamp)
+        let fileName = "\(filter.name.localizedCapitalized)-Integrated-\(files.count)files-\(earliestDateString)-\(latestDateString)"
+        return fileName
+    }
+
+    func integrate(filesByFilter: [Filter: [TargetExportRequestFile]], at url: URL) throws {
+        let integratedURL = url.appending(path: "Integrated")
+        try FileManager.default.createDirectory(at: integratedURL, withIntermediateDirectories: false)
+        try filesByFilter.forEach { (filter: Filter, files: [TargetExportRequestFile]) in
+            let fileURLs = files.compactMap { $0.url }
+            let op = PixInsightIntegrationOperation(fileURLs: fileURLs, mode: .lights)
+            op.main()
+            let fileName = integratedFileName(forFiles: files, filter: filter)
+            if let outputURL = op.outputURL {
+                try FileManager.default.moveItem(at: outputURL,
+                                                 to: integratedURL.appending(path: "\(fileName).xisf"))
+            }
         }
     }
 }
@@ -212,7 +281,7 @@ struct TargetExportFileBatch {
             file.source?.calibrationSession == calibrationSession
         }
         self.files = files
-        self.uniqueFilters = Set(files.compactMap { $0.source?.filter })
+        uniqueFilters = Set(files.compactMap { $0.source?.filter })
 
         var lightFilesByFilter = [Filter: [TargetExportRequestFile]]()
         var flatFilesByFilter = [Filter: [File]]()
