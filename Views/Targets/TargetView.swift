@@ -23,6 +23,9 @@ struct TargetView: View {
             let exportRequest = TargetExportRequest(context: viewContext)
             exportRequest.timestamp = Date()
             exportRequest.url = panel.url!
+            if FileManager.default.fileExists(atPath: exportRequest.url.path(percentEncoded: false)) {
+                try! FileManager.default.removeItem(at: exportRequest.url)
+            }
             try! FileManager.default.createDirectory(at: exportRequest.url, withIntermediateDirectories: false)
             exportRequest.target = target
             exportRequest.bookmark = try! exportRequest.url.bookmarkData(options: .withSecurityScope)
