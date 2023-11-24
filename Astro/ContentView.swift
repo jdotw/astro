@@ -123,8 +123,8 @@ struct ContentView: View {
 extension ContentView {
     var selectedSession: Session? {
         return selectedSessionID.flatMap { id in
-            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
-            return try? viewContext.existingObject(with: objectID!) as? Session
+            guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
+            return try? viewContext.existingObject(with: objectID) as? Session
         }
     }
 
