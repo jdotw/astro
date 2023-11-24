@@ -91,12 +91,15 @@ struct FITSFile {
     // MARK: Hash
     
     var fileHash: String? {
-        let file = try! FileHandle(forReadingFrom: self.url)
-        do {
-            let digest = try SHA512.hash(data: file.readToEnd()!)
-            return digest.map { String(format: "%02x", $0) }.joined()
-        } catch {
-            return nil
+        autoreleasepool {
+            let file = try! FileHandle(forReadingFrom: self.url)
+            do {
+                let digest = try SHA512.hash(data: file.readToEnd()!)
+                return digest.map { String(format: "%02x", $0) }.joined()
+                
+            } catch {
+                return nil
+            }
         }
     }
     
