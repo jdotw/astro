@@ -45,8 +45,7 @@ struct PersistenceController {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
-            let docsURLs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-            let docsURL = docsURLs.first!.appendingPathComponent("Astro")
+            let docsURL = URL.documentsDirectory!
             if !FileManager.default.fileExists(atPath: docsURL.path(percentEncoded: false)) {
                 try! FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
             }
