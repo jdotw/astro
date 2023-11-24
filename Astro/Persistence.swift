@@ -44,6 +44,13 @@ struct PersistenceController {
         container = NSPersistentContainer(name: "Astro")
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+            let docsURLs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+            let docsURL = docsURLs.first!.appendingPathComponent("Astro")
+            if !FileManager.default.fileExists(atPath: docsURL.path(percentEncoded: false)) {
+                try! FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
+            }
+            container.persistentStoreDescriptions.first!.url = docsURL.appending(path: "Library.sqlite")
         }
         container.loadPersistentStores(completionHandler: { storeDescription, error in
             print("store: \(storeDescription.url!)")

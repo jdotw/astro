@@ -93,7 +93,6 @@ struct ContentView: View {
                 navStackPath = []
             }
         }
-        
     }
 
     private func importFiles() {
@@ -131,29 +130,29 @@ extension ContentView {
 
     var selectedTarget: Target? {
         return selectedTargetID.flatMap { id in
-            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
-            return try? viewContext.existingObject(with: objectID!) as? Target
+            guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
+            return try? viewContext.existingObject(with: objectID) as? Target
         }
     }
 
     var selectedFile: File? {
         return selectedFileID.flatMap { id in
-            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
-            return try? viewContext.existingObject(with: objectID!) as? File
+            guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
+            return try? viewContext.existingObject(with: objectID) as? File
         }
     }
 
     var selectedCalibrationSession: Session? {
         return selectedCalibrationSessionID.flatMap { id in
-            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
-            return try? viewContext.existingObject(with: objectID!) as? Session
+            guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
+            return try? viewContext.existingObject(with: objectID) as? Session
         }
     }
 
     var selectedCalibrationFilter: Filter? {
         return selectedCalibrationFilterID.flatMap { id in
-            let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id)
-            return try? viewContext.existingObject(with: objectID!) as? Filter
+            guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
+            return try? viewContext.existingObject(with: objectID) as? Filter
         }
     }
 }

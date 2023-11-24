@@ -87,9 +87,16 @@ class FITSFileImporter: FileImporter {
         // Create UUID for this file]
         let fileID = UUID()
 
+        // Set up the documents directory
+        let docsURLs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        guard let docsURL = docsURLs.first?.appending(path: "Astro") else {
+            throw FITSFileImportError.noDocumentsDirectory
+        }
+        if !FileManager.default.fileExists(atPath: docsURL.path(percentEncoded: false)) {
+            try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
+        }
+
         // Save a FP32 representation (raw data)
-        let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] as URL
-        try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
         let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
         try data.write(to: fp32URL, options: [.atomic])
 
@@ -173,6 +180,7 @@ enum FITSFileImportError: Error {
     case noTarget
     case dataReadFailed
     case noDimensions
+    case noDocumentsDirectory
 }
 
 extension FITSFileImportError: LocalizedError {
