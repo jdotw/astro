@@ -26,7 +26,7 @@ class FileImporter: ObservableObject {
         self.context = context
     }
 
-    func importFile(completion: @escaping (File?, Error?) -> Void) {
+    func importFile() throws -> File? {
         fatalError("importFile() must be overridden")
     }
 }

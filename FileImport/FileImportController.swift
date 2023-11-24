@@ -14,6 +14,7 @@ class FileImportController: ObservableObject {
     @Published var importing = false
     @Published var error: Error?
     @Published var files = [ImportRequestFile]()
+    @Environment(\.managedObjectContext) private var viewContext
 
     init() {
         print("FILEIMPORTCONTROLLER INIT")
@@ -24,31 +25,29 @@ class FileImportController: ObservableObject {
         total = 0
         importing = true
         error = nil
-        request.performBackgroundTask { result in
-            switch result {
-            case .success(let importableFiles):
-                DispatchQueue.main.sync {
-                    print("Importable: ", importableFiles)
-                    self.total = importableFiles.count
-                    self.files = importableFiles
+        PersistenceController.shared.container.performBackgroundTask { context in
+            request.withResolvedFileList { result in
+                switch result {
+                case .success(let importableFiles):
+                    DispatchQueue.main.sync {
+                        print("Importable: ", importableFiles)
+                        self.total = importableFiles.count
+                        self.files = importableFiles
+                    }
+                    self.importFiles(importableFiles, context: context)
+                case .failure(let error):
+                    print("Failed to import: ", error)
+                    DispatchQueue.main.sync {
+                        self.error = error
+                    }
                 }
-                self.importFiles(importableFiles)
-            case .failure(let error):
-                print("Failed to import: ", error)
                 DispatchQueue.main.sync {
-                    self.error = error
+                    self.importing = false
+                    completion()
                 }
-            }
-            DispatchQueue.main.sync {
-                self.importing = false
-                completion()
             }
         }
     }
-
-    let waitSema = DispatchSemaphore(value: 0)
-    let rateSema = DispatchSemaphore(value: ProcessInfo.processInfo.processorCount)
-    let group = DispatchGroup()
 
     private func syncPublish(status: ImportRequestFileStatus, ofImportableFile importableFile: ImportRequestFile, error: Error?) {
         DispatchQueue.main.sync {
@@ -58,49 +57,42 @@ class FileImportController: ObservableObject {
             importableFile.error = error
             importableFile.status = status
         }
-        if status.isFinal {
-            rateSema.signal()
-            group.leave()
-        }
     }
 
-    private func importFiles(_ files: [ImportRequestFile]) {
+    private func importFiles(_ files: [ImportRequestFile], context: NSManagedObjectContext) {
         print("IMPORTING FROM:\n\(files)")
-        for importableFile in files {
-            rateSema.wait()
-            group.enter()
-            PersistenceController.shared.container.performBackgroundTask { context in
+        files.forEach { importableFile in
+            autoreleasepool {
                 guard let importer = FileImporter.importer(forURL: importableFile.url, context: context) else {
-                    self.syncPublish(status: .notImported,
-                                     ofImportableFile: importableFile,
-                                     error: FileImportControllerError.noImporter(importableFile.url))
+                    syncPublish(status: .notImported,
+                                ofImportableFile: importableFile,
+                                error: FileImportControllerError.noImporter(importableFile.url))
                     return
                 }
-                self.syncPublish(status: .importing,
-                                 ofImportableFile: importableFile,
-                                 error: nil)
-                importer.importFile { file, error in
-                    guard error == nil, let file = file else {
-                        print("Failed to import \(importableFile.url): \(error!)")
-                        self.syncPublish(status: .failed,
-                                         ofImportableFile: importableFile,
-                                         error: error)
+                syncPublish(status: .importing,
+                            ofImportableFile: importableFile,
+                            error: nil)
+                do {
+                    guard let file = try importer.importFile() else {
                         return
                     }
-                    let processor = FileProcessOperation(fileObjectID: file.objectID, context: context)
+                    importableFile.importedAt = Date()
+                    let processor = FileProcessOperation(fileObjectID: file.objectID)
                     processor.completionBlock = {
                         self.syncPublish(status: .imported,
                                          ofImportableFile: importableFile,
                                          error: nil)
                     }
                     FileProcessController.shared.queue.addOperation(processor)
+                } catch {
+                    print("Failed to import \(importableFile.url): \(error)")
+                    self.syncPublish(status: .failed,
+                                     ofImportableFile: importableFile,
+                                     error: error)
+                    return
                 }
             }
         }
-        group.notify(queue: .global()) {
-            self.waitSema.signal()
-        }
-        waitSema.wait()
     }
 }
 

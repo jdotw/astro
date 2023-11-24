@@ -21,12 +21,18 @@ class FITSFileImporter: FileImporter {
         super.init(url: url, context: context)
     }
 
-    override func importFile(completion: @escaping (File?, Error?) -> Void) {
+    override func importFile() throws -> File? {
         do {
             let file = try importFileSync()
-            completion(file, nil)
+            return file
         } catch {
-            completion(nil, error)
+            switch error {
+            case FITSFileImportError.alreadyExists:
+                throw error
+            default:
+                print("ERROR: ", error)
+                throw error
+            }
         }
     }
 
@@ -88,8 +94,7 @@ class FITSFileImporter: FileImporter {
         let fileID = UUID()
 
         // Set up the documents directory
-        let docsURLs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        guard let docsURL = docsURLs.first?.appending(path: "Astro") else {
+        guard let docsURL = URL.documentsDirectory else {
             throw FITSFileImportError.noDocumentsDirectory
         }
         if !FileManager.default.fileExists(atPath: docsURL.path(percentEncoded: false)) {

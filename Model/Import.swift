@@ -82,17 +82,15 @@ extension ImportRequest {
         return files
     }
 
-    func performBackgroundTask(_ completion: @escaping (Result<[ImportRequestFile], Error>) -> Void) {
-        DispatchQueue.global().async {
-            do {
-                let resolvedURLs = try self.resolvedURLs
-                resolvedURLs.forEach { _ = $0.startAccessingSecurityScopedResource() }
-                let files = try self.buildFileList(from: resolvedURLs)
-                completion(.success(files))
-                resolvedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
-            } catch {
-                completion(.failure(error))
-            }
+    func withResolvedFileList(_ completion: @escaping (Result<[ImportRequestFile], Error>) -> Void) {
+        do {
+            let resolvedURLs = try self.resolvedURLs
+            resolvedURLs.forEach { _ = $0.startAccessingSecurityScopedResource() }
+            let files = try buildFileList(from: resolvedURLs)
+            completion(.success(files))
+            resolvedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
+        } catch {
+            completion(.failure(error))
         }
     }
 }
@@ -131,10 +129,10 @@ extension ImportURL: Identifiable {
 }
 
 enum ImportRequestFileStatus: Int {
-    case failed = 0
-    case importing = 1
-    case pending = 2
-    case imported = 3
+    case importing = 0
+    case imported = 1
+    case failed = 2
+    case pending = 3
     case notImported = 4
 }
 
@@ -159,12 +157,14 @@ class ImportRequestFile {
     let name: String
     var error: Error?
     var status: ImportRequestFileStatus
+    var importedAt: Date?
 
     init(url: URL) {
         self.url = url
         self.name = url.lastPathComponent
         self.status = .pending
         self.error = nil
+        self.importedAt = nil
     }
 }
 
