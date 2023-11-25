@@ -47,4 +47,8 @@ extension Target {
     var unreviewedFilesCount: Int {
         files?.filtered(using: NSPredicate(format: "reviewed = false")).count ?? 0
     }
+
+    static var unknownTargetName: String {
+        return "Unknown"
+    }
 }

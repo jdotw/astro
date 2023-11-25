@@ -13,6 +13,7 @@ struct TargetList: View {
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Target.name, ascending: true)],
+        predicate: NSPredicate(format: "name !=[cd] %@", Target.unknownTargetName),
         animation: .default)
     private var targets: FetchedResults<Target>
 

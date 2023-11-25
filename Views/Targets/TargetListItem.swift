@@ -24,7 +24,7 @@ struct TargetListItem: View {
 
     var body: some View {
         Label(target.name, systemImage: "scope")
-            .badge(target.files?.count ?? 0)
+            .badge(files.count)
             .badgeProminence(.standard)
             .badge(unreviewedFiles.count)
             .badgeProminence(unreviewedFiles.count > 0 ? .increased : .decreased)
