@@ -94,11 +94,14 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
             self.error = error
         }
 
-        let pi = PixInsightProcessor()
-        let output = pi.runScript(atURL: scriptURL)
-
-        outputURL = outputImageURL
-
-        print("OUTPUT: ", output)
+        do {
+            try PixInsightController.shared.withInstance { pi in
+                let output = pi.runScript(atURL: scriptURL)
+                outputURL = outputImageURL
+                print("OUTPUT: ", output)
+            }
+        } catch {
+            self.error = error
+        }
     }
 }

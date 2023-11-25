@@ -79,8 +79,13 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
         }
         print("CAL OUTPUT: ", outputURL)
 
-        let pi = PixInsightProcessor()
-        let output = pi.runScript(atURL: scriptURL)
-        print("OUTPUT: ", output)
+        do {
+            try PixInsightController.shared.withInstance { pi in
+                let output = pi.runScript(atURL: scriptURL)
+                print("OUTPUT: ", output)
+            }
+        } catch {
+            self.error = error
+        }
     }
 }

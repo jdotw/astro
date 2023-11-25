@@ -40,6 +40,7 @@
 		103E22562AA2BF7B00B35FA6 /* StretchFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103E22552AA2BF7B00B35FA6 /* StretchFilter.swift */; };
 		103E22582AA2BF8400B35FA6 /* Stretch.metal in Sources */ = {isa = PBXBuildFile; fileRef = 103E22572AA2BF8400B35FA6 /* Stretch.metal */; };
 		105B76E62B11526F00B3D069 /* URL+Documents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76E52B11526F00B3D069 /* URL+Documents.swift */; };
+		105B76EA2B11B70300B3D069 /* PixInsightInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76E92B11B70300B3D069 /* PixInsightInstance.swift */; };
 		1062D76A2A981BD100466086 /* File+RegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1062D7692A981B2300466086 /* File+RegionTests.swift */; };
 		106BD33F2A6CCF9A00DE947D /* FIlteredImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */; };
 		106D0FA72A7DE3C0003015EA /* FileListModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */; };
@@ -160,6 +161,7 @@
 		103E22552AA2BF7B00B35FA6 /* StretchFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StretchFilter.swift; sourceTree = "<group>"; };
 		103E22572AA2BF8400B35FA6 /* Stretch.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Stretch.metal; sourceTree = "<group>"; };
 		105B76E52B11526F00B3D069 /* URL+Documents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Documents.swift"; sourceTree = "<group>"; };
+		105B76E92B11B70300B3D069 /* PixInsightInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightInstance.swift; sourceTree = "<group>"; };
 		1062D7692A981B2300466086 /* File+RegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+RegionTests.swift"; sourceTree = "<group>"; };
 		106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlteredImage.swift; sourceTree = "<group>"; };
 		106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListModePicker.swift; sourceTree = "<group>"; };
@@ -367,6 +369,7 @@
 				107145042B004CE70049E580 /* Operations */,
 				107145022B004CB90049E580 /* PixInsightProcessor.swift */,
 				1071450C2B004FEF0049E580 /* PixInsightScript.swift */,
+				105B76E92B11B70300B3D069 /* PixInsightInstance.swift */,
 			);
 			path = PixInsight;
 			sourceTree = "<group>";
@@ -839,6 +842,7 @@
 				100519452AA4209400C25AF6 /* ImageInspector.swift in Sources */,
 				10D8331D2A5FA34000C63083 /* Session.swift in Sources */,
 				10903D5A2ABFCD4F00065842 /* Filter.swift in Sources */,
+				105B76EA2B11B70300B3D069 /* PixInsightInstance.swift in Sources */,
 				1005194F2AA42C6F00C25AF6 /* File+Rotation.swift in Sources */,
 				103E22582AA2BF8400B35FA6 /* Stretch.metal in Sources */,
 				10D833132A5F758000C63083 /* CategoryList.swift in Sources */,
