@@ -19,7 +19,7 @@ struct PersistenceController {
             newFile.timestamp = Date()
             newFile.name = "file-\(Int.random(in: 0..<100)).fits"
             newFile.contentHash = "md5"
-            newFile.type = "light"
+            newFile.type = .light
             newFile.bookmark = Data()
             newFile.url = URL(fileURLWithPath: "/Users/jwilson/Downloads/IMG_0001.fits")
         }

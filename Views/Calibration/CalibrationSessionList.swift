@@ -109,12 +109,12 @@ struct CalibrationSessionList: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: true)],
-        predicate: NSPredicate(format: "ANY files.type =[cd] %@", "Flat"),
+        predicate: NSPredicate(format: "ANY files.typeRawValue =[cd] %@", FileType.flat.rawValue),
         animation: .default)
     private var calibrationSessions: FetchedResults<Session>
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: true)],
-        predicate: NSPredicate(format: "ANY files.type =[cd] %@", "Light"),
+        predicate: NSPredicate(format: "ANY files.typeRawValue =[cd] %@", FileType.light.rawValue),
         animation: .default)
     private var lightSessions: FetchedResults<Session>
 
@@ -246,11 +246,11 @@ struct CalibrationSessionList: View {
                 let filtersArray = files?.compactMap { file in
                     switch calibrationSession.type {
                     case .light:
-                        if file.type.lowercased() == "light" {
+                        if file.type == .light {
                             return file.filter // Only show the filter if there's light frames for this light session
                         }
                     case .calibration:
-                        if file.type.lowercased() == "flat" {
+                        if file.type == .flat {
                             return file.filter // Only show the filter if it's used for flat frames in this calibration session
                         }
                     }
@@ -352,7 +352,7 @@ extension Session {
     var uniqueCalibrationFilterNames: [String] {
         guard let files = files?.allObjects as? [File] else { return [] }
         let flatFiles = files.filter {
-            $0.type.caseInsensitiveCompare("Flat") == .orderedSame
+            $0.type == .flat
         }
         let filters = flatFiles.compactMap { $0.filter.name }
         return Array(Set(filters)).sorted()

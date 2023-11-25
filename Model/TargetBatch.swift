@@ -37,10 +37,10 @@ struct TargetFileBatch {
         let calibrationFiles = calibrationSession.files?.allObjects as? [File]
         for filter in uniqueFilters {
             lightFilesByFilter[filter] = files.filter { file in
-                file.filter == filter && file.type.lowercased() == "light"
+                file.filter == filter && file.type == .light
             }
             flatFilesByFilter[filter] = calibrationFiles?.filter { file in
-                file.filter == filter && file.type.lowercased() == "flat"
+                file.filter == filter && file.type == .flat
             }
         }
         self.lightFilesByFilter = lightFilesByFilter

@@ -7,11 +7,6 @@
 
 import Foundation
 
-enum FileType {
-    case fits
-    case unknown
-}
-
 extension URL {
     var isFITS: Bool { pathExtension == "fit" || pathExtension == "fits" }
 }

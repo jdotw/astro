@@ -50,8 +50,8 @@ struct CalibrationSessionFilterLightView: View {
         self.session = session
         self.filter = filter
 
-        let earlierPredicate = NSPredicate(format: "dateString <= %@ AND SUBQUERY(files, $file, $file.type =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, "Flat", filter)
-        let laterPredicate = NSPredicate(format: "dateString > %@ AND SUBQUERY(files, $file, $file.type =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, "Flat", filter)
+        let earlierPredicate = NSPredicate(format: "dateString <= %@ AND SUBQUERY(files, $file, $file.typeRawValue =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, FileType.flat.rawValue, filter)
+        let laterPredicate = NSPredicate(format: "dateString > %@ AND SUBQUERY(files, $file, $file.typeRawValue =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, FileType.flat.rawValue, filter)
         _earlierCalibrationSessions = FetchRequest(
             entity: Session.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
@@ -201,7 +201,7 @@ struct CalibrationSessionFilterLightView: View {
     func candidateFlats(inSession candidateSession: Session) -> [File] {
         guard let files = candidateSession.files?.allObjects as? [File] else { return [] }
         return files.compactMap { file in
-            if file.filter == filter && file.type.lowercased() == "flat" {
+            if file.filter == filter && file.type == .flat {
                 return file
             } else {
                 return nil
@@ -212,7 +212,7 @@ struct CalibrationSessionFilterLightView: View {
     func candidateFlat(inSession candidateSession: Session) -> File? {
         guard let files = candidateSession.files?.allObjects as? [File] else { return nil }
         return files.first { file in
-            file.filter == filter && file.type.lowercased() == "flat"
+            file.filter == filter && file.type == .flat
         }
     }
 

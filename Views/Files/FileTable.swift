@@ -94,8 +94,8 @@ struct FileTable: View {
                     .width(min: 100)
                     .defaultVisibility(columns.contains(.target) ? .visible : .hidden)
 
-                TableColumn("Type", value: \.type) { file in
-                    Text(file.type.localizedCapitalized)
+                TableColumn("Type", value: \.typeRawValue) { file in
+                    Text(file.typeRawValue)
                 }
                 .width(min: 50)
                 .defaultVisibility(columns.contains(.type) ? .visible : .hidden)

@@ -111,7 +111,7 @@ class TargetExportController: ObservableObject {
             let flatsURL = filterURL.appending(path: "Flat")
             try FileManager.default.createDirectory(at: flatsURL, withIntermediateDirectories: false)
             let flatFiles = (batch.calibrationSession.files?.allObjects as? [File])?.filter {
-                $0.filter == filter && $0.type.lowercased() == "flat"
+                $0.filter == filter && $0.type == .flat
             }
             try flatFiles?.forEach { flat in
                 try FileManager.default.copyItem(at: flat.fitsURL, to: flatsURL.appending(path: flat.name))
@@ -288,10 +288,10 @@ struct TargetExportFileBatch {
         let calibrationFiles = calibrationSession.files?.allObjects as? [File]
         for filter in uniqueFilters {
             lightFilesByFilter[filter] = files.filter { file in
-                file.source?.filter == filter && file.source?.type.lowercased() == "light"
+                file.source?.filter == filter && file.source?.type == .light
             }
             flatFilesByFilter[filter] = calibrationFiles?.filter { file in
-                file.filter == filter && file.type.lowercased() == "flat"
+                file.filter == filter && file.type == .flat
             }
         }
         self.lightFilesByFilter = lightFilesByFilter

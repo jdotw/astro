@@ -70,7 +70,8 @@ class FITSFileImporter: FileImporter {
             throw FITSFileImportError.noObservationDate
         }
 
-        let type = headers["FRAME"]?.value?.lowercased() ?? "light"
+        let typeString = headers["FRAME"]?.value?.lowercased() ?? "light"
+
         guard let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) else {
             throw FITSFileImportError.noBookmark
         }
@@ -115,7 +116,7 @@ class FITSFileImporter: FileImporter {
         file.timestamp = observationDate
         file.contentHash = fileHash
         file.name = url.lastPathComponent
-        file.type = type
+        file.type = file.type(forHeaderValue: typeString)
         file.url = url
         file.bookmark = bookmarkData
         file.fitsURL = fitsURL

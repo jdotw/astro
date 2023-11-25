@@ -16,6 +16,15 @@ import Foundation
 @objc(File)
 public class File: NSManagedObject {}
 
+public enum FileType: String, CaseIterable, Identifiable {
+    public var id: Self { self }
+    case unknown
+    case light
+    case flat
+    case dark
+    case bias
+}
+
 public extension File {
     @nonobjc class func fetchRequest() -> NSFetchRequest<File> {
         return NSFetchRequest<File>(entityName: "File")
@@ -26,7 +35,7 @@ public extension File {
     @NSManaged var contentHash: String
     @NSManaged var name: String
     @NSManaged var timestamp: Date
-    @NSManaged var type: String
+    @NSManaged var typeRawValue: String
     @NSManaged var url: URL // Original Source URL
     @NSManaged var fitsURL: URL // The FITS file as-imported
     @NSManaged var rawDataURL: URL // The 32bit fp values
@@ -43,6 +52,30 @@ public extension File {
     @NSManaged var metadata: NSSet?
 
     @NSManaged var calibrationSession: Session?
+
+    var type: FileType {
+        get {
+            FileType(rawValue: self.typeRawValue) ?? .unknown
+        }
+        set {
+            self.typeRawValue = newValue.rawValue
+        }
+    }
+
+    func type(forHeaderValue value: String) -> FileType {
+        switch value {
+        case "light":
+            return .light
+        case "dark":
+            return .dark
+        case "bias":
+            return .bias
+        case "flat":
+            return .flat
+        default:
+            return .unknown
+        }
+    }
 }
 
 extension File: Identifiable {

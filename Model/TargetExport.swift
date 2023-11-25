@@ -50,7 +50,7 @@ extension TargetExportRequest {
                 continue
             }
             let exportable = TargetExportRequestFile(source: file,
-                                                     type: file.type.lowercased() == "flat" ? .flat : .light,
+                                                     type: file.type,
                                                      status: .original,
                                                      url: nil)
             exportableFiles.append(exportable)
@@ -103,14 +103,6 @@ enum TargetExportRequestFileProgress: Int {
     case exported = 3
 }
 
-enum TargetExportRequestFileType: Int {
-    case unknown
-    case light
-    case flat
-    case dark
-    case bias
-}
-
 enum TargetExportRequestFileStatus: Int {
     case unknown
     case original
@@ -132,10 +124,10 @@ class TargetExportRequestFile: Identifiable {
     let url: URL?
     var progress: TargetExportRequestFileProgress
     var status: TargetExportRequestFileStatus
-    var type: TargetExportRequestFileType
+    var type: FileType
 
     init(source: File?,
-         type: TargetExportRequestFileType,
+         type: FileType,
          status: TargetExportRequestFileStatus,
          url: URL?)
     {
