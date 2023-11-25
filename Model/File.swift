@@ -44,6 +44,7 @@ public extension File {
     @NSManaged var target: Target?
     @NSManaged var filter: Filter
     @NSManaged var rejected: Bool
+    @NSManaged var reviewed: Bool
     @NSManaged var width: Int32
     @NSManaged var height: Int32
 

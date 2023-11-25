@@ -110,6 +110,8 @@ struct FileApproval: View {
                             // selection of the first file if selectedFileID is nil
                             if let selectedFile {
                                 proxy.scrollTo(selectedFile.id, anchor: .center)
+                                selectedFile.reviewed = true
+                                try! viewContext.save()
                             }
                         }
                     }

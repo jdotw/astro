@@ -42,3 +42,9 @@ extension Target: Identifiable {
         objectID.uriRepresentation()
     }
 }
+
+extension Target {
+    var unreviewedFilesCount: Int {
+        files?.filtered(using: NSPredicate(format: "reviewed = false")).count ?? 0
+    }
+}

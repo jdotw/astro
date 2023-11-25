@@ -10,6 +10,7 @@
         <attribute name="previewURL" optional="YES" attributeType="URI"/>
         <attribute name="rawDataURL" attributeType="URI"/>
         <attribute name="rejected" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="reviewed" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="typeRawValue" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
