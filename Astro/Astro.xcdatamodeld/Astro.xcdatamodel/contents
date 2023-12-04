@@ -11,19 +11,29 @@
         <attribute name="rawDataURL" attributeType="URI"/>
         <attribute name="rejected" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="reviewed" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="statusRawValue" attributeType="String" defaultValueString="original"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="typeRawValue" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
         <attribute name="uuid" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="width" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="calibrationSession" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="calibratesFiles" inverseEntity="Session"/>
+        <relationship name="derivedFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileDerivation" inverseName="output" inverseEntity="FileDerivation"/>
+        <relationship name="derivitives" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileDerivation" inverseName="input" inverseEntity="FileDerivation"/>
         <relationship name="filter" maxCount="1" deletionRule="Nullify" destinationEntity="Filter" inverseName="files" inverseEntity="Filter"/>
         <relationship name="import" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="files" inverseEntity="ImportRequest"/>
         <relationship name="metadata" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileMetadata" inverseName="file" inverseEntity="FileMetadata"/>
+        <relationship name="referenceFor" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TargetExportRequest" inverseName="reference" inverseEntity="TargetExportRequest"/>
         <relationship name="regions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Region" inverseName="file" inverseEntity="Region"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="files" inverseEntity="Session"/>
         <relationship name="statistics" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="FileStatistics" inverseName="file" inverseEntity="FileStatistics"/>
         <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="files" inverseEntity="Target"/>
+    </entity>
+    <entity name="FileDerivation" representedClassName="FileDerivation" syncable="YES">
+        <attribute name="processRawValue" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="input" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="derivitives" inverseEntity="File"/>
+        <relationship name="output" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="derivedFrom" inverseEntity="File"/>
     </entity>
     <entity name="FileMetadata" representedClassName="FileMetadata" syncable="YES">
         <attribute name="key" optional="YES" attributeType="String"/>
@@ -77,7 +87,7 @@
         <attribute name="error" optional="YES" attributeType="String"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" attributeType="URI"/>
-        <relationship name="reference" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File"/>
+        <relationship name="reference" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="referenceFor" inverseEntity="File"/>
         <relationship name="target" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="exportRequests" inverseEntity="Target"/>
     </entity>
 </model>

@@ -15,13 +15,22 @@ enum FITSHeaderKeywordError: Error {
 
 class FITSHeaderKeyword: CustomDebugStringConvertible {
     var name: String
-    var value: String?
+    var _value: String?
     var comment: String?
 
     init(name: String, value: String? = nil, comment: String? = nil) {
         self.name = name
-        self.value = value
+        self._value = value
         self.comment = comment
+    }
+
+    var value: String? {
+        guard var value = _value else {
+            return nil
+        }
+        if value.hasPrefix("'") { value.removeFirst() }
+        if value.hasSuffix("'") { value.removeLast() }
+        return value
     }
 
     init?(record: Data) {
@@ -67,7 +76,7 @@ class FITSHeaderKeyword: CustomDebugStringConvertible {
                 default: break
                 }
             }
-            self.value = String(bytes: valueAndComment[valueStartIndex..<valueEndIndex], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
+            self._value = String(bytes: valueAndComment[valueStartIndex..<valueEndIndex], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
             self.comment = String(bytes: valueAndComment[commentStartIndex..<valueAndComment.endIndex], encoding: .ascii)!.trimmingCharacters(in: .whitespaces)
         } else {
             // No value indicator, just parse comment

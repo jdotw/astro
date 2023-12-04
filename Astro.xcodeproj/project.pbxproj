@@ -28,6 +28,10 @@
 		101A38302AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A382F2AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift */; };
 		101A38322AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */; };
 		101A38342AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101A38332AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift */; };
+		101EFF372B1AB882003FD57D /* XISFFileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101EFF362B1AB881003FD57D /* XISFFileImporter.swift */; };
+		101EFF392B1C0AFE003FD57D /* CalibrationViewModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101EFF382B1C0AFE003FD57D /* CalibrationViewModePicker.swift */; };
+		101EFF3D2B1C0E59003FD57D /* CalibrationFileTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101EFF3C2B1C0CE4003FD57D /* CalibrationFileTable.swift */; };
+		101EFF3E2B1C229E003FD57D /* FileDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76ED2B12B4FB00B3D069 /* FileDerivation.swift */; };
 		102D542E2A63FAF300389791 /* FileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102D542D2A63FAF300389791 /* FileBrowser.swift */; };
 		103870992A5E246800064EF1 /* Date+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103870982A5E246800064EF1 /* Date+Session.swift */; };
 		1038709D2A5E4F4100064EF1 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038709C2A5E4F4100064EF1 /* SessionView.swift */; };
@@ -42,6 +46,8 @@
 		105B76E62B11526F00B3D069 /* URL+Documents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76E52B11526F00B3D069 /* URL+Documents.swift */; };
 		105B76EA2B11B70300B3D069 /* PixInsightInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76E92B11B70300B3D069 /* PixInsightInstance.swift */; };
 		105B76EC2B11F63100B3D069 /* TargetListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76EB2B11F63100B3D069 /* TargetListItem.swift */; };
+		105B76F02B12BA0600B3D069 /* XISFFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76EF2B12BA0600B3D069 /* XISFFile.swift */; };
+		105B76F22B12BE7300B3D069 /* URL+Hash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76F12B12BE7300B3D069 /* URL+Hash.swift */; };
 		1062D76A2A981BD100466086 /* File+RegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1062D7692A981B2300466086 /* File+RegionTests.swift */; };
 		106BD33F2A6CCF9A00DE947D /* FIlteredImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */; };
 		106D0FA72A7DE3C0003015EA /* FileListModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */; };
@@ -149,6 +155,9 @@
 		101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionFilterFlatView.swift; sourceTree = "<group>"; };
 		101A38332AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionFilterLightView.swift; sourceTree = "<group>"; };
 		101B308E2A5912430094DDCF /* Astro.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Astro.xctestplan; sourceTree = "<group>"; };
+		101EFF362B1AB881003FD57D /* XISFFileImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XISFFileImporter.swift; sourceTree = "<group>"; };
+		101EFF382B1C0AFE003FD57D /* CalibrationViewModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationViewModePicker.swift; sourceTree = "<group>"; };
+		101EFF3C2B1C0CE4003FD57D /* CalibrationFileTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationFileTable.swift; sourceTree = "<group>"; };
 		102D542D2A63FAF300389791 /* FileBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowser.swift; sourceTree = "<group>"; };
 		103870982A5E246800064EF1 /* Date+Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Session.swift"; sourceTree = "<group>"; };
 		1038709A2A5E24F200064EF1 /* Date+SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+SessionTests.swift"; sourceTree = "<group>"; };
@@ -164,6 +173,9 @@
 		105B76E52B11526F00B3D069 /* URL+Documents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Documents.swift"; sourceTree = "<group>"; };
 		105B76E92B11B70300B3D069 /* PixInsightInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightInstance.swift; sourceTree = "<group>"; };
 		105B76EB2B11F63100B3D069 /* TargetListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetListItem.swift; sourceTree = "<group>"; };
+		105B76ED2B12B4FB00B3D069 /* FileDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDerivation.swift; sourceTree = "<group>"; };
+		105B76EF2B12BA0600B3D069 /* XISFFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XISFFile.swift; sourceTree = "<group>"; };
+		105B76F12B12BE7300B3D069 /* URL+Hash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Hash.swift"; sourceTree = "<group>"; };
 		1062D7692A981B2300466086 /* File+RegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+RegionTests.swift"; sourceTree = "<group>"; };
 		106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlteredImage.swift; sourceTree = "<group>"; };
 		106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListModePicker.swift; sourceTree = "<group>"; };
@@ -334,6 +346,34 @@
 			path = Detail;
 			sourceTree = "<group>";
 		};
+		101EFF3A2B1C0CCC003FD57D /* Artefacts */ = {
+			isa = PBXGroup;
+			children = (
+				101EFF3C2B1C0CE4003FD57D /* CalibrationFileTable.swift */,
+			);
+			path = Artefacts;
+			sourceTree = "<group>";
+		};
+		101EFF3B2B1C0CD5003FD57D /* Sessions */ = {
+			isa = PBXGroup;
+			children = (
+				1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */,
+				100D900C2AE4A39900B2F648 /* CalibrationSessionListSessionView.swift */,
+				100D900A2AE48D2200B2F648 /* CalibrationSessionListFilterView.swift */,
+				101A382C2AC8DF7C008DBB4C /* Detail */,
+			);
+			path = Sessions;
+			sourceTree = "<group>";
+		};
+		105B76EE2B12B9FA00B3D069 /* XISF */ = {
+			isa = PBXGroup;
+			children = (
+				101EFF362B1AB881003FD57D /* XISFFileImporter.swift */,
+				105B76EF2B12BA0600B3D069 /* XISFFile.swift */,
+			);
+			path = XISF;
+			sourceTree = "<group>";
+		};
 		106702412A66A96900FD2DA6 /* FITS */ = {
 			isa = PBXGroup;
 			children = (
@@ -349,6 +389,7 @@
 		106D0FA52A7DE3A1003015EA /* Toolbar */ = {
 			isa = PBXGroup;
 			children = (
+				101EFF382B1C0AFE003FD57D /* CalibrationViewModePicker.swift */,
 				106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */,
 			);
 			path = Toolbar;
@@ -401,10 +442,8 @@
 		1089AA632AB6842D007D4E6B /* Calibration */ = {
 			isa = PBXGroup;
 			children = (
-				1092FB282AB68B1700CD69BD /* CalibrationSessionList.swift */,
-				100D900C2AE4A39900B2F648 /* CalibrationSessionListSessionView.swift */,
-				100D900A2AE48D2200B2F648 /* CalibrationSessionListFilterView.swift */,
-				101A382C2AC8DF7C008DBB4C /* Detail */,
+				101EFF3B2B1C0CD5003FD57D /* Sessions */,
+				101EFF3A2B1C0CCC003FD57D /* Artefacts */,
 			);
 			path = Calibration;
 			sourceTree = "<group>";
@@ -603,6 +642,7 @@
 			isa = PBXGroup;
 			children = (
 				10D833212A5FA46400C63083 /* File.swift */,
+				105B76ED2B12B4FB00B3D069 /* FileDerivation.swift */,
 				1096BDF32A9AD5ED00420F4C /* FileStatistics.swift */,
 				10903D592ABFCCA500065842 /* Filter.swift */,
 				1005194C2AA425E800C25AF6 /* FileMetadata.swift */,
@@ -644,6 +684,7 @@
 				109D2DCD2A5ACA370024BBBD /* URL+FileType.swift */,
 				10AABE8D2A6A99B5000443B8 /* URL+FileTypeTests.swift */,
 				106702412A66A96900FD2DA6 /* FITS */,
+				105B76EE2B12B9FA00B3D069 /* XISF */,
 			);
 			path = FileImport;
 			sourceTree = "<group>";
@@ -658,6 +699,7 @@
 				1005194E2AA42C6F00C25AF6 /* File+Rotation.swift */,
 				103B8A632A65F4A600B526C7 /* CGImage+Filter.swift */,
 				105B76E52B11526F00B3D069 /* URL+Documents.swift */,
+				105B76F12B12BE7300B3D069 /* URL+Hash.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -808,6 +850,7 @@
 				105B76EC2B11F63100B3D069 /* TargetListItem.swift in Sources */,
 				1005194A2AA421AC00C25AF6 /* FileMetadataInspectorPane.swift in Sources */,
 				10B792562A621F4800291B6D /* FileImportContentView.swift in Sources */,
+				101EFF3E2B1C229E003FD57D /* FileDerivation.swift in Sources */,
 				106BD33F2A6CCF9A00DE947D /* FIlteredImage.swift in Sources */,
 				107145032B004CB90049E580 /* PixInsightProcessor.swift in Sources */,
 				101A38342AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift in Sources */,
@@ -819,6 +862,7 @@
 				10E81F4A2A5108A000846852 /* File+PreviewProvider.swift in Sources */,
 				10F6468A2A62B8D200DE27FE /* FileImporter.swift in Sources */,
 				107145002B004CA00049E580 /* ExternalProcessor.swift in Sources */,
+				101EFF392B1C0AFE003FD57D /* CalibrationViewModePicker.swift in Sources */,
 				101A38322AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift in Sources */,
 				100577492A7DF3AF000B0D2B /* FileTable.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
@@ -838,6 +882,7 @@
 				10A85CC42A9EAD57001196E0 /* Region.swift in Sources */,
 				1071451B2B01AC340049E580 /* TargetExportOperation.swift in Sources */,
 				10AABE8A2A67FB37000443B8 /* FileImportController.swift in Sources */,
+				101EFF372B1AB882003FD57D /* XISFFileImporter.swift in Sources */,
 				107145092B004D2C0049E580 /* PixInsightIntegrationOperation.swift in Sources */,
 				10C432252A50F80F00E620DF /* AstroApp.swift in Sources */,
 				108F822A2A61557600061511 /* CGImage+Format.swift in Sources */,
@@ -852,6 +897,8 @@
 				10D833132A5F758000C63083 /* CategoryList.swift in Sources */,
 				101A382E2AC8DFB7008DBB4C /* CalibrationSessionView.swift in Sources */,
 				102D542E2A63FAF300389791 /* FileBrowser.swift in Sources */,
+				101EFF3D2B1C0E59003FD57D /* CalibrationFileTable.swift in Sources */,
+				105B76F02B12BA0600B3D069 /* XISFFile.swift in Sources */,
 				107145072B004D0B0049E580 /* ExternalProcessingOperation.swift in Sources */,
 				10D8331B2A5F7D1600C63083 /* FileList.swift in Sources */,
 				10B5CC722A55801E00A36387 /* FITSHeaderKeyword.swift in Sources */,
@@ -866,6 +913,7 @@
 				10F646832A623D5900DE27FE /* ImageProcessor.swift in Sources */,
 				10D833262A5FA46A00C63083 /* Target.swift in Sources */,
 				10E81F472A5104C300846852 /* FileGrid.swift in Sources */,
+				105B76F22B12BE7300B3D069 /* URL+Hash.swift in Sources */,
 				1089AA622AB53B78007D4E6B /* TargetExportController.swift in Sources */,
 				10C432312A50F81000E620DF /* Astro.xcdatamodeld in Sources */,
 				1005194D2AA4267B00C25AF6 /* FileMetadata.swift in Sources */,

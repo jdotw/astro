@@ -69,6 +69,40 @@ struct PersistenceController {
             }
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
+
+        // JW HACK
+//        let url = URL(filePath: "/Users/jwilson/Desktop/integrated-image.xisf")
+//        let xisfFile = XISFFile(url: url)
+//        let headerData = xisfFile.headerData
+//        print("JW: headerData.count = ", headerData?.count ?? -1)
+//        let headers = xisfFile.parseHeaders()
+//        print("HEADERS: ", headers ?? "none")
+//        let firstImage = xisfFile.images.first!
+//        let imageHeaders = firstImage.fitsKeywords
+//        print("FITS HEADERS: ", imageHeaders)
+//
+//        let importer = XISFFileImporter(url: url,
+//                                        context: container.viewContext)
+//        do {
+//            guard let importedFile = try importer.importFile() else {
+//                print("NO FILE IMPORTED")
+//                return
+//            }
+//            print("IMPORTED: ", importedFile)
+//            let processor = FileProcessOperation(fileObjectID: importedFile.objectID)
+//            FileProcessController.shared.queue.addOperation(processor)
+//
+//        } catch {
+//            switch error {
+//            case FileImportError.alreadyExists(let file):
+//                print("ALREADY EXISTS: ", file)
+//                let processor = FileProcessOperation(fileObjectID: file.objectID)
+//                FileProcessController.shared.queue.addOperation(processor)
+//            default:
+//                print("IMPORT ERROR: ", error)
+//            }
+//        }
+        // END JW HACK
     }
 }
 

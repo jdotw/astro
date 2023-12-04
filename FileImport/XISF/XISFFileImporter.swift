@@ -1,8 +1,8 @@
 //
-//  FITSFileImport.swift
+//  XISFFileImporter.swift
 //  Astro
 //
-//  Created by James Wilson on 15/7/2023.
+//  Created by James Wilson on 2/12/2023.
 //
 
 import CoreData
@@ -11,19 +11,24 @@ import CryptoKit
 import Foundation
 import ImageIO
 
-class FITSFileImporter: FileImporter {
-    private var fitsFile: FITSFile
+class XISFFileImporter: FileImporter {
+    private var xisfFile: XISFFile
+    var addToSession = true
 
     // MARK: API
 
     override init(url: URL, context: NSManagedObjectContext) {
-        fitsFile = FITSFile(url: url)
+        xisfFile = XISFFile(url: url)
         super.init(url: url, context: context)
     }
 
-    override func importFile() throws -> File? {
+    func importFile(completion: @escaping (File) -> Void) throws -> File? {
         do {
             let file = try importFileSync()
+            if let file {
+                completion(file)
+            }
+            try context.save()
             return file
         } catch {
             switch error {
@@ -40,7 +45,7 @@ class FITSFileImporter: FileImporter {
 
     private func importFileSync() throws -> File? {
         guard let fileHash = url.sha512Hash else {
-            throw FITSFileImportError.hashFailed
+            throw XISFFileImportError.hashFailed
         }
 
         // Look up File by fileHash
@@ -51,52 +56,57 @@ class FITSFileImporter: FileImporter {
             throw FileImportError.alreadyExists(existing)
         }
 
-        // Get Headers
-        var dataStartOffset: UInt64 = 0
-        guard let headers = fitsFile.parseHeaders(dataStartOffset: &dataStartOffset) else {
-            throw FITSFileImportError.noHeaders
+        // Get Headers from first Image
+        guard let _ = xisfFile.parseHeaders(),
+              let firstImage = xisfFile.images.first
+        else {
+            throw XISFFileImportError.noHeaders
         }
+        let headers = firstImage.fitsKeywords
         var observationDate: Date!
         if let headerDateString = headers["DATE-OBS"]?.value {
             guard
                 let headerDate = Date(fitsDate: headerDateString)
             else {
-                throw FITSFileImportError.invalidObservationDate
+                throw XISFFileImportError.invalidObservationDate
             }
             observationDate = headerDate
-        } else if let fileCreationDate = try? fitsFile.url.resourceValues(forKeys: [.creationDateKey]).creationDate {
+        } else if let fileCreationDate = try? xisfFile.url.resourceValues(forKeys: [.creationDateKey]).creationDate {
             observationDate = fileCreationDate
         } else {
-            throw FITSFileImportError.noObservationDate
+            throw XISFFileImportError.noObservationDate
         }
 
-        let typeString = headers["FRAME"]?.value?.lowercased() ?? "light"
+        var type: FileType = .unknown
+        switch headers["IMAGETYP"]?.value {
+        case "Flat Frame":
+            type = .flat
+        default:
+            break
+        }
 
         guard let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) else {
-            throw FITSFileImportError.noBookmark
+            throw XISFFileImportError.noBookmark
         }
         guard let targetName = headers["OBJECT"]?.value else {
-            throw FITSFileImportError.noTarget
+            throw XISFFileImportError.noTarget
         }
-        guard let widthString = headers["NAXIS1"]?.value,
-              let width = Int32(widthString),
-              let heightString = headers["NAXIS2"]?.value,
-              let height = Int32(heightString)
+        guard
+            let width = firstImage.width,
+            let height = firstImage.height
         else {
-            throw FITSFileImportError.noDimensions
+            throw XISFFileImportError.noDimensions
         }
 
-        // Get Data and Image
-        guard let data = fitsFile.getImageData(fromOffset: dataStartOffset, headers: headers) else {
-            throw FITSFileImportError.dataReadFailed
-        }
+        // Get Data for First Image
+        let data = try firstImage.getImageData()
 
-        // Create UUID for this file]
+        // Create UUID for this file
         let fileID = UUID()
 
         // Set up the documents directory
         guard let docsURL = URL.documentsDirectory else {
-            throw FITSFileImportError.noDocumentsDirectory
+            throw XISFFileImportError.noDocumentsDirectory
         }
         if !FileManager.default.fileExists(atPath: docsURL.path(percentEncoded: false)) {
             try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
@@ -106,9 +116,9 @@ class FITSFileImporter: FileImporter {
         let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
         try data.write(to: fp32URL, options: [.atomic])
 
-        // Save a copy of the original FITS file
-        let fitsURL = docsURL.appendingPathComponent("\(fileID.uuidString).fits")
-        try FileManager.default.copyItem(at: url, to: fitsURL)
+        // Save a copy of the original XISF file
+        let xisfURL = docsURL.appendingPathComponent("\(fileID.uuidString).xisf")
+        try FileManager.default.copyItem(at: url, to: xisfURL)
 
         // Create the File record (we have already de-duped)
         let file = File(context: context)
@@ -116,25 +126,26 @@ class FITSFileImporter: FileImporter {
         file.timestamp = observationDate
         file.contentHash = fileHash
         file.name = url.lastPathComponent
-        file.type = file.type(forHeaderValue: typeString)
+        file.type = type
         file.url = url
         file.bookmark = bookmarkData
-        file.fitsURL = fitsURL
+        file.fitsURL = xisfURL
         file.rawDataURL = fp32URL
-        file.width = width
-        file.height = height
-        file.status = .original
+        file.width = Int32(width)
+        file.height = Int32(height)
 
         // Find/Create Target
-        let targetReq = NSFetchRequest<Target>(entityName: "Target")
-        targetReq.predicate = NSPredicate(format: "name == %@", targetName)
-        targetReq.fetchLimit = 1
-        if let target = try? context.fetch(targetReq).first {
-            file.target = target
-        } else {
-            let newTarget = Target(context: context)
-            newTarget.name = targetName
-            file.target = newTarget
+        if !targetName.isUnknownTargetName {
+            let targetReq = NSFetchRequest<Target>(entityName: "Target")
+            targetReq.predicate = NSPredicate(format: "name == %@", targetName)
+            targetReq.fetchLimit = 1
+            if let target = try? context.fetch(targetReq).first {
+                file.target = target
+            } else {
+                let newTarget = Target(context: context)
+                newTarget.name = targetName
+                file.target = newTarget
+            }
         }
 
         // Find/Create Filter
@@ -151,16 +162,18 @@ class FITSFileImporter: FileImporter {
         }
 
         // Find Session by dateString
-        let dateString = observationDate.sessionDateString()
-        let sessionReq = NSFetchRequest<Session>(entityName: "Session")
-        sessionReq.predicate = NSPredicate(format: "dateString == %@", dateString)
-        sessionReq.fetchLimit = 1
-        if let session = try? context.fetch(sessionReq).first {
-            file.session = session
-        } else {
-            let newSession = Session(context: context)
-            newSession.dateString = dateString
-            file.session = newSession
+        if addToSession {
+            let dateString = observationDate.sessionDateString()
+            let sessionReq = NSFetchRequest<Session>(entityName: "Session")
+            sessionReq.predicate = NSPredicate(format: "dateString == %@", dateString)
+            sessionReq.fetchLimit = 1
+            if let session = try? context.fetch(sessionReq).first {
+                file.session = session
+            } else {
+                let newSession = Session(context: context)
+                newSession.dateString = dateString
+                file.session = newSession
+            }
         }
 
         // Create metadata entities from FITS Header Keywors
@@ -171,13 +184,11 @@ class FITSFileImporter: FileImporter {
             metadata.file = file
         }
 
-        try context.save()
-
         return file
     }
 }
 
-enum FITSFileImportError: Error {
+enum XISFFileImportError: Error {
     case hashFailed
     case noHeaders
     case noObservationDate
@@ -189,15 +200,11 @@ enum FITSFileImportError: Error {
     case noDocumentsDirectory
 }
 
-extension FITSFileImportError: LocalizedError {
+extension XISFFileImportError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         default:
             return nil
         }
     }
-}
-
-enum FITSFileError: Error {
-    case blockTooSmall(_: Int)
 }

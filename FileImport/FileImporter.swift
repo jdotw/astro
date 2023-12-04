@@ -21,12 +21,25 @@ class FileImporter: ObservableObject {
         }
     }
 
-    init?(url: URL, context: NSManagedObjectContext) {
+    init(url: URL, context: NSManagedObjectContext) {
         self.url = url
         self.context = context
     }
 
     func importFile() throws -> File? {
         fatalError("importFile() must be overridden")
+    }
+}
+
+enum FileImportError: Error {
+    case alreadyExists(File)
+}
+
+extension FileImportError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .alreadyExists:
+            return NSLocalizedString("The file has already been imported", comment: "file already imported")
+        }
     }
 }

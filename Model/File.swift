@@ -25,6 +25,16 @@ public enum FileType: String, CaseIterable, Identifiable {
     case bias
 }
 
+public enum FileStatus: String, CaseIterable, Identifiable {
+    public var id: Self { self }
+    case unknown
+    case original
+    case calibrated
+    case registered
+    case master // For calibration frames
+    case integrated // For light frames
+}
+
 public extension File {
     @nonobjc class func fetchRequest() -> NSFetchRequest<File> {
         return NSFetchRequest<File>(entityName: "File")
@@ -36,6 +46,7 @@ public extension File {
     @NSManaged var name: String
     @NSManaged var timestamp: Date
     @NSManaged var typeRawValue: String
+    @NSManaged var statusRawValue: String
     @NSManaged var url: URL // Original Source URL
     @NSManaged var fitsURL: URL // The FITS file as-imported
     @NSManaged var rawDataURL: URL // The 32bit fp values
@@ -53,6 +64,10 @@ public extension File {
     @NSManaged var metadata: NSSet?
 
     @NSManaged var calibrationSession: Session?
+    @NSManaged var referenceFor: NSSet?
+
+    @NSManaged var derivitives: NSSet?
+    @NSManaged var derivedFrom: NSSet?
 
     var type: FileType {
         get {
@@ -77,6 +92,36 @@ public extension File {
             return .unknown
         }
     }
+
+    var status: FileStatus {
+        get {
+            FileStatus(rawValue: self.statusRawValue) ?? .unknown
+        }
+        set {
+            self.statusRawValue = newValue.rawValue
+        }
+    }
+}
+
+extension File {
+//    convenience init?(withFileAt url: URL, type: FileType) {
+//        guard let info = try? FileManager.default.attributesOfItem(atPath: url.path(percentEncoded: false)),
+//              let creationDate = info[.creationDate] as? Date
+//        else { return nil }
+//        self.uuid = UUID()
+//        self.timestamp = creationDate
+//        self.name = url.lastPathComponent.removingPercentEncoding ?? "unknown"
+//        self.type = type
+//        self.url = url
+//        self.fitsURL = self.fitsURL
+//        self.rawDataURL = fp32URL
+//        self.width = self.width
+//        self.height = self.height
+//
+//        self.bookmark = bookmarkData
+//
+//        self.contentHash = fileHash
+//    }
 }
 
 extension File: Identifiable {
@@ -97,6 +142,16 @@ struct StretchParameters {
 }
 
 extension File {
+    var sessionDateString: String {
+        if let session {
+            return session.dateString
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyyMMdd"
+            return dateFormatter.string(from: self.timestamp)
+        }
+    }
+
     var cgImage: CGImage? {
         guard let data = try? Data(contentsOf: rawDataURL) else { return nil }
         let width = Int(width)

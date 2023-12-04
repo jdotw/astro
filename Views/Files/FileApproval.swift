@@ -88,9 +88,12 @@ struct FileApproval: View {
         VStack {
             if let selectedFile {
                 Text("File: \(selectedFile.name)")
+                ItemFullSizeImage(file: selectedFile,
+                                  showStarRects: $showStarRects)
+                    .frame(maxHeight: .infinity)
+            } else {
+                Text("no file selected")
             }
-            ItemFullSizeImage(file: selectedFile, showStarRects: $showStarRects)
-                .frame(maxHeight: .infinity)
             ScrollViewReader { proxy in
                 ScrollView(.horizontal) {
                     LazyHStack {
@@ -152,16 +155,12 @@ struct FileApproval: View {
     }
 
     private struct ItemFullSizeImage: View {
-        var file: File?
+        @ObservedObject var file: File
         @State private var histogram: NSImage = .init()
         @Binding var showStarRects: Bool
 
         var body: some View {
-            if let file = file {
-                FilteredImage(file: file, histogramImage: $histogram, showStarRects: $showStarRects)
-            } else {
-                Text("no file selected")
-            }
+            FilteredImage(file: file, histogramImage: $histogram, showStarRects: $showStarRects)
         }
     }
 

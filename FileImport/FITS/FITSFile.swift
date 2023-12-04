@@ -88,21 +88,6 @@ struct FITSFile {
         return fpData
     }
     
-    // MARK: Hash
-    
-    var fileHash: String? {
-        autoreleasepool {
-            let file = try! FileHandle(forReadingFrom: self.url)
-            do {
-                let digest = try SHA512.hash(data: file.readToEnd()!)
-                return digest.map { String(format: "%02x", $0) }.joined()
-                
-            } catch {
-                return nil
-            }
-        }
-    }
-    
     // MARK: Image
     
     func cgImage(data: Data, headers: [String: FITSHeaderKeyword]) -> CGImage? {

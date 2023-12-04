@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 struct FilteredImage: View {
-    var file: File
+    @ObservedObject var file: File
     var inputImage: CGImage?
 
     var exposureValue: Double = 0.0

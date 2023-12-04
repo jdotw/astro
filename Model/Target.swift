@@ -52,3 +52,14 @@ extension Target {
         return "Unknown"
     }
 }
+
+extension String {
+    var isUnknownTargetName: Bool {
+        switch self {
+        case "Unknown":
+            return true
+        default:
+            return false
+        }
+    }
+}
