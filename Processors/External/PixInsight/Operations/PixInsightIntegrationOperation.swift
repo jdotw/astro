@@ -18,6 +18,7 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
     let fileURLs: [URL]
     var error: Error?
     var outputURL: URL?
+    var outputFileObjectID: NSManagedObjectID?
     var mode: PixInsightIntegrationMode = .lights
 
     required init(files: [File]) {
@@ -79,9 +80,7 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
         // Look for an existing artefact
         if mode == .flats {
             let artefactRequest = NSFetchRequest<File>(entityName: "File")
-//            artefactRequest.predicate = NSPredicate(format: "typeRawValue == %@ AND statusRawValue == %@ AND filter == %@ AND ALL derivedFrom.input == %@ AND derivedFrom.@count == %@", FileType.flat.rawValue, FileStatus.master.rawValue, referenceFile.filter, NSSet(array: files), files.count as NSNumber)
             artefactRequest.predicate = NSPredicate(format: "SUBQUERY(derivedFrom, $derivedFrom, $derivedFrom.input IN %@).@count == derivedFrom.@count AND derivedFrom.@count == %d", NSSet(array: files), files.count)
-
             artefactRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
             let waitSema = DispatchSemaphore(value: 0)
             var didFindCachedCandidate = false
@@ -89,6 +88,7 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
                 if let result = try? context.fetch(artefactRequest).first {
                     print("FOUND CACHED: ", result)
                     self.outputURL = result.fitsURL
+                    self.outputFileObjectID = result.objectID
                     didFindCachedCandidate = true
                 } else {
                     print("NO CACHE :/")
@@ -176,8 +176,10 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
                                 }
                             }
 
-                            // Process the imported image (create preview, etc)
                             if let importedFile {
+                                self.outputFileObjectID = importedFile.objectID
+
+                                // Process the imported image (create preview, etc)
                                 let processor = FileProcessOperation(fileObjectID: importedFile.objectID)
                                 FileProcessController.shared.queue.addOperation(processor)
                             }
