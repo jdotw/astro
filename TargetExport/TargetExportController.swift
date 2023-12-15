@@ -5,6 +5,7 @@
 //  Created by James Wilson on 16/9/2023.
 //
 
+import CoreData
 import Foundation
 
 class TargetExportController: ObservableObject {
@@ -40,18 +41,23 @@ class TargetExportController: ObservableObject {
         total = 0
         exporting = true
         error = nil
-        try request.performBackgroundTask { result in
+        try request.withResolvedFileList { result in
             switch result {
             case .success(let exportableFiles):
                 DispatchQueue.main.sync {
                     self.total = exportableFiles.count
                     self.files = exportableFiles
                 }
-                do {
-                    try self.exportFiles(exportableFiles, forRequest: request)
-                } catch {
-                    print("ERROR: ", error)
+                let waitSema = DispatchSemaphore(value: 0)
+                PersistenceController.shared.container.performBackgroundTask { context in
+                    do {
+                        try self.exportFiles(exportableFiles, forRequest: request, context: context)
+                    } catch {
+                        print("ERROR: ", error)
+                    }
+                    waitSema.signal()
                 }
+                waitSema.wait()
             case .failure(let error):
                 DispatchQueue.main.sync {
                     self.error = error
@@ -65,7 +71,7 @@ class TargetExportController: ObservableObject {
         }
     }
 
-    private func exportFiles(_ files: [TargetExportRequestFile], forRequest request: TargetExportRequest) throws {
+    private func exportFiles(_ files: [TargetExportRequestFile], forRequest request: TargetExportRequest, context: NSManagedObjectContext) throws {
         let batches = files.batches
         print("BATCHES: ", batches)
         for batch in batches {
@@ -76,7 +82,7 @@ class TargetExportController: ObservableObject {
             let batchURL = request.url.disambigutedURL(addingPath: batchPath)
             try FileManager.default.createDirectory(at: batchURL, withIntermediateDirectories: false)
             try exportFiles(inBatch: batch, to: batchURL)
-            try calibrateFiles(inBatch: batch, at: batchURL)
+            try calibrateFiles(inBatch: batch, at: batchURL, context: context)
         }
         let calibratedFiles = self.files.filter {
             $0.type == .light && $0.status == .calibrated
@@ -119,7 +125,7 @@ class TargetExportController: ObservableObject {
         }
     }
 
-    func calibrateFiles(inBatch batch: TargetExportFileBatch, at url: URL) throws {
+    func calibrateFiles(inBatch batch: TargetExportFileBatch, at url: URL, context: NSManagedObjectContext) throws {
         try batch.uniqueFilters.forEach { filter in
             let filterURL = url.appending(path: filter.name.localizedCapitalized)
             let flatsURL = filterURL.appending(path: "Flat")
@@ -129,9 +135,10 @@ class TargetExportController: ObservableObject {
             let integrationOp = PixInsightIntegrationOperation(files: flatsFiles, mode: .flats)
             print("INTEGRATING FLATS for \(filter.name) in batch \(String(describing: batch.path)) using \(flatsFiles.count) flat files")
             integrationOp.main()
-            guard let integrationOutputURL = integrationOp.outputURL else { return }
+            guard let integratedFileObjectID = integrationOp.outputFileObjectID else { return }
+            let masterFlat = context.object(with: integratedFileObjectID) as! File
             let masterFlatURL = flatsURL.appending(component: "master.xisf")
-            try FileManager.default.copyItem(at: integrationOutputURL, to: masterFlatURL)
+            try FileManager.default.copyItem(at: masterFlat.url, to: masterFlatURL)
 
             // - Create record of the master flat
             let masterFlatFile = TargetExportRequestFile(source: nil,
@@ -148,7 +155,7 @@ class TargetExportController: ObservableObject {
             else { return }
             let lightFiles = lightFileRequests.compactMap { $0.source }
             let calOp = PixInsightCalibrationOperation(files: lightFiles,
-                                                       masterFlat: masterFlatURL)
+                                                       masterFlat: masterFlat)
             calOp.main()
             let calibratedURL = filterURL.appending(path: "Calibrated")
             try FileManager.default.copyItem(at: calOp.outputURL, to: calibratedURL)

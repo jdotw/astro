@@ -10,6 +10,4 @@ import Foundation
 protocol ExternalProcessingOperation {
     var files: [File] { get }
     var error: Error? { get }
-
-    init(files: [File])
 }
