@@ -14,6 +14,7 @@ import ImageIO
 class XISFFileImporter: FileImporter {
     private var xisfFile: XISFFile
     var addToSession = true
+    var addToTarget = true
 
     // MARK: API
 
@@ -135,7 +136,7 @@ class XISFFileImporter: FileImporter {
         file.height = Int32(height)
 
         // Find/Create Target
-        if !targetName.isUnknownTargetName {
+        if addToTarget, !targetName.isUnknownTargetName {
             let targetReq = NSFetchRequest<Target>(entityName: "Target")
             targetReq.predicate = NSPredicate(format: "name == %@", targetName)
             targetReq.fetchLimit = 1
