@@ -75,7 +75,7 @@ extension TargetExportRequest {
         resolvedDestinationURL.stopAccessingSecurityScopedResource()
     }
 
-    func performBackgroundTask(_ completion: @escaping (Result<[TargetExportRequestFile], Error>) -> Void) throws {
+    func withResolvedFileList(_ completion: @escaping (Result<[TargetExportRequestFile], Error>) -> Void) throws {
         try withResolvedDestinationURL { destinationURL in
             DispatchQueue.global().async {
                 do {
