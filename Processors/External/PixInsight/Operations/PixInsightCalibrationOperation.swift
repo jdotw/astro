@@ -5,6 +5,7 @@
 //  Created by James Wilson on 12/11/2023.
 //
 
+import CoreData
 import Foundation
 
 class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
@@ -19,7 +20,9 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
         super.init()
     }
 
-    var outputURL: URL {
+    var outputFileObjectIDs: [NSManagedObjectID] = []
+
+    private var outputURL: URL {
         FileManager.default.temporaryDirectory.appending(path: uuid.uuidString)
     }
 
@@ -45,6 +48,31 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
     }
 
     override func main() {
+        // Look for an existing set of artefacts
+        let artefactRequest = NSFetchRequest<File>(entityName: "File")
+        artefactRequest.predicate = NSPredicate(format: "SUBQUERY(derivedFrom, $derivedFrom, $derivedFrom.input IN %@).@count == 1 AND SUBQUERY(derivedFrom, $derivedFrom, $derivedFrom.input IN %@).@count == 1", NSSet(array: [masterFlat]), NSSet(array: files))
+        artefactRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+        artefactRequest.fetchLimit = files.count
+        let waitSema = DispatchSemaphore(value: 0)
+        var didFindCachedCandidate = false
+        PersistenceController.shared.container.performBackgroundTask { context in
+            if let result = try? context.fetch(artefactRequest),
+               result.count == self.files.count
+            {
+                print("CALIBRATION FOUND CACHED: ", result)
+                self.outputFileObjectIDs = result.map { $0.objectID }
+                didFindCachedCandidate = true
+            } else {
+                print("CALIBRATION: NO CACHE :/")
+            }
+            waitSema.signal()
+        }
+        waitSema.wait()
+        if didFindCachedCandidate {
+            print("CALIBRATION: USING CACHED FILE AND BAILING EARLY!")
+            return
+        }
+
         let jsScriptURL = FileManager.default.temporaryDirectory.appending(path: "\(uuid.uuidString).js")
         print("JS URL: ", jsScriptURL)
         do {
@@ -77,9 +105,8 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
             try PixInsightController.shared.withInstance { pi in
                 let output = pi.runScript(atURL: scriptURL)
                 print("OUTPUT: ", output)
-
+                let waitSema = DispatchSemaphore(value: 0)
                 PersistenceController.shared.container.performBackgroundTask { context in
-
                     self.files.forEach { inputFile in
                         let sourceURL = outputURL.appending(path: inputFile.fitsURL.lastPathComponent)
                             .deletingPathExtension()
@@ -117,8 +144,11 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
                                 flatDerivation.process = .calibration
                             }
 
-                            // Process the imported image (create preview, etc)
                             if let importedFile {
+                                // Add to output
+                                self.outputFileObjectIDs.append(importedFile.objectID)
+
+                                // Process the imported image (create preview, etc)
                                 let processor = FileProcessOperation(fileObjectID: importedFile.objectID)
                                 FileProcessController.shared.queue.addOperation(processor)
                             }
@@ -137,7 +167,9 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
                             }
                         }
                     }
+                    waitSema.signal()
                 }
+                waitSema.wait()
             }
         } catch {
             self.error = error

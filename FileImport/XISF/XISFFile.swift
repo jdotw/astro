@@ -29,7 +29,6 @@ class XISFFile: NSObject {
             headerLength = headerLengthData.withUnsafeBytes {
                 UInt32(littleEndian: $0.load(as: UInt32.self))
             }
-            print("HEADER LENGTH: ", headerLength!)
         } catch {
             print("Failed to read header length: ", error)
             return nil
@@ -66,13 +65,9 @@ class XISFFileXMLParserDelegate: NSObject, XMLParserDelegate {
         self.url = url
     }
 
-    func parserDidStartDocument(_ parser: XMLParser) {
-        print("didStartDocument")
-    }
+    func parserDidStartDocument(_ parser: XMLParser) {}
     
-    func parserDidEndDocument(_ parser: XMLParser) {
-        print("didEndDocument")
-    }
+    func parserDidEndDocument(_ parser: XMLParser) {}
     
 //    optional func parser(_ parser: XMLParser, foundNotationDeclarationWithName name: String, publicID: String?, systemID: String?)
     
@@ -87,8 +82,6 @@ class XISFFileXMLParserDelegate: NSObject, XMLParserDelegate {
 //    optional func parser(_ parser: XMLParser, foundExternalEntityDeclarationWithName name: String, publicID: String?, systemID: String?)
     
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String: String] = [:]) {
-        print("didStartElement name=\(elementName) attributes=\(attributeDict)")
-        
         switch elementName {
         case "Image":
             let image = XISFImage(url: url, xmlAttributes: attributeDict)
@@ -97,14 +90,11 @@ class XISFFileXMLParserDelegate: NSObject, XMLParserDelegate {
         default:
             if let currentImage {
                 currentImage.parser(parser, didStartElement: elementName, namespaceURI: namespaceURI, qualifiedName: qName, attributes: attributeDict)
-            } else {
-                print("Ignoring element: ", elementName)
             }
         }
     }
     
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        print("didEndElement name=\(elementName)")
         switch elementName {
         case "Image":
             currentImage = nil
@@ -119,9 +109,7 @@ class XISFFileXMLParserDelegate: NSObject, XMLParserDelegate {
     
 //    optional func parser(_ parser: XMLParser, didEndMappingPrefix prefix: String)
     
-    func parser(_ parser: XMLParser, foundCharacters string: String) {
-        print("foundCharacters: \(string)")
-    }
+    func parser(_ parser: XMLParser, foundCharacters string: String) {}
     
 //    optional func parser(_ parser: XMLParser, foundIgnorableWhitespace whitespaceString: String)
     
@@ -187,7 +175,6 @@ class XISFImage: NSObject {
     }
     
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String: String] = [:]) {
-        print("IMAGE HANDLING \(elementName): \(attributeDict)")
         switch elementName {
         case "FITSKeyword":
             if let kw = FITSHeaderKeyword(xmlAttributes: attributeDict) {
@@ -198,9 +185,7 @@ class XISFImage: NSObject {
         }
     }
 
-    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        print("IMAGE didEndElement name=\(elementName)")
-    }
+    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {}
     
     func getImageData() throws -> Data {
         guard let location = location else {

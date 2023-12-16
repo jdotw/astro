@@ -138,7 +138,7 @@ class TargetExportController: ObservableObject {
             guard let integratedFileObjectID = integrationOp.outputFileObjectID else { return }
             let masterFlat = context.object(with: integratedFileObjectID) as! File
             let masterFlatURL = flatsURL.appending(component: "master.xisf")
-            try FileManager.default.copyItem(at: masterFlat.url, to: masterFlatURL)
+            try FileManager.default.copyItem(at: masterFlat.fitsURL, to: masterFlatURL)
 
             // - Create record of the master flat
             let masterFlatFile = TargetExportRequestFile(source: nil,
@@ -158,17 +158,16 @@ class TargetExportController: ObservableObject {
                                                        masterFlat: masterFlat)
             calOp.main()
             let calibratedURL = filterURL.appending(path: "Calibrated")
-            try FileManager.default.copyItem(at: calOp.outputURL, to: calibratedURL)
-
-            // Rename UUID-based files to their original filenamess
-            try lightFiles.forEach { file in
-                let source = calibratedURL.appending(path: file.fitsURL.lastPathComponent)
+            try FileManager.default.createDirectory(at: calibratedURL, withIntermediateDirectories: false)
+            for outputFileObjectID in calOp.outputFileObjectIDs {
+                guard let file = context.object(with: outputFileObjectID) as? File,
+                      let derivedFromLight = file.derivedLightFile
+                else { continue }
+                let source = file.fitsURL
+                let destination = calibratedURL.appending(path: derivedFromLight.name)
                     .deletingPathExtension()
                     .appendingPathExtension("xisf")
-                let destination = calibratedURL.appending(path: file.name)
-                    .deletingPathExtension()
-                    .appendingPathExtension("xisf")
-                try FileManager.default.moveItem(at: source, to: destination)
+                try FileManager.default.copyItem(at: source, to: destination)
 
                 // Create record of the file
                 let calFile = TargetExportRequestFile(source: file,
@@ -345,5 +344,14 @@ extension URL {
             }
         }
         return url
+    }
+}
+
+extension File {
+    var derivedLightFile: File? {
+        guard let derivedFromRecords = derivedFrom?.allObjects as? [FileDerivation]
+        else { return nil }
+        let derivedFromFiles = derivedFromRecords.map { $0.input }
+        return derivedFromFiles.first(where: { $0.type == .light })
     }
 }
