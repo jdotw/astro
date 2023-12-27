@@ -35,5 +35,14 @@ struct AstroApp: App {
                 EmptyView()
             }
         }
+        WindowGroup(for: TransientWindowType.self) { $windowType in
+            switch windowType {
+            case .targetExportRequestList:
+                TargetExportRequestListView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            default:
+                EmptyView()
+            }
+        }
     }
 }

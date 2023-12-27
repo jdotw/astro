@@ -22,6 +22,7 @@ struct TargetExportContentView: View {
     @State private var showSelectReferenceAlert: Bool = false
 
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.openWindow) private var openWindow
     @Environment(\.dismiss) var dismiss
 
     var configBody: some View {
@@ -64,6 +65,8 @@ struct TargetExportContentView: View {
                             exportRequest.status = .failed
                             exportRequest.error = error.localizedDescription
                         }
+                        dismiss()
+                        openWindow(value: TransientWindowType.targetExportRequestList)
                     }
                     .buttonStyle(.borderedProminent)
                     .alert("Select Reference Image", isPresented: $showSelectReferenceAlert, actions: {
