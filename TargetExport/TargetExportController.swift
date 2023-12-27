@@ -92,7 +92,7 @@ class TargetExportController: ObservableObject {
         }
         let registeredFilesByFilter = try register(files: calibratedFiles,
                                                    usingReference: reference,
-                                                   at: request.url)
+                                                   at: request.url, context: context)
         try integrate(filesByFilter: registeredFilesByFilter, at: request.url)
     }
 
@@ -184,37 +184,42 @@ class TargetExportController: ObservableObject {
 
     // MARK: Registration
 
-    func register(files: [TargetExportRequestFile], usingReference reference: File, at url: URL) throws -> [Filter: [TargetExportRequestFile]] {
-        let fileURLs = files.compactMap { $0.url }
-        guard let calibratedReference = files.first(where: { $0.source?.id == reference.id }),
-              let calibratedReferenceURL = calibratedReference.url
+    func register(files: [TargetExportRequestFile], usingReference reference: File, at url: URL, context: NSManagedObjectContext) throws -> [Filter: [TargetExportRequestFile]] {
+        guard let calibratedReference = files.first(where: { $0.source?.isDerived(from: reference) ?? false })?.source
         else { return [:] }
-        let op = PixInsightRegistrationOperation(fileURLs: fileURLs,
-                                                 referenceFileURL: calibratedReferenceURL)
+        let op = PixInsightRegistrationOperation(files: files.compactMap { $0.source },
+                                                 referenceFile: calibratedReference)
 
         op.main()
         let registeredDestination = url.appending(path: "Registered")
-        try FileManager.default.createDirectory(at: registeredDestination, withIntermediateDirectories: false)
+        if !FileManager.default.fileExists(atPath: registeredDestination.path(percentEncoded: false)) {
+            try FileManager.default.createDirectory(at: registeredDestination, withIntermediateDirectories: false)
+        }
 
         var registeredFilesByFilter = [Filter: [TargetExportRequestFile]]()
 
-        try files.forEach { file in
-            guard let sourceFile = file.source,
-                  let fileURL = file.url
-            else { return }
-            let sourceURL = op.outputURL.appending(path: fileURL.lastPathComponent)
-            let filterDestinationURL = registeredDestination.appending(path: sourceFile.filter.name.localizedCapitalized)
+        let outputFiles = op.outputFileObjectIDs.compactMap { context.object(with: $0) as? File }
+        for file in outputFiles {
+            let filterDestinationURL = registeredDestination.appending(path: file.filter.name.localizedCapitalized)
 
             if !FileManager.default.fileExists(atPath: filterDestinationURL.path(percentEncoded: false)) {
-                try FileManager.default.createDirectory(at: filterDestinationURL, withIntermediateDirectories: false)
+                do {
+                    try FileManager.default.createDirectory(at: filterDestinationURL, withIntermediateDirectories: false)
+                } catch {
+                    print("Faield to create directory: ", filterDestinationURL)
+                }
             }
-            let destinationURL = filterDestinationURL.appending(path: fileURL.lastPathComponent)
+            let destinationURL = filterDestinationURL.appending(path: file.name)
 
-            if FileManager.default.fileExists(atPath: sourceURL.path(percentEncoded: false)) {
-                try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
+            if FileManager.default.fileExists(atPath: file.fitsURL.path(percentEncoded: false)) {
+                do {
+                    try FileManager.default.copyItem(at: file.fitsURL, to: destinationURL)
+                } catch {
+                    print("Failed to move item from \(file.fitsURL) to \(destinationURL)")
+                }
 
                 // Create record of file
-                let registeredFile = TargetExportRequestFile(source: sourceFile,
+                let registeredFile = TargetExportRequestFile(source: file,
                                                              type: .light,
                                                              status: .registered,
                                                              url: destinationURL)
@@ -222,7 +227,7 @@ class TargetExportController: ObservableObject {
                     self.files.append(registeredFile)
                     registeredFile.progress = .exported
                 }
-                registeredFilesByFilter[sourceFile.filter, default: []].append(registeredFile)
+                registeredFilesByFilter[file.filter, default: []].append(registeredFile)
             } else {
                 // File failed to be registered
                 // It was in the original data set, but was not
@@ -254,21 +259,31 @@ class TargetExportController: ObservableObject {
         dateFormatter.timeStyle = .none
         let earliestDateString = fileNameTimestamp(forDate: sortedFiles.first?.source?.timestamp)
         let latestDateString = fileNameTimestamp(forDate: sortedFiles.last?.source?.timestamp)
-        let fileName = "\(filter.name.localizedCapitalized)-Integrated-\(files.count)files-\(earliestDateString)-\(latestDateString)"
+        let locFilterName = filter.name.localizedCapitalized.trimmingCharacters(in: .whitespacesAndNewlines)
+        let fileName = "\(locFilterName)-Integrated-\(files.count)files-\(earliestDateString)-\(latestDateString)"
         return fileName
     }
 
     func integrate(filesByFilter: [Filter: [TargetExportRequestFile]], at url: URL) throws {
         let integratedURL = url.appending(path: "Integrated")
-        try FileManager.default.createDirectory(at: integratedURL, withIntermediateDirectories: false)
-        try filesByFilter.forEach { (filter: Filter, files: [TargetExportRequestFile]) in
-            let fileURLs = files.compactMap { $0.url }
-            let op = PixInsightIntegrationOperation(fileURLs: fileURLs, mode: .lights)
+        if !FileManager.default.fileExists(atPath: integratedURL.path(percentEncoded: false)) {
+            try FileManager.default.createDirectory(at: integratedURL, withIntermediateDirectories: false)
+        }
+        filesByFilter.forEach { (filter: Filter, files: [TargetExportRequestFile]) in
+            let sourceFiles = files.compactMap { $0.source }
+            let op = PixInsightIntegrationOperation(files: sourceFiles, mode: .lights)
             op.main()
             let fileName = integratedFileName(forFiles: files, filter: filter)
-            if let outputURL = op.outputURL {
-                try FileManager.default.moveItem(at: outputURL,
-                                                 to: integratedURL.appending(path: "\(fileName).xisf"))
+            if let outputFileObjectID = op.outputFileObjectID {
+                let waitSema = DispatchSemaphore(value: 0)
+                PersistenceController.shared.container.performBackgroundTask { context in
+                    if let outputFile = try? context.existingObject(with: outputFileObjectID) as? File {
+                        try? FileManager.default.copyItem(at: outputFile.fitsURL,
+                                                          to: integratedURL.appending(path: "\(fileName).xisf"))
+                    }
+                    waitSema.signal()
+                }
+                waitSema.wait()
             }
         }
     }

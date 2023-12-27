@@ -16,15 +16,18 @@ struct FileGrid: View {
     @State private var exposureValue: Double = 0
     @State private var selection: Set<File> = []
     @State private var itemSize: CGFloat = 250
-    @Binding var navStackPath: [File]
     @State private var sortOrder: [KeyPathComparator<File>] = [
         .init(\.timestamp, order: SortOrder.forward)
     ]
     
-    init(source: FileBrowserSource, navStackPath: Binding<[File]>) {
+    @Binding var navStackPath: [File]
+    @Binding var selectedFile: File?
+
+    init(source: FileBrowserSource, navStackPath: Binding<[File]>? = nil, selectedFile: Binding<File?>? = nil) {
         self.source = source
         _files = source.fileFetchRequest
-        _navStackPath = navStackPath
+        _navStackPath = navStackPath ?? .constant([])
+        _selectedFile = selectedFile ?? .constant(nil)
     }
     
     var body: some View {
@@ -33,12 +36,11 @@ struct FileGrid: View {
                 ForEach(files) { file in
                     Item(file: file, size: itemSize, isSelected: selection.contains(file))
                         .gesture(TapGesture(count: 2).onEnded {
-                            print("double clicked")
                             navStackPath.append(file)
                         })
                         .simultaneousGesture(TapGesture().onEnded {
-                            print("Single.. bruh")
                             selection = [file]
+                            selectedFile = file
                         })
                 }
             }

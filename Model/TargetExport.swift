@@ -14,6 +14,15 @@ import Foundation
 @objc(TargetExportRequest)
 public class TargetExportRequest: NSManagedObject {}
 
+public enum TargetExportRequestStatus: String, CaseIterable, Identifiable {
+    public var id: Self { self }
+    case notStarted
+    case inProgress
+    case exported
+    case failed
+    case cancelled
+}
+
 public extension TargetExportRequest {
     @nonobjc class func fetchRequest() -> NSFetchRequest<TargetExportRequest> {
         return NSFetchRequest<TargetExportRequest>(entityName: "TargetExportRequest")
@@ -25,15 +34,26 @@ public extension TargetExportRequest {
         self.init(entity: TargetExportRequest.entity(), insertInto: context)
         self.timestamp = Date()
         self.url = url
+        self.statusRawValue = TargetExportRequestStatus.notStarted.rawValue
     }
 
     @NSManaged var timestamp: Date
     @NSManaged var url: URL
     @NSManaged var bookmark: Data
     @NSManaged var target: Target
+    @NSManaged var statusRawValue: String
     @NSManaged var completed: Bool
     @NSManaged var error: String?
     @NSManaged var reference: File?
+
+    var status: TargetExportRequestStatus {
+        get {
+            TargetExportRequestStatus(rawValue: self.statusRawValue) ?? .notStarted
+        }
+        set {
+            self.statusRawValue = newValue.rawValue
+        }
+    }
 }
 
 extension TargetExportRequest: Identifiable {
@@ -45,7 +65,7 @@ extension TargetExportRequest: Identifiable {
 extension TargetExportRequest {
     func buildFileList(forDestination destinationURL: URL) throws -> [TargetExportRequestFile] {
         var exportableFiles = [TargetExportRequestFile]()
-        for file in target.files?.allObjects as! [File] {
+        for file in self.target.files?.allObjects as! [File] {
             if file.isDeleted {
                 continue
             }
@@ -66,17 +86,17 @@ extension TargetExportRequest {
                                                     bookmarkDataIsStale: &stale)
         else {
             print("Failed to get security scoped URL")
-            throw TargetExportRequestError.failedToResolveDestinationBookmark(url)
+            throw TargetExportRequestError.failedToResolveDestinationBookmark(self.url)
         }
         guard resolvedDestinationURL.startAccessingSecurityScopedResource() else {
             throw TargetExportRequestError.failedToStartAccessingDestinationURL
         }
-        completion(url)
+        completion(self.url)
         resolvedDestinationURL.stopAccessingSecurityScopedResource()
     }
 
     func withResolvedFileList(_ completion: @escaping (Result<[TargetExportRequestFile], Error>) -> Void) throws {
-        try withResolvedDestinationURL { destinationURL in
+        try self.withResolvedDestinationURL { destinationURL in
             DispatchQueue.global().async {
                 do {
                     let files = try self.buildFileList(forDestination: destinationURL)

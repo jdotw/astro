@@ -21,6 +21,8 @@ public enum DerivationProcess: String, CaseIterable, Identifiable {
     case unknown
     case integration
     case calibration
+    case registration
+    case registrationReference
 }
 
 public extension FileDerivation {

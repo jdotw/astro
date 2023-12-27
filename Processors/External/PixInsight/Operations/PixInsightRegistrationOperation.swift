@@ -5,23 +5,26 @@
 //  Created by James Wilson on 18/11/2023.
 //
 
+import CoreData
 import Foundation
 
 class PixInsightRegistrationOperation: Operation {
-    let fileURLs: [URL]
-    let referenceFileURL: URL
+    let files: [File]
+    let referenceFile: File
     var error: Error?
     let uuid = UUID()
 
-    init(fileURLs: [URL], referenceFileURL: URL) {
-        self.fileURLs = fileURLs
-        self.referenceFileURL = referenceFileURL
+    init(files: [File], referenceFile: File) {
+        self.files = files
+        self.referenceFile = referenceFile
         super.init()
     }
 
-    var outputURL: URL {
+    private var outputURL: URL {
         FileManager.default.temporaryDirectory.appending(path: uuid.uuidString)
     }
+
+    var outputFileObjectIDs: [NSManagedObjectID] = []
 
     private var jsScript: String? {
         guard let templateURL = Bundle.main.url(forResource: "PixInsightRegistrationScriptTemplate", withExtension: "js"),
@@ -31,10 +34,10 @@ class PixInsightRegistrationOperation: Operation {
         var script = String()
         script.append("var P = new StarAlignment;\n")
         script.append("P.outputDirectory = \"\(outputURL.path(percentEncoded: false))\";\n")
-        script.append("P.referenceImage = \"\(referenceFileURL.path(percentEncoded: false))\";\n")
+        script.append("P.referenceImage = \"\(referenceFile.fitsURL.path(percentEncoded: false))\";\n")
         script.append("P.targets = [ // enabled, isFile, image\n")
-        fileURLs.forEach { url in
-            script.append("    [true, true, \"\(url.path(percentEncoded: false))\"],\n")
+        files.forEach { file in
+            script.append("    [true, true, \"\(file.fitsURL.path(percentEncoded: false))\"],\n")
         }
         script.append("];\n")
         script.append(template)
@@ -75,7 +78,72 @@ class PixInsightRegistrationOperation: Operation {
             try PixInsightController.shared.withInstance { pi in
                 let output = pi.runScript(atURL: scriptURL)
                 print("OUTPUT: ", output)
+
+                let waitSema = DispatchSemaphore(value: 0)
+                PersistenceController.shared.container.performBackgroundTask { context in
+                    guard let outputURLContents = try? FileManager.default.contentsOfDirectory(at: outputURL, includingPropertiesForKeys: nil) else { return }
+                    for outputFile in outputURLContents {
+                        if outputFile.pathExtension != "xisf" {
+                            continue
+                        }
+                        guard let originalFile = self.files.first(where: { $0.fitsURL.lastPathComponent == outputFile.lastPathComponent }) else {
+                            print("CANT FIND ORIGINAL FOR: ", outputFile)
+                            continue
+                        }
+                        let importer = XISFFileImporter(url: outputFile,
+                                                        context: context)
+                        importer.addToSession = false
+                        importer.addToTarget = false
+                        do {
+                            let importedFile = try importer.importFile { file in
+                                let importedFileName = "Registered_\(originalFile.name)"
+                                file.name = importedFileName
+                                file.timestamp = Date()
+                                file.status = .registered
+                                if let calibratedFileObjectID = self.files.first(where: { $0.fitsURL.lastPathComponent == outputFile.lastPathComponent })?.objectID,
+                                   let calibratedFile = context.object(with: calibratedFileObjectID) as? File
+                                {
+                                    let derivation = FileDerivation(context: context)
+                                    derivation.timestamp = Date()
+                                    derivation.input = calibratedFile
+                                    derivation.output = file
+                                    derivation.process = .registration
+
+                                    let refereceDerivation = FileDerivation(context: context)
+                                    refereceDerivation.timestamp = Date()
+                                    refereceDerivation.input = context.object(with: self.referenceFile.objectID) as! File
+                                    refereceDerivation.output = file
+                                    refereceDerivation.process = .registrationReference
+                                }
+                            }
+
+                            if let importedFile {
+                                self.outputFileObjectIDs.append(importedFile.objectID)
+
+                                // Process the imported image (create preview, etc)
+                                let processor = FileProcessOperation(fileObjectID: importedFile.objectID)
+                                FileProcessController.shared.queue.addOperation(processor)
+                            }
+                        } catch {
+                            self.error = error
+                            switch error {
+                            case FileImportError.alreadyExists(let file):
+                                if file.previewURL == nil {
+                                    // Exists but has no preview, process it
+                                    FileProcessController.process(fileObjectID: file.objectID)
+                                    let processor = FileProcessOperation(fileObjectID: file.objectID)
+                                    FileProcessController.shared.queue.addOperation(processor)
+                                }
+                            default:
+                                print("Error importing integrated image: ", error)
+                            }
+                        }
+                    }
+                    waitSema.signal()
+                }
+                waitSema.wait()
             }
+
         } catch {
             self.error = error
         }

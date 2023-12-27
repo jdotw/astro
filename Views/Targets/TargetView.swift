@@ -21,6 +21,7 @@ struct TargetView: View {
         panel.nameFieldStringValue = "\(target.name)"
         if panel.runModal() == .OK {
             let exportRequest = TargetExportRequest(context: viewContext)
+            exportRequest.status = .notStarted
             exportRequest.timestamp = Date()
             exportRequest.url = panel.url!
             if FileManager.default.fileExists(atPath: exportRequest.url.path(percentEncoded: false)) {
@@ -36,18 +37,6 @@ struct TargetView: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
             openWindow(value: exportRequest.id)
-            do {
-                try TargetExportController.shared.performExport(request: exportRequest) {
-                    exportRequest.completed = true
-                    do {
-                        try viewContext.save()
-                    } catch {
-                        exportRequest.error = error.localizedDescription
-                    }
-                }
-            } catch {
-                exportRequest.error = error.localizedDescription
-            }
         }
     }
 

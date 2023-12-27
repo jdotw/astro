@@ -15,7 +15,6 @@ enum PixInsightIntegrationMode {
 
 class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
     let files: [File]
-    let fileURLs: [URL]
     var error: Error?
     var outputURL: URL?
     var outputFileObjectID: NSManagedObjectID?
@@ -23,19 +22,10 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
 
     required init(files: [File]) {
         self.files = files
-        self.fileURLs = []
     }
 
     init(files: [File], mode: PixInsightIntegrationMode) {
         self.files = files
-        self.fileURLs = []
-        self.mode = mode
-        super.init()
-    }
-
-    init(fileURLs: [URL], mode: PixInsightIntegrationMode) {
-        self.files = []
-        self.fileURLs = fileURLs
         self.mode = mode
         super.init()
     }
@@ -59,9 +49,6 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
         script.append("P.images = [ // enabled, path, drizzlePath, localNormalizationDataPath\n")
         files.forEach { file in
             script.append("    [true, \"\(file.fitsURL.path(percentEncoded: false))\", \"\", \"\"],\n")
-        }
-        fileURLs.forEach { url in
-            script.append("    [true, \"\(url.path(percentEncoded: false))\", \"\", \"\"],\n")
         }
         script.append("];\n")
         script.append(template)
@@ -151,6 +138,7 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
                 print("OUTPUT: ", output)
 
                 if let outputURL {
+                    let waitSema = DispatchSemaphore(value: 0)
                     PersistenceController.shared.container.performBackgroundTask { context in
                         let importer = XISFFileImporter(url: outputURL,
                                                         context: context)
@@ -197,7 +185,9 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
                                 print("Error importing integrated image: ", error)
                             }
                         }
+                        waitSema.signal()
                     }
+                    waitSema.wait()
                 }
             }
         } catch {

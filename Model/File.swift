@@ -296,3 +296,12 @@ extension File {
         return image
     }
 }
+
+extension File {
+    func isDerived(from file: File) -> Bool {
+        let derivedFrom = self.derivedFrom?.allObjects as? [FileDerivation]
+        return derivedFrom?.first(where: { derivation in
+            derivation.input.objectID == file.objectID
+        }) != nil
+    }
+}
