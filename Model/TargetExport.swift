@@ -42,7 +42,6 @@ public extension TargetExportRequest {
     @NSManaged var bookmark: Data
     @NSManaged var target: Target
     @NSManaged var statusRawValue: String
-    @NSManaged var completed: Bool
     @NSManaged var error: String?
     @NSManaged var reference: File?
 
@@ -106,6 +105,16 @@ extension TargetExportRequest {
                 }
             }
         }
+    }
+}
+
+extension TargetExportRequest {
+    var exportOperation: TargetExportOperation? {
+        return TargetExportController.shared.operation(forRequest: self)
+    }
+
+    var hasExportOperation: Bool {
+        return self.exportOperation != nil
     }
 }
 

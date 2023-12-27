@@ -14,14 +14,18 @@ struct TargetExportRequestListView: View {
         animation: .default)
     private var exportRequests: FetchedResults<TargetExportRequest>
 
+    @State private var selection: URL?
+    @Environment(\.openWindow) private var openWindow
+
     var body: some View {
-        List {
+        List(selection: $selection) {
             ForEach(exportRequests) { exportRequest in
-                NavigationLink(destination: TargetExportContentView(exportRequest: exportRequest)) {
-                    TargetExportRequestRow(exportRequest: exportRequest)
-                }
+                TargetExportRequestRow(exportRequest: exportRequest)
             }
         }
+        .contextMenu(forSelectionType: URL.self, menu: { _ in }, primaryAction: { items in
+            items.forEach { openWindow(value: $0) }
+        })
         .navigationTitle("Target Exports")
     }
 }
@@ -31,22 +35,26 @@ struct TargetExportRequestRow: View {
 
     var body: some View {
         HStack {
-            exportRequest.status.statusView
+            exportRequest.statusView
             VStack(alignment: .leading) {
                 Text(exportRequest.target.name).bold()
                 Text(exportRequest.timestamp, style: .date)
             }
             Spacer()
-            Text(exportRequest.status.label)
+            Text(exportRequest.statusLabel)
         }
     }
 }
 
-extension TargetExportRequestStatus {
-    var label: String {
-        switch self {
+extension TargetExportRequest {
+    var statusLabel: String {
+        switch status {
         case .inProgress:
-            return "In Progress"
+            if hasExportOperation {
+                return "In Progress"
+            } else {
+                return "Cancelled"
+            }
         case .cancelled:
             return "Cancelled"
         case .exported:
@@ -60,12 +68,18 @@ extension TargetExportRequestStatus {
 
     var statusView: some View {
         VStack {
-            switch self {
+            switch status {
             case .inProgress:
-                ProgressView()
-                    .scaleEffect(0.5)
-                    .progressViewStyle(.circular)
-                    .frame(width: 14, height: 14)
+                if hasExportOperation {
+                    ProgressView()
+                        .scaleEffect(0.5)
+                        .progressViewStyle(.circular)
+                        .frame(width: 14, height: 14)
+                } else {
+                    // Stale
+                    Image(systemName: "nosign")
+                        .foregroundColor(.gray)
+                }
             case .failed:
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.red)

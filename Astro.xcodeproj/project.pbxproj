@@ -45,6 +45,8 @@
 		103E22582AA2BF8400B35FA6 /* Stretch.metal in Sources */ = {isa = PBXBuildFile; fileRef = 103E22572AA2BF8400B35FA6 /* Stretch.metal */; };
 		103F7B8F2B3BA12D002686E0 /* TargetExportRequestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103F7B8E2B3BA12D002686E0 /* TargetExportRequestListView.swift */; };
 		103F7B932B3BA1C5002686E0 /* TransientWindowEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103F7B922B3BA1C5002686E0 /* TransientWindowEnum.swift */; };
+		103F7B962B3BBADE002686E0 /* TargetExportSettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103F7B952B3BBA66002686E0 /* TargetExportSettingsContentView.swift */; };
+		103F7B982B3BBB24002686E0 /* TargetExportProgressContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103F7B972B3BBAF9002686E0 /* TargetExportProgressContentView.swift */; };
 		105B76E62B11526F00B3D069 /* URL+Documents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76E52B11526F00B3D069 /* URL+Documents.swift */; };
 		105B76EA2B11B70300B3D069 /* PixInsightInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76E92B11B70300B3D069 /* PixInsightInstance.swift */; };
 		105B76EC2B11F63100B3D069 /* TargetListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76EB2B11F63100B3D069 /* TargetListItem.swift */; };
@@ -174,6 +176,8 @@
 		103E22572AA2BF8400B35FA6 /* Stretch.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Stretch.metal; sourceTree = "<group>"; };
 		103F7B8E2B3BA12D002686E0 /* TargetExportRequestListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportRequestListView.swift; sourceTree = "<group>"; };
 		103F7B922B3BA1C5002686E0 /* TransientWindowEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransientWindowEnum.swift; sourceTree = "<group>"; };
+		103F7B952B3BBA66002686E0 /* TargetExportSettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportSettingsContentView.swift; sourceTree = "<group>"; };
+		103F7B972B3BBAF9002686E0 /* TargetExportProgressContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportProgressContentView.swift; sourceTree = "<group>"; };
 		105B76E52B11526F00B3D069 /* URL+Documents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Documents.swift"; sourceTree = "<group>"; };
 		105B76E92B11B70300B3D069 /* PixInsightInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightInstance.swift; sourceTree = "<group>"; };
 		105B76EB2B11F63100B3D069 /* TargetListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetListItem.swift; sourceTree = "<group>"; };
@@ -577,6 +581,8 @@
 			isa = PBXGroup;
 			children = (
 				10C55BA72AAD6331000BBC5E /* TargetExportContentView.swift */,
+				103F7B972B3BBAF9002686E0 /* TargetExportProgressContentView.swift */,
+				103F7B952B3BBA66002686E0 /* TargetExportSettingsContentView.swift */,
 				1089AA612AB53B78007D4E6B /* TargetExportController.swift */,
 				1071451A2B01AC340049E580 /* TargetExportOperation.swift */,
 				103D6CAD2B098D34006F9806 /* TargetExportController+Tests.swift */,
@@ -889,6 +895,7 @@
 				101A38322AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift in Sources */,
 				100577492A7DF3AF000B0D2B /* FileTable.swift in Sources */,
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
+				103F7B962B3BBADE002686E0 /* TargetExportSettingsContentView.swift in Sources */,
 				105B76E62B11526F00B3D069 /* URL+Documents.swift in Sources */,
 				109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */,
 				1071450D2B004FEF0049E580 /* PixInsightScript.swift in Sources */,
@@ -949,6 +956,7 @@
 				100D90162AF20A2B00B2F648 /* CombinedProcessingOperation.swift in Sources */,
 				108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */,
 				108F82262A60DE0000061511 /* FileViewer.swift in Sources */,
+				103F7B982B3BBB24002686E0 /* TargetExportProgressContentView.swift in Sources */,
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,
 				10F6468C2A62B8EB00DE27FE /* FITSFileImporter.swift in Sources */,
 				10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */,

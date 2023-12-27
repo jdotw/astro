@@ -83,7 +83,6 @@
     </entity>
     <entity name="TargetExportRequest" representedClassName="TargetExportRequest" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
-        <attribute name="completed" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="error" optional="YES" attributeType="String"/>
         <attribute name="statusRawValue" attributeType="String"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
