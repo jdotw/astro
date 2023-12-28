@@ -8,7 +8,7 @@
 @testable import Astro
 import XCTest
 
-final class TargetExportControllerTests: XCTestCase {
+final class TargetExportOperationTests: XCTestCase {
     var context: NSManagedObjectContext!
 
     override func setUpWithError() throws {
@@ -18,15 +18,13 @@ final class TargetExportControllerTests: XCTestCase {
     override func tearDownWithError() throws {}
 
     func testFileNameTimestampWithKnownDate() throws {
-        let controller = TargetExportController.shared
         let date = Date(timeIntervalSince1970: 1700353528)
-        let dateString = controller.fileNameTimestamp(forDate: date)
+        let dateString = TargetExportOperation.fileNameTimestamp(forDate: date)
         XCTAssertEqual(dateString, "20231119")
     }
 
     func testFileNameTimestampWithoutDate() throws {
-        let controller = TargetExportController.shared
-        let dateString = controller.fileNameTimestamp(forDate: nil)
+        let dateString = TargetExportOperation.fileNameTimestamp(forDate: nil)
         XCTAssertEqual(dateString, "unknown")
     }
 
@@ -67,11 +65,11 @@ final class TargetExportControllerTests: XCTestCase {
         let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         let filter = Filter(context: context)
         filter.name = "TestFilter"
-        let earliestDateString = TargetExportController.shared.fileNameTimestamp(forDate: oldestDate)
-        let latestDateString = TargetExportController.shared.fileNameTimestamp(forDate: newestDate)
+        let earliestDateString = oldestDate.fileNameTimestamp
+        let latestDateString = newestDate.fileNameTimestamp
         let pattern = "^\(filter.name.localizedCapitalized)-Integrated-\(files.count)files-\(earliestDateString)-\(latestDateString)$"
 
-        let integratedFileName = TargetExportController.shared.integratedFileName(forFiles: files, filter: filter)
+        let integratedFileName = TargetExportOperation.integratedFileName(forFiles: files, filter: filter)
         let matches = try integratedFileName.matches(of: Regex(pattern))
 
         XCTAssertEqual(matches.count, 1)

@@ -260,25 +260,21 @@ class TargetExportOperation: Operation, ObservableObject {
     
     // MARK: - Integration
     
-    func fileNameTimestamp(forDate date: Date?) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd"
-        if let date {
-            return dateFormatter.string(from: date)
-        } else {
-            return "unknown"
-        }
+    static func fileNameTimestamp(forDate date: Date?) -> String {
+        return date?.fileNameTimestamp ?? "unknown"
     }
     
-    func integratedFileName(forFiles files: [TargetExportRequestFile], filter: Filter) -> String {
+    static func integratedFileName(forFiles files: [TargetExportRequestFile], filter: Filter) -> String {
         let sortedFiles = files.sorted { a, b in
             a.source?.timestamp ?? Date() < b.source?.timestamp ?? Date()
         }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
         dateFormatter.timeStyle = .none
-        let earliestDateString = fileNameTimestamp(forDate: sortedFiles.first?.source?.timestamp)
-        let latestDateString = fileNameTimestamp(forDate: sortedFiles.last?.source?.timestamp)
+        let earliestDate = sortedFiles.first?.source?.timestamp
+        let latestDate = sortedFiles.last?.source?.timestamp
+        let earliestDateString = TargetExportOperation.fileNameTimestamp(forDate: earliestDate)
+        let latestDateString = TargetExportOperation.fileNameTimestamp(forDate: latestDate)
         let locFilterName = filter.name.localizedCapitalized.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileName = "\(locFilterName)-Integrated-\(files.count)files-\(earliestDateString)-\(latestDateString)"
         return fileName
@@ -293,7 +289,7 @@ class TargetExportOperation: Operation, ObservableObject {
             let sourceFiles = files.compactMap { $0.source }
             let op = PixInsightIntegrationOperation(files: sourceFiles, mode: .lights)
             op.main()
-            let fileName = integratedFileName(forFiles: files, filter: filter)
+            let fileName = TargetExportOperation.integratedFileName(forFiles: files, filter: filter)
             if let outputFileObjectID = op.outputFileObjectID {
                 let waitSema = DispatchSemaphore(value: 0)
                 PersistenceController.shared.container.performBackgroundTask { context in
@@ -388,5 +384,13 @@ extension File {
         else { return nil }
         let derivedFromFiles = derivedFromRecords.map { $0.input }
         return derivedFromFiles.first(where: { $0.type == .light })
+    }
+}
+
+extension Date {
+    var fileNameTimestamp: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        return dateFormatter.string(from: self)
     }
 }
