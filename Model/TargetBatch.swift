@@ -16,7 +16,7 @@ struct TargetFileBatch {
 
     static func batches(forFiles files: [File]) -> [TargetFileBatch] {
         var batches = [TargetFileBatch]()
-        let calibrationSessions = Set<Session>(files.compactMap { $0.calibrationSession })
+        let calibrationSessions = Set<Session>(files.compactMap { $0.flatCalibrationSession })
         for session in calibrationSessions {
             let batch = TargetFileBatch(calibrationSession: session, files: files)
             batches.append(batch)
@@ -27,7 +27,7 @@ struct TargetFileBatch {
     init(calibrationSession: Session, files: [File]) {
         self.calibrationSession = calibrationSession
         let files = files.filter { file in
-            file.calibrationSession == calibrationSession
+            file.flatCalibrationSession == calibrationSession
         }
         self.files = files
         self.uniqueFilters = Set(files.compactMap { $0.filter })

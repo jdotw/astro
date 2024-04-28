@@ -24,7 +24,7 @@ struct CalibrationSessionListSessionView: View {
         case .calibration:
             _files = FetchRequest(
                 sortDescriptors: [NSSortDescriptor(keyPath: \File.name, ascending: true)],
-                predicate: NSPredicate(format: "calibrationSession = %@", session),
+                predicate: NSPredicate(format: "flatCalibrationSession = %@ OR darkCalibrationSession = %@ OR biasCalibrationSession = %@", session, session, session),
                 animation: .default)
         }
     }
@@ -44,7 +44,7 @@ struct CalibrationSessionListSessionView: View {
 
     var uncalibratedFiles: [File] {
         files.filter { file in
-            file.calibrationSession == nil
+            file.flatCalibrationSession == nil
         }
     }
 

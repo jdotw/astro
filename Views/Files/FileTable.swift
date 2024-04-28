@@ -107,7 +107,7 @@ struct FileTable: View {
                 .defaultVisibility(columns.contains(.filter) ? .visible : .hidden)
 
                 TableColumn("Calibrated", value: \.filter.name) { file in
-                    if file.calibrationSession == nil {
+                    if file.flatCalibrationSession == nil {
                         Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.yellow)
                     } else {
                         Image(systemName: "checkmark.circle")

@@ -21,7 +21,9 @@ public extension Session {
 
     @NSManaged var dateString: String
     @NSManaged var files: NSSet?
-    @NSManaged var calibratesFiles: NSSet?
+    @NSManaged var flatCalibrationForFiles: NSSet?
+    @NSManaged var darkCalibrationForFiles: NSSet?
+    @NSManaged var biasCalibrationForFiles: NSSet?
 }
 
 // MARK: Generated accessors for files

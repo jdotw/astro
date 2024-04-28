@@ -40,19 +40,18 @@ class TargetExportController: ObservableObject {
         let op = TargetExportOperation(request: request)
         operationsByRequst[request.objectID.uriRepresentation()] = op
         op.completionBlock = {
+            // Will be called on main
             self.operationsByRequst.removeValue(forKey: request.objectID.uriRepresentation())
-            DispatchQueue.main.sync {
-                if let error = op.error {
-                    request.status = .failed
-                    request.error = error.localizedDescription
-                } else {
-                    request.status = .exported
-                }
-                do {
-                    try context.save()
-                } catch {
-                    request.error = error.localizedDescription
-                }
+            if let error = op.error {
+                request.status = .failed
+                request.error = error.localizedDescription
+            } else {
+                request.status = .exported
+            }
+            do {
+                try context.save()
+            } catch {
+                request.error = error.localizedDescription
             }
         }
         exportQueue.addOperation(op)

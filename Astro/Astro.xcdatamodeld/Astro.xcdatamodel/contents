@@ -17,10 +17,12 @@
         <attribute name="url" attributeType="URI"/>
         <attribute name="uuid" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="width" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="calibrationSession" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="calibratesFiles" inverseEntity="Session"/>
+        <relationship name="biasCalibrationSession" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="biasCalibrationForFiles" inverseEntity="Session"/>
+        <relationship name="darkCalibrationSession" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="darkCalibrationForFiles" inverseEntity="Session"/>
         <relationship name="derivedFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileDerivation" inverseName="output" inverseEntity="FileDerivation"/>
         <relationship name="derivitives" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileDerivation" inverseName="input" inverseEntity="FileDerivation"/>
         <relationship name="filter" maxCount="1" deletionRule="Nullify" destinationEntity="Filter" inverseName="files" inverseEntity="Filter"/>
+        <relationship name="flatCalibrationSession" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Session" inverseName="flatCalibrationForFiles" inverseEntity="Session"/>
         <relationship name="import" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImportRequest" inverseName="files" inverseEntity="ImportRequest"/>
         <relationship name="metadata" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileMetadata" inverseName="file" inverseEntity="FileMetadata"/>
         <relationship name="referenceFor" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TargetExportRequest" inverseName="reference" inverseEntity="TargetExportRequest"/>
@@ -73,8 +75,10 @@
     </entity>
     <entity name="Session" representedClassName="Session" syncable="YES">
         <attribute name="dateString" attributeType="String"/>
-        <relationship name="calibratesFiles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="calibrationSession" inverseEntity="File"/>
+        <relationship name="biasCalibrationForFiles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="biasCalibrationSession" inverseEntity="File"/>
+        <relationship name="darkCalibrationForFiles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="darkCalibrationSession" inverseEntity="File"/>
         <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="session" inverseEntity="File"/>
+        <relationship name="flatCalibrationForFiles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="flatCalibrationSession" inverseEntity="File"/>
     </entity>
     <entity name="Target" representedClassName="Target" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -82,11 +86,11 @@
         <relationship name="files" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="target" inverseEntity="File"/>
     </entity>
     <entity name="TargetExportRequest" representedClassName="TargetExportRequest" syncable="YES">
-        <attribute name="bookmark" attributeType="Binary"/>
+        <attribute name="bookmark" optional="YES" attributeType="Binary"/>
         <attribute name="error" optional="YES" attributeType="String"/>
         <attribute name="statusRawValue" attributeType="String"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="url" attributeType="URI"/>
+        <attribute name="url" optional="YES" attributeType="URI"/>
         <relationship name="reference" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="referenceFor" inverseEntity="File"/>
         <relationship name="target" maxCount="1" deletionRule="Nullify" destinationEntity="Target" inverseName="exportRequests" inverseEntity="Target"/>
     </entity>

@@ -17,27 +17,16 @@ struct TargetView: View {
     @Environment(\.openWindow) private var openWindow
 
     private func exportTarget() {
-        let panel = NSSavePanel()
-        panel.nameFieldStringValue = "\(target.name)"
-        if panel.runModal() == .OK {
-            let exportRequest = TargetExportRequest(context: viewContext)
-            exportRequest.status = .notStarted
-            exportRequest.timestamp = Date()
-            exportRequest.url = panel.url!
-            if FileManager.default.fileExists(atPath: exportRequest.url.path(percentEncoded: false)) {
-                try! FileManager.default.removeItem(at: exportRequest.url)
-            }
-            try! FileManager.default.createDirectory(at: exportRequest.url, withIntermediateDirectories: false)
-            exportRequest.target = target
-            exportRequest.bookmark = try! exportRequest.url.bookmarkData(options: .withSecurityScope)
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-            openWindow(value: exportRequest.id)
+        let exportRequest = TargetExportRequest(context: viewContext)
+        exportRequest.timestamp = Date()
+        exportRequest.target = target
+        exportRequest.status = .notStarted
+        do {
+            try viewContext.save()
+        } catch {
+            fatalError(error.localizedDescription)
         }
+        openWindow(value: exportRequest.id)
     }
 
     var body: some View {

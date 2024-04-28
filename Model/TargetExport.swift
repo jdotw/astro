@@ -38,8 +38,8 @@ public extension TargetExportRequest {
     }
 
     @NSManaged var timestamp: Date
-    @NSManaged var url: URL
-    @NSManaged var bookmark: Data
+    @NSManaged var url: URL?
+    @NSManaged var bookmark: Data?
     @NSManaged var target: Target
     @NSManaged var statusRawValue: String
     @NSManaged var error: String?
@@ -79,18 +79,18 @@ extension TargetExportRequest {
 
     func withResolvedDestinationURL(_ completion: @escaping (URL) -> Void) throws {
         var stale = false
-        guard let resolvedDestinationURL = try? URL(resolvingBookmarkData: bookmark,
+        guard let resolvedDestinationURL = try? URL(resolvingBookmarkData: bookmark!,
                                                     options: .withSecurityScope,
                                                     relativeTo: nil,
                                                     bookmarkDataIsStale: &stale)
         else {
             print("Failed to get security scoped URL")
-            throw TargetExportRequestError.failedToResolveDestinationBookmark(self.url)
+            throw TargetExportRequestError.failedToResolveDestinationBookmark(self.url!)
         }
         guard resolvedDestinationURL.startAccessingSecurityScopedResource() else {
             throw TargetExportRequestError.failedToStartAccessingDestinationURL
         }
-        completion(self.url)
+        completion(self.url!)
         resolvedDestinationURL.stopAccessingSecurityScopedResource()
     }
 

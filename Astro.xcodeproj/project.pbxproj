@@ -178,6 +178,7 @@
 		103F7B922B3BA1C5002686E0 /* TransientWindowEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransientWindowEnum.swift; sourceTree = "<group>"; };
 		103F7B952B3BBA66002686E0 /* TargetExportSettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportSettingsContentView.swift; sourceTree = "<group>"; };
 		103F7B972B3BBAF9002686E0 /* TargetExportProgressContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportProgressContentView.swift; sourceTree = "<group>"; };
+		103F7B992B3E5768002686E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		105B76E52B11526F00B3D069 /* URL+Documents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Documents.swift"; sourceTree = "<group>"; };
 		105B76E92B11B70300B3D069 /* PixInsightInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixInsightInstance.swift; sourceTree = "<group>"; };
 		105B76EB2B11F63100B3D069 /* TargetListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetListItem.swift; sourceTree = "<group>"; };
@@ -539,6 +540,7 @@
 		10C432232A50F80F00E620DF /* Astro */ = {
 			isa = PBXGroup;
 			children = (
+				103F7B992B3E5768002686E0 /* Info.plist */,
 				107144FC2AFF0C790049E580 /* AstroRelease.entitlements */,
 				10C432242A50F80F00E620DF /* AstroApp.swift */,
 				10C432282A50F81000E620DF /* Assets.xcassets */,
@@ -1137,6 +1139,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Astro/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1168,6 +1171,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Astro/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

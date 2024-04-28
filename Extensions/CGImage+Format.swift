@@ -34,3 +34,4 @@ public extension CGImage {
         return dataOfType(utType: UTType.tiff)
     }
 }
+

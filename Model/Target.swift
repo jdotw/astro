@@ -10,6 +10,7 @@
 
 import CoreData
 import Foundation
+import UniformTypeIdentifiers
 
 @objc(Target)
 public class Target: NSManagedObject {}
@@ -62,4 +63,8 @@ extension String {
             return false
         }
     }
+}
+
+extension UTType {
+    static var target: UTType { UTType(exportedAs: "com.jdotw.astro.target") }
 }

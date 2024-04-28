@@ -147,7 +147,7 @@ struct CalibrationSessionList: View {
                 Button("Clear Calibration") {
                     let files = try! viewContext.fetch(File.fetchRequest())
                     files.forEach { file in
-                        file.calibrationSession = nil
+                        file.flatCalibrationSession = nil
                     }
                     try! viewContext.save()
                 }
@@ -203,7 +203,7 @@ struct CalibrationSessionList: View {
                         print("DESTINATION FILTERS: ", calibratedFilters)
                         candidateFiles?.forEach { file in
                             if calibratedFilters.contains(file.filter.name) {
-                                file.calibrationSession = destinationSession
+                                file.flatCalibrationSession = destinationSession
                                 acceptDrop = true
                                 print("MATCHED SOURCE FILE: ", file)
                             } else {
@@ -365,7 +365,7 @@ extension Session {
 
     var uncalibratedFiles: [File] {
         guard let files = files?.allObjects as? [File] else { return [] }
-        return files.filter { $0.calibrationSession == nil }
+        return files.filter { $0.flatCalibrationSession == nil }
     }
 
     var hasUncalibratedFiles: Bool {

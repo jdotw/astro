@@ -63,7 +63,10 @@ public extension File {
     @NSManaged var regions: NSSet?
     @NSManaged var metadata: NSSet?
 
-    @NSManaged var calibrationSession: Session?
+    @NSManaged var flatCalibrationSession: Session?
+    @NSManaged var darkCalibrationSession: Session?
+    @NSManaged var biasCalibrationSession: Session?
+
     @NSManaged var referenceFor: NSSet?
 
     @NSManaged var derivitives: NSSet?

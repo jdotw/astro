@@ -25,6 +25,7 @@ struct TargetExportContentView: View {
 
 extension TargetExportRequest {
     var formattedTimestamp: String {
+//        return ""
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         return formatter.string(from: timestamp)

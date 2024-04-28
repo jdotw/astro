@@ -20,7 +20,7 @@ struct TargetExportProgressContentView: View {
     var exportingBody: some View {
         VStack {
             if let exportOperation = exportRequest.exportOperation {
-                Text("Exporting \(exportRequest.target.name) to \(exportRequest.url.relativePath)")
+                Text("Exporting \(exportRequest.target.name) to \(exportRequest.url!.relativePath)")
                 Text("\(exportOperation.exported) out of \(exportOperation.total) completed")
                 ProgressView(value: Float(exportOperation.exported) / Float(exportOperation.total), total: 1.0)
             }
@@ -35,7 +35,7 @@ struct TargetExportProgressContentView: View {
                 .frame(width: 44, height: 44)
                 .aspectRatio(contentMode: .fit)
             VStack(alignment: .leading) {
-                Text("Exported \(exportRequest.target.name) to \(exportRequest.url.relativePath)")
+                Text("Exported \(exportRequest.target.name) to \(exportRequest.url!.relativePath)")
                 if let exportOperation = exportRequest.exportOperation,
                    exportOperation.exported > 0
                 {

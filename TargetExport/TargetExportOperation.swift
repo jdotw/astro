@@ -99,7 +99,7 @@ class TargetExportOperation: Operation, ObservableObject {
                 print("FAILED TO GET PATH FOR: ", batch)
                 continue
             }
-            let batchURL = request.url.disambigutedURL(addingPath: batchPath)
+            let batchURL = request.url!.disambigutedURL(addingPath: batchPath)
             try FileManager.default.createDirectory(at: batchURL, withIntermediateDirectories: false)
             try exportFiles(inBatch: batch, to: batchURL)
             try calibrateFiles(inBatch: batch, at: batchURL, context: context)
@@ -112,8 +112,8 @@ class TargetExportOperation: Operation, ObservableObject {
         }
         let registeredFilesByFilter = try register(files: calibratedFiles,
                                                    usingReference: reference,
-                                                   at: request.url, context: context)
-        try integrate(filesByFilter: registeredFilesByFilter, at: request.url)
+                                                   at: request.url!, context: context)
+        try integrate(filesByFilter: registeredFilesByFilter, at: request.url!)
     }
     
     // MARK: Export
@@ -315,7 +315,7 @@ struct TargetExportFileBatch {
     init(calibrationSession: Session, files: [TargetExportRequestFile]) {
         self.calibrationSession = calibrationSession
         let files = files.filter { file in
-            file.source?.calibrationSession == calibrationSession
+            file.source?.flatCalibrationSession == calibrationSession
         }
         self.files = files
         self.uniqueFilters = Set(files.compactMap { $0.source?.filter })
@@ -355,7 +355,7 @@ struct TargetExportFileBatch {
 extension [TargetExportRequestFile] {
     var batches: [TargetExportFileBatch] {
         var batches = [TargetExportFileBatch]()
-        let calibrationSessions = Set<Session>(compactMap { $0.source?.calibrationSession })
+        let calibrationSessions = Set<Session>(compactMap { $0.source?.flatCalibrationSession })
         for session in calibrationSessions {
             let batch = TargetExportFileBatch(calibrationSession: session, files: self)
             batches.append(batch)

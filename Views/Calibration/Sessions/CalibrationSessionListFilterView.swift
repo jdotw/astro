@@ -33,7 +33,7 @@ struct CalibrationSessionListFilterView: View {
         case .calibration:
             _files = FetchRequest(
                 sortDescriptors: [NSSortDescriptor(keyPath: \File.name, ascending: true)],
-                predicate: NSPredicate(format: "calibrationSession = %@ AND filter = %@", session, filter),
+                predicate: NSPredicate(format: "(flatCalibrationSession = %@ OR darkCalibrationSession = %@ OR biasCalibrationSession = %@) AND filter = %@", session, session, session, filter),
                 animation: .default)
         }
     }
@@ -209,8 +209,8 @@ extension Filter {
 extension [File] {
     var calibrationSession: Session? {
         return self.first { file in
-            file.calibrationSession != nil
-        }?.calibrationSession
+            file.flatCalibrationSession != nil
+        }?.flatCalibrationSession
     }
 
     var hasCalibrationSession: Bool {
