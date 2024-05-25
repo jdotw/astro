@@ -10,14 +10,22 @@ import SwiftUI
 struct CalibrationView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var session: Session
-    var filter: Filter?
-    var type: SessionType
+    @AppStorage("calibrationViewMode") private var calibrationViewMode: CalibrationViewMode = .sessions
+    @Binding var navStackPath: [File]
 
     var body: some View {
-        if let filter {
-            CalibrationSessionFilterView(session: session, filter: filter, type: type)
-        } else {
-            CalibrationSessionView(session: session, type: type)
+        VStack {
+            switch calibrationViewMode {
+            case .sessions:
+                CalibrationSessionView(session: session)
+            case .files:
+                CalibrationFileTable(session: session, navStackPath: $navStackPath)
+            }
+        }
+        .toolbar {
+            ToolbarItem {
+                CalibrationViewModePicker(mode: $calibrationViewMode)
+            }
         }
     }
 }

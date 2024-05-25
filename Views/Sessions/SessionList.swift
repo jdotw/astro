@@ -12,18 +12,14 @@ struct SessionList: View {
     @Binding var selectedSessionID: URL?
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \Session.date, ascending: false)],
         animation: .default)
     private var sessions: FetchedResults<Session>
 
     var body: some View {
         List(selection: $selectedSessionID) {
             ForEach(sessions) { session in
-                if let date = Date(sessionDateString: session.dateString) {
-                    Label(date.formatted(date: .abbreviated, time: .omitted), systemImage: "moon")
-                } else {
-                    Label(session.dateString, systemImage: "moon")
-                }
+                Label(session.date.formatted(date: .abbreviated, time: .omitted), systemImage: "moon")
             }
         }
     }

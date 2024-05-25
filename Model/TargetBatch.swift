@@ -55,7 +55,7 @@ struct TargetFileBatch {
 
     var name: String {
         let sortedSessions = sessions.sorted { a, b in
-            a.dateString < b.dateString
+            a.date < b.date
         }
         guard let earliestSession = sortedSessions.first,
               let latestSession = sortedSessions.last

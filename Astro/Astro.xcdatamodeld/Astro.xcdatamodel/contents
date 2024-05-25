@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22222" systemVersion="23C64" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="File" representedClassName="File" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
@@ -74,6 +74,7 @@
         <relationship name="file" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="File" inverseName="regions" inverseEntity="File"/>
     </entity>
     <entity name="Session" representedClassName="Session" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dateString" attributeType="String"/>
         <relationship name="biasCalibrationForFiles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="biasCalibrationSession" inverseEntity="File"/>
         <relationship name="darkCalibrationForFiles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="File" inverseName="darkCalibrationSession" inverseEntity="File"/>

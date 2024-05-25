@@ -173,6 +173,7 @@ class XISFFileImporter: FileImporter {
             } else {
                 let newSession = Session(context: context)
                 newSession.dateString = dateString
+                newSession.date = observationDate
                 file.session = newSession
             }
         }

@@ -52,6 +52,8 @@
 		105B76EC2B11F63100B3D069 /* TargetListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76EB2B11F63100B3D069 /* TargetListItem.swift */; };
 		105B76F02B12BA0600B3D069 /* XISFFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76EF2B12BA0600B3D069 /* XISFFile.swift */; };
 		105B76F22B12BE7300B3D069 /* URL+Hash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105B76F12B12BE7300B3D069 /* URL+Hash.swift */; };
+		105F606C2C0003A100E24195 /* CalibrationSessionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105F606B2C0003A100E24195 /* CalibrationSessionPicker.swift */; };
+		105F606E2C000BD100E24195 /* CalibrationReferenceImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105F606D2C000BD100E24195 /* CalibrationReferenceImagePicker.swift */; };
 		1062D76A2A981BD100466086 /* File+RegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1062D7692A981B2300466086 /* File+RegionTests.swift */; };
 		106BD33F2A6CCF9A00DE947D /* FIlteredImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */; };
 		106D0FA72A7DE3C0003015EA /* FileListModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */; };
@@ -185,6 +187,8 @@
 		105B76ED2B12B4FB00B3D069 /* FileDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDerivation.swift; sourceTree = "<group>"; };
 		105B76EF2B12BA0600B3D069 /* XISFFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XISFFile.swift; sourceTree = "<group>"; };
 		105B76F12B12BE7300B3D069 /* URL+Hash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Hash.swift"; sourceTree = "<group>"; };
+		105F606B2C0003A100E24195 /* CalibrationSessionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSessionPicker.swift; sourceTree = "<group>"; };
+		105F606D2C000BD100E24195 /* CalibrationReferenceImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationReferenceImagePicker.swift; sourceTree = "<group>"; };
 		1062D7692A981B2300466086 /* File+RegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+RegionTests.swift"; sourceTree = "<group>"; };
 		106BD33E2A6CCF9A00DE947D /* FIlteredImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlteredImage.swift; sourceTree = "<group>"; };
 		106D0FA62A7DE3C0003015EA /* FileListModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListModePicker.swift; sourceTree = "<group>"; };
@@ -351,6 +355,8 @@
 				101A382F2AC8DFC1008DBB4C /* CalibrationSessionFilterView.swift */,
 				101A38312AC8E1D3008DBB4C /* CalibrationSessionFilterFlatView.swift */,
 				101A38332AC8E217008DBB4C /* CalibrationSessionFilterLightView.swift */,
+				105F606B2C0003A100E24195 /* CalibrationSessionPicker.swift */,
+				105F606D2C000BD100E24195 /* CalibrationReferenceImagePicker.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -912,6 +918,7 @@
 				10B792582A6222D500291B6D /* Import.swift in Sources */,
 				1096BDF22A9AD48900420F4C /* FileProcessController.swift in Sources */,
 				10A85CC42A9EAD57001196E0 /* Region.swift in Sources */,
+				105F606C2C0003A100E24195 /* CalibrationSessionPicker.swift in Sources */,
 				1071451B2B01AC340049E580 /* TargetExportOperation.swift in Sources */,
 				10AABE8A2A67FB37000443B8 /* FileImportController.swift in Sources */,
 				101EFF372B1AB882003FD57D /* XISFFileImporter.swift in Sources */,
@@ -958,6 +965,7 @@
 				100D90162AF20A2B00B2F648 /* CombinedProcessingOperation.swift in Sources */,
 				108DD7EE2A5AA8F3002A7549 /* Date+FITS.swift in Sources */,
 				108F82262A60DE0000061511 /* FileViewer.swift in Sources */,
+				105F606E2C000BD100E24195 /* CalibrationReferenceImagePicker.swift in Sources */,
 				103F7B982B3BBB24002686E0 /* TargetExportProgressContentView.swift in Sources */,
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,
 				10F6468C2A62B8EB00DE27FE /* FITSFileImporter.swift in Sources */,

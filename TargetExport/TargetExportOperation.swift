@@ -315,7 +315,7 @@ struct TargetExportFileBatch {
     init(calibrationSession: Session, files: [TargetExportRequestFile]) {
         self.calibrationSession = calibrationSession
         let files = files.filter { file in
-            file.source?.flatCalibrationSession == calibrationSession
+            file.source?.resolvedFlatCalibrationSession == calibrationSession
         }
         self.files = files
         self.uniqueFilters = Set(files.compactMap { $0.source?.filter })
@@ -343,7 +343,7 @@ struct TargetExportFileBatch {
     
     var path: String? {
         let sortedSessions = sessions.sorted { a, b in
-            a.dateString > b.dateString
+            a.date > b.date
         }
         guard let earliestSession = sortedSessions.first,
               let latestSession = sortedSessions.last
@@ -355,7 +355,15 @@ struct TargetExportFileBatch {
 extension [TargetExportRequestFile] {
     var batches: [TargetExportFileBatch] {
         var batches = [TargetExportFileBatch]()
-        let calibrationSessions = Set<Session>(compactMap { $0.source?.flatCalibrationSession })
+        let calibrationSessions = Set<Session>(compactMap {
+            guard let file = $0.source, let filter = $0.source?.filter else { return nil }
+            if let resolvedSession = file.session?.resolvedCalibrationSession(forFilter: filter, type: .flat) {
+                return resolvedSession
+            } else {
+                return $0.source?.flatCalibrationSession
+            }
+            
+        })
         for session in calibrationSessions {
             let batch = TargetExportFileBatch(calibrationSession: session, files: self)
             batches.append(batch)

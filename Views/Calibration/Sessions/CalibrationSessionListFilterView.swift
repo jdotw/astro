@@ -140,7 +140,7 @@ struct CalibrationSessionListFilterView: View {
 
     func lineDirection(forFilesInFilter filesForFilter: [File]) -> CalibrationSessionListFilterLineDirection {
         guard let calibrationSession = filesForFilter.calibrationSession else { return .down }
-        switch calibrationSession.dateString.compare(self.session.dateString) {
+        switch calibrationSession.date.compare(self.session.date) {
         case .orderedAscending:
             return .up
         case .orderedDescending:
@@ -155,12 +155,12 @@ struct CalibrationSessionListFilterView: View {
     func lineDirection(forFilesCalibratedWithFilter filesForFilter: [File]) -> CalibrationSessionListFilterLineDirection {
         var direction: CalibrationSessionListFilterLineDirection = .none
         if filesForFilter.first(where: { file in
-            file.session?.dateString.compare(session.dateString) == .orderedAscending
+            file.session?.date.compare(session.date) == .orderedAscending
         }) != nil {
             direction = .up
         }
         if filesForFilter.first(where: { file in
-            file.session?.dateString.compare(session.dateString) != .orderedAscending
+            file.session?.date.compare(session.date) != .orderedAscending
         }) != nil {
             if direction == .up {
                 direction = .both

@@ -10,9 +10,8 @@ import SwiftUI
 struct CalibrationSessionView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var session: Session
-    var type: SessionType
 
     var body: some View {
-        Text("\(session.dateString) - \(type.rawValue)")
+        Text("\(session.dateString)")
     }
 }

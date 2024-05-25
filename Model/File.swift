@@ -308,3 +308,36 @@ extension File {
         }) != nil
     }
 }
+
+extension File {
+    func resolvedCalibrationSession(type: FileType) -> Session? {
+        var configuredSession: Session?
+        switch type {
+        case .flat:
+            configuredSession = self.flatCalibrationSession
+        case .bias:
+            configuredSession = self.biasCalibrationSession
+        case .dark:
+            configuredSession = self.darkCalibrationSession
+        default:
+            break
+        }
+        if let configuredSession {
+            return configuredSession
+        } else {
+            return self.session?.resolvedCalibrationSession(forFilter: self.filter, type: .flat)
+        }
+    }
+
+    var resolvedFlatCalibrationSession: Session? {
+        return self.resolvedCalibrationSession(type: .flat)
+    }
+
+    var resolvedDarkCalibrationSession: Session? {
+        return self.resolvedCalibrationSession(type: .dark)
+    }
+
+    var resolvedBiasCalibrationSession: Session? {
+        return self.resolvedCalibrationSession(type: .bias)
+    }
+}

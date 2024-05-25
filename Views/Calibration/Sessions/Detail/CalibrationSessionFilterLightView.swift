@@ -7,59 +7,92 @@
 
 import SwiftUI
 
-enum CalibrationSessionFilterLightViewOverlay: String, CaseIterable, Identifiable {
-    var id: Self { self }
-
-    case earlier
-    case later
-}
-
 struct CalibrationSessionFilterLightView: View {
-    @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var session: Session
     var filter: Filter
 
-    @State private var histogramImage: NSImage = .init()
-    @State private var showStarRects: Bool = false
-    @State private var earlierHistogramImage: NSImage = .init()
-    @State private var laterHistogramImage: NSImage = .init()
-    @State private var overlay: CalibrationSessionFilterLightViewOverlay = .earlier
-    @State private var showOverlay: Bool = true
-
-    @State private var earlierCalibrationSessionID: String = ""
-    @State private var laterCalibrationSessionID: String = ""
-
-    @FocusState private var focused: Bool
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: true)])
-    private var sessions: FetchedResults<Session>
-
     @FetchRequest private var earlierCalibrationSessions: FetchedResults<Session>
     @FetchRequest private var laterCalibrationSessions: FetchedResults<Session>
+    @FetchRequest private var candidateImages: FetchedResults<File>
 
-    @AppStorage("calibrationLightTargetBackground") private var imageTargetBackground: Double = 0.25
-    @AppStorage("calibrationFlatTargetBackground") private var flatTargetBackground: Double = 0.25
+    @State private var earlierCalibrationSessionID: URL?
+    @State private var laterCalibrationSessionID: URL?
+    @State private var candidateImageID: URL?
 
     @State private var earlierStackedFlatFrame: CGImage?
     @State private var laterStackedFlatFrame: CGImage?
 
-    @State private var imageProcessingQueue: OperationQueue = .init()
+    @State private var showStarRects: Bool = false
+    @State private var earlierHistogram: NSImage = .init()
+    @State private var laterHistogram: NSImage = .init()
+    @State private var candidateHistogram: NSImage = .init()
+
+    @Environment(\.managedObjectContext) private var viewContext
 
     init(session: Session, filter: Filter) {
         self.session = session
         self.filter = filter
 
-        let earlierPredicate = NSPredicate(format: "dateString <= %@ AND SUBQUERY(files, $file, $file.typeRawValue =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, FileType.flat.rawValue, filter)
-        let laterPredicate = NSPredicate(format: "dateString > %@ AND SUBQUERY(files, $file, $file.typeRawValue =[cd] %@ and $file.filter = %@).@count > 0", session.dateString, FileType.flat.rawValue, filter)
         _earlierCalibrationSessions = FetchRequest(
             entity: Session.entity(),
-            sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: false)],
-            predicate: earlierPredicate)
+            sortDescriptors: [NSSortDescriptor(keyPath: \Session.date, ascending: false)],
+            predicate: NSPredicate(format: "date <= %@ AND SUBQUERY(files, $file, $file.typeRawValue =[cd] %@ and $file.filter = %@).@count > 0", session.date as CVarArg, FileType.flat.rawValue, filter))
         _laterCalibrationSessions = FetchRequest(
             entity: Session.entity(),
-            sortDescriptors: [NSSortDescriptor(keyPath: \Session.dateString, ascending: true)],
-            predicate: laterPredicate)
+            sortDescriptors: [NSSortDescriptor(keyPath: \Session.date, ascending: true)],
+            predicate: NSPredicate(format: "date > %@ AND SUBQUERY(files, $file, $file.typeRawValue =[cd] %@ and $file.filter = %@).@count > 0", session.date as CVarArg, FileType.flat.rawValue, filter))
+        _candidateImages = FetchRequest(
+            entity: File.entity(),
+            sortDescriptors: [NSSortDescriptor(keyPath: \File.timestamp, ascending: true)],
+            predicate: NSPredicate(format: "session = %@ AND typeRawValue =[cd] %@ and filter = %@", session, FileType.light.rawValue, filter))
+    }
+
+    private var candidateImage: File? {
+        guard let candidateImageID else { return candidateImages.first }
+        guard let objectID = viewContext.managedObjectID(forURIRepresentation: candidateImageID) else { return nil }
+        return viewContext.object(with: objectID) as? File
+    }
+
+    private func candidateImageBinding() -> Binding<URL?> {
+        return .init(
+            get: {
+                candidateImage?.id
+            },
+            set: {
+                candidateImageID = $0
+            })
+    }
+
+    var earlierCandidateSession: Session? {
+        guard let earlierCalibrationSessionID else { return earlierCalibrationSessions.first }
+        guard let objectID = viewContext.managedObjectID(forURIRepresentation: earlierCalibrationSessionID) else { return nil }
+        return viewContext.object(with: objectID) as? Session
+    }
+
+    private func earlierSessionBinding() -> Binding<URL?> {
+        return .init(
+            get: {
+                earlierCandidateSession?.id
+            },
+            set: {
+                earlierCalibrationSessionID = $0
+            })
+    }
+
+    var laterCandidateSession: Session? {
+        guard let laterCalibrationSessionID else { return laterCalibrationSessions.first }
+        guard let objectID = viewContext.managedObjectID(forURIRepresentation: laterCalibrationSessionID) else { return nil }
+        return viewContext.object(with: objectID) as? Session
+    }
+
+    private func laterSessionBinding() -> Binding<URL?> {
+        return .init(
+            get: {
+                laterCandidateSession?.id
+            },
+            set: {
+                laterCalibrationSessionID = $0
+            })
     }
 
     var body: some View {
@@ -69,126 +102,66 @@ struct CalibrationSessionFilterLightView: View {
                 VStack {
                     ZStack {
                         if let earlierCandidateSession,
-                           let file = candidateFlat(inSession: earlierCandidateSession),
-                           let earlierStackedFlatFrame
+                           let file = candidateFlat(inSession: earlierCandidateSession)
                         {
-                            FilteredImage(file: file, inputImage: earlierStackedFlatFrame, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $earlierHistogramImage, showStarRects: $showStarRects)
-                                .opacity(showOverlay ? 1.0 : 0.0)
-
+                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $earlierHistogram, showStarRects: $showStarRects)
                         } else {
                             Text("No earlier calibration session found")
                         }
-                        if let file = candidateFile {
-                            FilteredImage(file: file, autoFlipImage: false, targetBackground: imageTargetBackground, histogramImage: $histogramImage, showStarRects: $showStarRects)
-                                .opacity(showOverlay ? 0.2 : 1.0)
-                        } else {
-                            Text("No candidate file found")
-                        }
                     }
-                    if earlierCalibrationSessions.count > 0 {
-                        Picker("Session", selection: $earlierCalibrationSessionID) {
-                            ForEach(earlierCalibrationSessions, id: \.id.absoluteString) { session in
-                                Text(session.dateString)
-                            }
+                    Picker("Earlier", selection: earlierSessionBinding()) {
+                        ForEach(earlierCalibrationSessions) { session in
+                            Text(session.dateString).tag(session.id as URL?)
                         }
-                        .focusable(true)
+                        Text("None").tag(nil as URL?)
                     }
                 }
-                .focusable(true)
+                VStack {
+                    if let candidateImageID,
+                       let candidateFile = candidateImages.first(where: { $0.id == candidateImageID })
+                    {
+                        FilteredImage(file: candidateFile, autoFlipImage: false, histogramImage: $candidateHistogram, showStarRects: $showStarRects)
+                    } else if let candidateFile = candidateImages.first {
+                        FilteredImage(file: candidateFile, autoFlipImage: false, histogramImage: $candidateHistogram, showStarRects: $showStarRects)
+                    }
+                    Picker("Image", selection: candidateImageBinding()) {
+                        ForEach(candidateImages) { file in
+                            Text(file.name).tag(file.id as URL?)
+                        }
+//                        Text("None").tag(nil as URL?)
+                    }
+                }
                 VStack {
                     ZStack {
-                        if let laterCandidateSession = laterCandidateSession,
+                        if let laterCandidateSession,
                            let file = candidateFlat(inSession: laterCandidateSession)
                         {
-                            if let laterStackedFlatFrame {
-                                FilteredImage(file: file, inputImage: laterStackedFlatFrame, autoFlipImage: false, targetBackground: flatTargetBackground, histogramImage: $laterHistogramImage, showStarRects: $showStarRects)
-                                    .opacity(showOverlay ? 1.0 : 0.0)
-                            }
+                            FilteredImage(file: file, autoFlipImage: false, histogramImage: $laterHistogram, showStarRects: $showStarRects)
                         } else {
                             Text("No later calibration session found")
                         }
-                        if let file = candidateFile {
-                            FilteredImage(file: file, autoFlipImage: false, targetBackground: imageTargetBackground, histogramImage: $histogramImage, showStarRects: $showStarRects)
-                                .opacity(showOverlay ? 0.2 : 1.0)
-                        } else {
-                            Text("No candidate file found")
-                        }
                     }
-                    if laterCalibrationSessions.count > 0 {
-                        Picker("Session", selection: $laterCalibrationSessionID) {
-                            ForEach(laterCalibrationSessions, id: \.id.absoluteString) { session in
-                                Text(session.dateString)
-                            }
+                    Picker("Later", selection: laterSessionBinding()) {
+                        ForEach(laterCalibrationSessions) { session in
+                            Text(session.dateString).tag(session.id as URL?)
                         }
-                        .focusable(true)
+                        Text("None").tag(nil as URL?)
                     }
                 }
-            }
-        }
-        .toolbar(content: {
-            ToolbarItemGroup {
-                HStack {
-                    Text("Image Stretch")
-                    Slider(value: $imageTargetBackground, in: 0.0 ... 1.0)
-                        .controlSize(.small)
-                        .frame(width: 100)
-                    //                .padding(.trailing)
-                }
-                HStack {
-                    Text("Flat Stretch")
-                    Slider(value: $flatTargetBackground, in: 0.0 ... 1.0, label: { Text("Flat Stretch") })
-                        .controlSize(.small)
-                        .frame(width: 100)
-                    //                .padding(.trailing)
+                VStack {
+//                    Picker("Dark", selection: $laterCalibrationSessionID) {
+//                        ForEach(laterCalibrationSessions) { session in
+//                            Text(session.dateString)
+//                        }
+//                    }
+//                    Picker("Bias", selection: $laterCalibrationSessionID) {
+//                        ForEach(laterCalibrationSessions) { session in
+//                            Text(session.dateString)
+//                        }
+//                    }
                 }
             }
-            ToolbarItemGroup {
-                Toggle("Show Overlay", isOn: $showOverlay)
-                    .keyboardShortcut(.space, modifiers: [])
-            }
-        })
-        .task {
-            updateSessionPickers()
-            stackFlatFrames()
         }
-        .onChange(of: session) { _, _ in
-            updateSessionPickers()
-            stackFlatFrames()
-        }
-        .onChange(of: filter) {
-            stackFlatFrames()
-        }
-    }
-
-    func stackFlatFrames() {
-        if let laterCandidateSession {
-            let files = candidateFlats(inSession: laterCandidateSession)
-            let op = StackingOperation(files: files) { image in
-                let ctx = CIContext(options: [.useSoftwareRenderer: false])
-                let cgImage = ctx.createCGImage(image, from: image.extent)
-                self.laterStackedFlatFrame = cgImage
-            }
-            imageProcessingQueue.addOperation(op)
-        } else {
-            laterStackedFlatFrame = nil
-        }
-
-        if let earlierCandidateSession {
-            let files = candidateFlats(inSession: earlierCandidateSession)
-            let op = StackingOperation(files: files) { image in
-                let ctx = CIContext(options: [.useSoftwareRenderer: false])
-                let cgImage = ctx.createCGImage(image, from: image.extent)
-                self.earlierStackedFlatFrame = cgImage
-            }
-            imageProcessingQueue.addOperation(op)
-        } else {
-            earlierStackedFlatFrame = nil
-        }
-    }
-
-    func updateSessionPickers() {
-        earlierCalibrationSessionID = earlierCalibrationSessions.first?.id.absoluteString ?? ""
-        laterCalibrationSessionID = laterCalibrationSessions.first?.id.absoluteString ?? ""
     }
 
     var candidateFile: File? {
@@ -214,47 +187,5 @@ struct CalibrationSessionFilterLightView: View {
         return files.first { file in
             file.filter == filter && file.type == .flat
         }
-    }
-
-    var earlierCandidateSession: Session? {
-        earlierCalibrationSessions.first { session in
-            session.id.absoluteString == earlierCalibrationSessionID
-        }
-    }
-
-    var laterCandidateSession: Session? {
-        laterCalibrationSessions.first { session in
-            session.id.absoluteString == laterCalibrationSessionID
-        }
-    }
-}
-
-struct CalibrationSessionFilterLightViewOverlayPicker: View {
-    @Binding var overlay: CalibrationSessionFilterLightViewOverlay
-
-    var body: some View {
-        Picker("Overlay", selection: $overlay) {
-            ForEach(CalibrationSessionFilterLightViewOverlay.allCases) { overlay in
-                overlay.label
-                    .keyboardShortcut(overlay.labelContent.keyboardShortcut, modifiers: [])
-            }
-        }
-        .pickerStyle(SegmentedPickerStyle())
-    }
-}
-
-extension CalibrationSessionFilterLightViewOverlay {
-    var labelContent: (name: String, systemImage: String, keyboardShortcut: KeyEquivalent) {
-        switch self {
-        case .earlier:
-            return ("Earlier", "chevron.up", .upArrow)
-        case .later:
-            return ("Later", "chevron.down", .downArrow)
-        }
-    }
-
-    var label: some View {
-        let content = labelContent
-        return Label(content.name, systemImage: content.systemImage)
     }
 }

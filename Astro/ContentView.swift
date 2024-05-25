@@ -16,13 +16,9 @@ struct ContentView: View {
     @AppStorage("selectedCategory") private var selectedCategory: CategoryItem = .sessions
     @AppStorage("selectedSession") private var selectedSessionID: URL?
     @AppStorage("selectedCalibrationSession") private var selectedCalibrationSessionID: URL?
-    @AppStorage("selectedCalibrationSessionType") private var selectedCalibrationSessionType: SessionType?
-    @AppStorage("selectedCalibrationFilter") private var selectedCalibrationFilterID: URL?
     @AppStorage("selectedTarget") private var selectedTargetID: URL?
     @AppStorage("selectedFile") private var selectedFileID: URL?
     @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
-
-    @AppStorage("calibrationViewMode") private var calibrationViewMode: CalibrationViewMode = .sessions
 
     @State private var navStackPath = [File]()
 
@@ -41,12 +37,7 @@ struct ContentView: View {
                 case .files:
                     FileList(selectedFileID: $selectedFileID)
                 case .calibration:
-                    switch calibrationViewMode {
-                    case .sessions:
-                        CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID, selectedFilterID: $selectedCalibrationFilterID, selectedSessionType: $selectedCalibrationSessionType)
-                    case .files:
-                        Text("GROUPS HERE")
-                    }
+                    CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID)
                 }
             }
         } detail: {
@@ -74,21 +65,10 @@ struct ContentView: View {
                         }
                     case .calibration:
                         VStack {
-                            switch calibrationViewMode {
-                            case .sessions:
-                                if let selectedCalibrationSession {
-                                    CalibrationView(session: selectedCalibrationSession, filter: selectedCalibrationFilter, type: selectedCalibrationSessionType ?? .light)
-                                } else {
-                                    Text("No session selected")
-                                }
-                            case .files:
-                                CalibrationFileTable(navStackPath: $navStackPath)
-                                Text("Calibration Artefacts Here")
-                            }
-                        }
-                        .toolbar {
-                            ToolbarItem {
-                                CalibrationViewModePicker(mode: $calibrationViewMode)
+                            if let selectedCalibrationSession {
+                                CalibrationView(session: selectedCalibrationSession, navStackPath: $navStackPath)
+                            } else {
+                                Text("No session selected")
                             }
                         }
                     }
@@ -166,13 +146,6 @@ extension ContentView {
         return selectedCalibrationSessionID.flatMap { id in
             guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
             return try? viewContext.existingObject(with: objectID) as? Session
-        }
-    }
-
-    var selectedCalibrationFilter: Filter? {
-        return selectedCalibrationFilterID.flatMap { id in
-            guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
-            return try? viewContext.existingObject(with: objectID) as? Filter
         }
     }
 }
