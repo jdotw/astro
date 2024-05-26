@@ -55,24 +55,24 @@ class TargetExportOperation: Operation, ObservableObject {
         //              |-> [flat.fits...]
         //              |-> master.xisf
         //  |-> Filter x
-        //      |-> Session 1
+        //      |-> Batch 1 (Same Flat, Dark and Bias calibration masters)
         //          |-> Uncalibrated
         //              |-> [light.fits...]
         //          |-> Calibrated
         //              |-> [light-calibrated.xisf...]
-        //      |-> Session 2
+        //      |-> Batch 2
         //          |-> Uncalibrated
         //              |-> [light.fits...]
         //          |-> Calibrated
         //              |-> [light-calibrated.xisf...]
         //      |-> integrated.xisf
         //  |-> Filter y
-        //      |-> Session 1
+        //      |-> Batch 1
         //          |-> Uncalibrated
         //              |-> [light.fits...]
         //          |-> Calibrated
         //              |-> [light-calibrated.xisf...]
-        //      |-> Session 2
+        //      |-> Batch 2
         //          |-> Uncalibrated
         //              |-> [light.fits...]
         //          |-> Calibrated
