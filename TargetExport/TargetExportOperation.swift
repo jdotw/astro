@@ -26,20 +26,68 @@ class TargetExportOperation: Operation, ObservableObject {
         // for a given target and arranges them in this structure:
         //
         //  Target
-        //  |-> Batch 1
-        //      |-> Filter 1
-        //          |-> Calibration
-        //          |-> Light
-        //      |-> Filter 2
-        //          |-> Calibration
-        //          |-> Light
-        //  |-> Batch 2
-        //      |-> Filter 1
-        //          |-> Calibration
-        //          |-> Light
-        //      |-> Filter 2
-        //          |-> Calibration
-        //          |-> Light
+        //  |-> Calibration
+        //      |-> Darks
+        //          |-> Session
+        //              |-> [dark.fits...]
+        //              |-> master.xisf
+        //          |-> Session
+        //              |-> [dark.fits...]
+        //              |-> master.xisf
+        //          |-> Session
+        //              |-> [dark.fits...]
+        //              |-> master.xisf
+        //      |-> Bias
+        //          |-> Session
+        //              |-> [bias.fits...]
+        //              |-> master.xisf
+        //          |-> Session
+        //              |-> [bias.fits...]
+        //              |-> master.xisf
+        //      |-> Flat
+        //          |-> Session
+        //              |-> [flat.fits...]
+        //              |-> master.xisf
+        //          |-> Session
+        //              |-> [flat.fits...]
+        //              |-> master.xisf
+        //          |-> Session
+        //              |-> [flat.fits...]
+        //              |-> master.xisf
+        //  |-> Filter x
+        //      |-> Session 1
+        //          |-> Uncalibrated
+        //              |-> [light.fits...]
+        //          |-> Calibrated
+        //              |-> [light-calibrated.xisf...]
+        //      |-> Session 2
+        //          |-> Uncalibrated
+        //              |-> [light.fits...]
+        //          |-> Calibrated
+        //              |-> [light-calibrated.xisf...]
+        //      |-> integrated.xisf
+        //  |-> Filter y
+        //      |-> Session 1
+        //          |-> Uncalibrated
+        //              |-> [light.fits...]
+        //          |-> Calibrated
+        //              |-> [light-calibrated.xisf...]
+        //      |-> Session 2
+        //          |-> Uncalibrated
+        //              |-> [light.fits...]
+        //          |-> Calibrated
+        //              |-> [light-calibrated.xisf...]
+        //      |-> integrated.xisf
+        //
+        //
+        // Steps:
+        //
+        // 1. Get unique Set of Dark, Bias and Flat calibration sessions
+        // 2. Create masters for each Dark, Bias and Flat calibration session
+        // 3. Get Batches which are light files that are calibrated using
+        //    the same Dark, Bias and Flat calibration sessions
+        // 4. Calibrate each Batch using the master Dark, Bias and Flat for that batch
+        // 5. Integrate all files for a given Filter
 
         DispatchQueue.main.sync {
             exporting = true
@@ -353,21 +401,31 @@ struct TargetExportFileBatch {
 }
 
 extension [TargetExportRequestFile] {
-    var batches: [TargetExportFileBatch] {
+    func calibrationSessionFileBatches(ofType type: FileType) -> [TargetExportFileBatch] {
         var batches = [TargetExportFileBatch]()
         let calibrationSessions = Set<Session>(compactMap {
             guard let file = $0.source, let filter = $0.source?.filter else { return nil }
-            if let resolvedSession = file.session?.resolvedCalibrationSession(forFilter: filter, type: .flat) {
-                return resolvedSession
-            } else {
-                return $0.source?.flatCalibrationSession
-            }
-            
+            return file.session?.resolvedCalibrationSession(forFilter: filter, type: type)
         })
         for session in calibrationSessions {
             let batch = TargetExportFileBatch(calibrationSession: session, files: self)
             batches.append(batch)
         }
+        return batches
+    }
+    
+    var batches: [TargetExportFileBatch] {
+        var batches = [TargetExportFileBatch]()
+        
+        // Flat Calibration Sessions
+        batches.append(contentsOf: calibrationSessionFileBatches(ofType: .flat))
+
+        // Dark Calibration Sessions
+        batches.append(contentsOf: calibrationSessionFileBatches(ofType: .dark))
+
+        // Bias Calibration Sessions
+        batches.append(contentsOf: calibrationSessionFileBatches(ofType: .bias))
+
         return batches
     }
 }

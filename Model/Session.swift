@@ -98,7 +98,7 @@ public extension Session {
         let candidateFetchReq = NSFetchRequest<Session>(entityName: "Session")
         switch type {
         case .dark, .bias:
-            candidateFetchReq.predicate = NSPredicate(format: "SUBQUERY(files, $file, $file.typeRawValue = %@).@count > 0", type.rawValue, filter)
+            candidateFetchReq.predicate = NSPredicate(format: "SUBQUERY(files, $file, $file.typeRawValue = %@).@count > 0", type.rawValue)
         default:
             candidateFetchReq.predicate = NSPredicate(format: "SUBQUERY(files, $file, $file.typeRawValue = %@ AND $file.filter = %@).@count > 0", type.rawValue, filter)
         }
