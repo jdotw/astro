@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		10024F5D2C0E78D00063A417 /* CalibrationMasterExportOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10024F5C2C0E78D00063A417 /* CalibrationMasterExportOperation.swift */; };
 		100519452AA4209400C25AF6 /* ImageInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100519442AA4209400C25AF6 /* ImageInspector.swift */; };
 		1005194A2AA421AC00C25AF6 /* FileMetadataInspectorPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100519492AA421AC00C25AF6 /* FileMetadataInspectorPane.swift */; };
 		1005194D2AA4267B00C25AF6 /* FileMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1005194C2AA425E800C25AF6 /* FileMetadata.swift */; };
@@ -103,6 +104,7 @@
 		10C432482A50F81000E620DF /* AstroUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C432472A50F81000E620DF /* AstroUITestsLaunchTests.swift */; };
 		10C55BA82AAD6331000BBC5E /* TargetExportContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C55BA72AAD6331000BBC5E /* TargetExportContentView.swift */; };
 		10C55BAB2AAD6561000BBC5E /* TargetExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C55BA92AAD64BD000BBC5E /* TargetExport.swift */; };
+		10D027462C291113001119EF /* CalibrateAndExportLightFramesOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D027452C291113001119EF /* CalibrateAndExportLightFramesOperation.swift */; };
 		10D833132A5F758000C63083 /* CategoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833122A5F758000C63083 /* CategoryList.swift */; };
 		10D833152A5F75AC00C63083 /* SessionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833142A5F75AC00C63083 /* SessionList.swift */; };
 		10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D833182A5F7C6F00C63083 /* TargetList.swift */; };
@@ -141,6 +143,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		10024F5C2C0E78D00063A417 /* CalibrationMasterExportOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationMasterExportOperation.swift; sourceTree = "<group>"; };
 		100519442AA4209400C25AF6 /* ImageInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageInspector.swift; sourceTree = "<group>"; };
 		100519492AA421AC00C25AF6 /* FileMetadataInspectorPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMetadataInspectorPane.swift; sourceTree = "<group>"; };
 		1005194C2AA425E800C25AF6 /* FileMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMetadata.swift; sourceTree = "<group>"; };
@@ -244,6 +247,7 @@
 		10C432472A50F81000E620DF /* AstroUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstroUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		10C55BA72AAD6331000BBC5E /* TargetExportContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExportContentView.swift; sourceTree = "<group>"; };
 		10C55BA92AAD64BD000BBC5E /* TargetExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetExport.swift; sourceTree = "<group>"; };
+		10D027452C291113001119EF /* CalibrateAndExportLightFramesOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrateAndExportLightFramesOperation.swift; sourceTree = "<group>"; };
 		10D833122A5F758000C63083 /* CategoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryList.swift; sourceTree = "<group>"; };
 		10D833142A5F75AC00C63083 /* SessionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionList.swift; sourceTree = "<group>"; };
 		10D833182A5F7C6F00C63083 /* TargetList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetList.swift; sourceTree = "<group>"; };
@@ -594,6 +598,8 @@
 				1089AA612AB53B78007D4E6B /* TargetExportController.swift */,
 				1071451A2B01AC340049E580 /* TargetExportOperation.swift */,
 				103D6CAD2B098D34006F9806 /* TargetExportOperation+Tests.swift */,
+				10024F5C2C0E78D00063A417 /* CalibrationMasterExportOperation.swift */,
+				10D027452C291113001119EF /* CalibrateAndExportLightFramesOperation.swift */,
 			);
 			path = TargetExport;
 			sourceTree = "<group>";
@@ -804,7 +810,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					10C432202A50F80F00E620DF = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -905,6 +911,7 @@
 				10C432272A50F80F00E620DF /* ContentView.swift in Sources */,
 				103F7B962B3BBADE002686E0 /* TargetExportSettingsContentView.swift in Sources */,
 				105B76E62B11526F00B3D069 /* URL+Documents.swift in Sources */,
+				10D027462C291113001119EF /* CalibrateAndExportLightFramesOperation.swift in Sources */,
 				109D2DC62A5AC47D0024BBBD /* FITSFile.swift in Sources */,
 				1071450D2B004FEF0049E580 /* PixInsightScript.swift in Sources */,
 				100D90102AF2084800B2F648 /* ImageProcessorContentView.swift in Sources */,
@@ -967,6 +974,7 @@
 				108F82262A60DE0000061511 /* FileViewer.swift in Sources */,
 				105F606E2C000BD100E24195 /* CalibrationReferenceImagePicker.swift in Sources */,
 				103F7B982B3BBB24002686E0 /* TargetExportProgressContentView.swift in Sources */,
+				10024F5D2C0E78D00063A417 /* CalibrationMasterExportOperation.swift in Sources */,
 				103870992A5E246800064EF1 /* Date+Session.swift in Sources */,
 				10F6468C2A62B8EB00DE27FE /* FITSFileImporter.swift in Sources */,
 				10D833192A5F7C6F00C63083 /* TargetList.swift in Sources */,

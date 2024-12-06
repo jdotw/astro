@@ -8,33 +8,28 @@
 import CoreData
 import Foundation
 
-enum PixInsightIntegrationMode {
-    case flats
-    case lights
-}
-
 class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
     let files: [File]
     var error: Error?
     var outputURL: URL?
     var outputFileObjectID: NSManagedObjectID?
-    var mode: PixInsightIntegrationMode = .lights
+    var type: FileType = .light
 
     required init(files: [File]) {
         self.files = files
     }
 
-    init(files: [File], mode: PixInsightIntegrationMode) {
+    init(files: [File], type: FileType) {
         self.files = files
-        self.mode = mode
+        self.type = type
         super.init()
     }
 
     private var jsScriptTemplateName: String {
-        switch mode {
-        case .flats:
+        switch type {
+        case .flat, .dark, .bias:
             return "PixInsightFlatsIntegrationScriptTemplate"
-        case .lights:
+        case .light, .unknown:
             return "PixInsightLightsIntegrationScriptTemplate"
         }
     }
@@ -64,8 +59,9 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
             return
         }
 
-        // Look for an existing artefact
-        if mode == .flats {
+        // If we're integrating calibration files (no lights)
+        // Then look for an existing artefact we can use instead
+        if type != .light {
             let artefactRequest = NSFetchRequest<File>(entityName: "File")
             artefactRequest.predicate = NSPredicate(format: "SUBQUERY(derivedFrom, $derivedFrom, $derivedFrom.input IN %@).@count == derivedFrom.@count AND derivedFrom.@count == %d", NSSet(array: files), files.count)
             artefactRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
@@ -147,10 +143,10 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
                             let importedFile = try importer.importFile { file in
                                 file.name = importedFileName
                                 file.timestamp = Date()
-                                switch self.mode {
-                                case .flats:
+                                switch self.type {
+                                case .flat, .dark, .bias:
                                     file.status = .master
-                                case .lights:
+                                case .light, .unknown:
                                     file.status = .integrated
                                 }
                                 let fileObjectIDs = self.files.map { $0.objectID }

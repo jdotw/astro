@@ -23,6 +23,10 @@ public enum FileType: String, CaseIterable, Identifiable {
     case flat
     case dark
     case bias
+
+    var directoryName: String {
+        return self.rawValue.localizedCapitalized
+    }
 }
 
 public enum FileStatus: String, CaseIterable, Identifiable {

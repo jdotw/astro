@@ -25,6 +25,13 @@ class TargetExportOperation: Operation, ObservableObject {
         // Exports all the files, both light and calibration frames,
         // for a given target and arranges them in this structure:
         //
+        // NOTE: We kept the concept of batches (files with the same
+        //       flat, dark and bias calibration sessions) because
+        //       the calibration session is a property of the file
+        //       itself and it is possible that within a given set
+        //       of files for a filter in a given session that there
+        //       could be files with different calibration sessions
+        //
         //  Target
         //  |-> Calibration
         //      |-> Darks
@@ -140,6 +147,14 @@ class TargetExportOperation: Operation, ObservableObject {
     }
     
     private func exportFiles(_ files: [TargetExportRequestFile], forRequest request: TargetExportRequest, context: NSManagedObjectContext) throws {
+        // Step 1. Export the Dark and Bias calibration sessions
+        try exportCalibrationMasters(ofType: .dark)
+        try exportCalibrationMasters(ofType: .bias)
+        
+        // Step 2. Calibrate the Light frames
+        try calibrateLightFrames()
+
+        // -- LEGACY CODE BELOW
         let batches = files.batches
         print("BATCHES: ", batches)
         for batch in batches {
@@ -165,6 +180,18 @@ class TargetExportOperation: Operation, ObservableObject {
     }
     
     // MARK: Export
+    
+    private func exportCalibrationMasters(ofType type: FileType) throws {
+        // Get the unique calibration session of this type
+        let sessions = files.calibrationSessions(ofType: type)
+        
+        // Export the files of that type from each session
+        for session in sessions {
+            // Use the CalibrationMasterExportOperation to export the master
+            let op = CalibrationMasterExportOperation(destination: request.url!, session: session, type: type)
+            op.main()
+        }
+    }
     
     private func exportFiles(inBatch batch: TargetExportFileBatch, to url: URL) throws {
         try batch.uniqueFilters.forEach { filter in
@@ -193,6 +220,29 @@ class TargetExportOperation: Operation, ObservableObject {
         }
     }
     
+    // MARK: Calibration of Light Frames
+    
+    func calibrateLightFrames() throws {
+        // Light frames are exported as:
+        //
+        // Destination
+        // -> Filter
+        //    -> Session
+        //    -> Session
+        //    -> ...
+        // -> Filter
+        //    -> Session
+        //    -> Session
+        //    -> ...
+        // -> ...
+        //
+        // Therefore we obtain and iterate over the unique filters
+        // present in the array of files to be exported
+        try files.uniqueFilters.forEach { filter in
+            let calibrationOp = CalibrateAndExportLightFramesOperation
+        }
+    }
+    
     func calibrateFiles(inBatch batch: TargetExportFileBatch, at url: URL, context: NSManagedObjectContext) throws {
         try batch.uniqueFilters.forEach { filter in
             let filterURL = url.appending(path: filter.name.localizedCapitalized)
@@ -200,7 +250,7 @@ class TargetExportOperation: Operation, ObservableObject {
             
             //  - Integrated calibration frames
             guard let flatsFiles = batch.flatFilesByFilter[filter] else { return }
-            let integrationOp = PixInsightIntegrationOperation(files: flatsFiles, mode: .flats)
+            let integrationOp = PixInsightIntegrationOperation(files: flatsFiles, type: .flat)
             print("INTEGRATING FLATS for \(filter.name) in batch \(String(describing: batch.path)) using \(flatsFiles.count) flat files")
             integrationOp.main()
             guard let integratedFileObjectID = integrationOp.outputFileObjectID else { return }
@@ -335,7 +385,7 @@ class TargetExportOperation: Operation, ObservableObject {
         }
         filesByFilter.forEach { (filter: Filter, files: [TargetExportRequestFile]) in
             let sourceFiles = files.compactMap { $0.source }
-            let op = PixInsightIntegrationOperation(files: sourceFiles, mode: .lights)
+            let op = PixInsightIntegrationOperation(files: sourceFiles, type: .light)
             op.main()
             let fileName = TargetExportOperation.integratedFileName(forFiles: files, filter: filter)
             if let outputFileObjectID = op.outputFileObjectID {
@@ -354,33 +404,43 @@ class TargetExportOperation: Operation, ObservableObject {
 }
 
 struct TargetExportFileBatch {
-    let calibrationSession: Session
-    let files: [TargetExportRequestFile]
-    let lightFilesByFilter: [Filter: [TargetExportRequestFile]]
-    let flatFilesByFilter: [Filter: [File]]
-    let uniqueFilters: Set<Filter>
-    
-    init(calibrationSession: Session, files: [TargetExportRequestFile]) {
-        self.calibrationSession = calibrationSession
-        let files = files.filter { file in
-            file.source?.resolvedFlatCalibrationSession == calibrationSession
-        }
-        self.files = files
-        self.uniqueFilters = Set(files.compactMap { $0.source?.filter })
-        
-        var lightFilesByFilter = [Filter: [TargetExportRequestFile]]()
-        var flatFilesByFilter = [Filter: [File]]()
-        let calibrationFiles = calibrationSession.files?.allObjects as? [File]
-        for filter in uniqueFilters {
-            lightFilesByFilter[filter] = files.filter { file in
-                file.source?.filter == filter && file.source?.type == .light
-            }
-            flatFilesByFilter[filter] = calibrationFiles?.filter { file in
-                file.filter == filter && file.type == .flat
-            }
-        }
-        self.lightFilesByFilter = lightFilesByFilter
-        self.flatFilesByFilter = flatFilesByFilter
+    // A Batch is a group of files that all use the
+    // same flat, dark and bias calibration session.
+    // A Batch is always a only files belonging to a
+    // particular filter. This is both by design and
+    // also in herently true as you wouldn't usually
+    // have different filters using the same flat cal
+    let filter: Filter
+    let flatCalibrationSession: Session
+    let darkCalibrationSession: Session
+    let biasCalibrationSession: Session
+    var files: [TargetExportRequestFile] = .init()
+
+    init(filter: Filter, flatCalibrationSession: Session, darkCalibrationSession: Session, biasCalibrationSession: Session) {
+        self.filter = filter
+        self.flatCalibrationSession = flatCalibrationSession
+        self.darkCalibrationSession = darkCalibrationSession
+        self.biasCalibrationSession = biasCalibrationSession
+
+//        let files = files.filter { file in
+//            file.source?.resolvedFlatCalibrationSession == calibrationSession
+//        }
+//        self.files = files
+//        self.uniqueFilters = Set(files.compactMap { $0.source?.filter })
+//
+//        var lightFilesByFilter = [Filter: [TargetExportRequestFile]]()
+//        var flatFilesByFilter = [Filter: [File]]()
+//        let calibrationFiles = calibrationSession.files?.allObjects as? [File]
+//        for filter in uniqueFilters {
+//            lightFilesByFilter[filter] = files.filter { file in
+//                file.source?.filter == filter && file.source?.type == .light
+//            }
+//            flatFilesByFilter[filter] = calibrationFiles?.filter { file in
+//                file.filter == filter && file.type == .flat
+//            }
+//        }
+//        self.lightFilesByFilter = lightFilesByFilter
+//        self.flatFilesByFilter = flatFilesByFilter
     }
     
     var sessions: Set<Session> {
@@ -401,32 +461,23 @@ struct TargetExportFileBatch {
 }
 
 extension [TargetExportRequestFile] {
-    func calibrationSessionFileBatches(ofType type: FileType) -> [TargetExportFileBatch] {
-        var batches = [TargetExportFileBatch]()
-        let calibrationSessions = Set<Session>(compactMap {
-            guard let file = $0.source, let filter = $0.source?.filter else { return nil }
-            return file.session?.resolvedCalibrationSession(forFilter: filter, type: type)
-        })
-        for session in calibrationSessions {
-            let batch = TargetExportFileBatch(calibrationSession: session, files: self)
-            batches.append(batch)
-        }
-        return batches
-    }
-    
     var batches: [TargetExportFileBatch] {
-        var batches = [TargetExportFileBatch]()
-        
-        // Flat Calibration Sessions
-        batches.append(contentsOf: calibrationSessionFileBatches(ofType: .flat))
-
-        // Dark Calibration Sessions
-        batches.append(contentsOf: calibrationSessionFileBatches(ofType: .dark))
-
-        // Bias Calibration Sessions
-        batches.append(contentsOf: calibrationSessionFileBatches(ofType: .bias))
-
-        return batches
+        var batchesByCalHash = [String: TargetExportFileBatch]()
+        forEach { file in
+            guard let file = file.source else { return }
+            guard let flatSession = file.resolvedCalibrationSession(type: .flat),
+                  let darkSession = file.resolvedCalibrationSession(type: .dark),
+                  let biasSession = file.resolvedCalibrationSession(type: .bias)
+            else { return }
+            let calHash = TargetExportFileBatch.hash(forFlatSession: flatSession,
+                                                     darkSession: darkSession,
+                                                     biasSession: biasSession)
+            if batchesByCalHash[calHash] == nil {
+                batchesByCalHash[calHash] = TargetExportFileBatch(filter: file.filter, flatCalibrationSession: flatSession, darkCalibrationSession: darkSession, biasCalibrationSession: biasSession, files: [])
+            }
+            batchesByCalHash[calHash]?.files.append(file)
+        }
+        return [TargetExportFileBatch](batchesByCalHash.values)
     }
 }
 

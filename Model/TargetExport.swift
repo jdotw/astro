@@ -168,3 +168,17 @@ class TargetExportRequestFile: Identifiable {
         self.url = url
     }
 }
+
+extension [TargetExportRequestFile] {
+    func calibrationSessions(ofType type: FileType) -> Set<Session> {
+        return Set<Session>(self.compactMap { exportFile in
+            exportFile.source?.resolvedCalibrationSession(type: type)
+        })
+    }
+
+    var uniqueFilters: Set<Filter> {
+        return Set<Filter>(self.compactMap { exportFile in
+            exportFile.source?.filter
+        })
+    }
+}

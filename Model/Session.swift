@@ -168,3 +168,9 @@ public extension Session {
         }
     }
 }
+
+extension Session {
+    var directoryName: String {
+        return dateString
+    }
+}
