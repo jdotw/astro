@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24C98" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="File" representedClassName="File" syncable="YES">
         <attribute name="bookmark" attributeType="Binary"/>
         <attribute name="contentHash" attributeType="String"/>
@@ -8,7 +8,6 @@
         <attribute name="height" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="previewURL" optional="YES" attributeType="URI"/>
-        <attribute name="rawDataURL" attributeType="URI"/>
         <attribute name="rejected" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="reviewed" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="statusRawValue" attributeType="String" defaultValueString="original"/>

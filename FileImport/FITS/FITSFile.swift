@@ -120,4 +120,68 @@ struct FITSFile {
         )
         return image
     }
+    
+    var cgImage: CGImage? {
+        var dataStartOffset: UInt64 = 0
+        guard let headers = parseHeaders(dataStartOffset: &dataStartOffset) else {
+            return nil
+        }
+//        var observationDate: Date!
+//        if let headerDateString = headers["DATE-OBS"]?.value {
+//            guard
+//                let headerDate = Date(fitsDate: headerDateString)
+//            else {
+//                throw FITSFileImportError.invalidObservationDate
+//            }
+//            observationDate = headerDate
+//        } else if let fileCreationDate = try? fitsFile.url.resourceValues(forKeys: [.creationDateKey]).creationDate {
+//            observationDate = fileCreationDate
+//        } else {
+//            throw FITSFileImportError.noObservationDate
+//        }
+//
+//        let typeString = headers["FRAME"]?.value?.lowercased() ?? "light"
+//
+//        guard let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) else {
+//            throw FITSFileImportError.noBookmark
+//        }
+//        guard let targetName = headers["OBJECT"]?.value else {
+//            throw FITSFileImportError.noTarget
+//        }
+        guard let widthString = headers["NAXIS1"]?.value,
+              let width = Int(widthString),
+              let heightString = headers["NAXIS2"]?.value,
+              let height = Int(heightString)
+        else {
+            return nil
+        }
+
+        // Get Data and Image
+        guard let data = getImageData(fromOffset: dataStartOffset, headers: headers) else {
+            return nil
+        }
+
+        // Create Image
+        let bitsPerComponent = 32
+        let bitsPerPixel = 32
+        let bytesPerRow = width * (bitsPerPixel / 8)
+        let colorSpace = CGColorSpaceCreateDeviceGray()
+        let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
+        let image = CGImage(
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bitsPerPixel: bitsPerPixel,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: bitmapInfo,
+            provider: CGDataProvider(data: data as CFData)!,
+            decode: nil,
+            shouldInterpolate: false,
+            intent: CGColorRenderingIntent.defaultIntent
+        )
+        return image
+
+        
+    }
 }

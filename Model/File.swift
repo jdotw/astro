@@ -53,7 +53,6 @@ public extension File {
     @NSManaged var statusRawValue: String
     @NSManaged var url: URL // Original Source URL
     @NSManaged var fitsURL: URL // The FITS file as-imported
-    @NSManaged var rawDataURL: URL // The 32bit fp values
     @NSManaged var previewURL: URL? // Downsized and stretched PNG
     @NSManaged var session: Session?
     @NSManaged var target: Target?
@@ -131,6 +130,12 @@ extension File {
 //    }
 }
 
+extension File {
+    var fitsFile: FITSFile {
+        return FITSFile(url: fitsURL)
+    }
+}
+
 extension File: Identifiable {
     public var id: URL {
         objectID.uriRepresentation()
@@ -160,28 +165,29 @@ extension File {
     }
 
     var cgImage: CGImage? {
-        guard let data = try? Data(contentsOf: rawDataURL) else { return nil }
-        let width = Int(width)
-        let height = Int(height)
-        let bitsPerComponent = 32
-        let bitsPerPixel = 32
-        let bytesPerRow = width * (bitsPerPixel / 8)
-        let colorSpace = CGColorSpaceCreateDeviceGray()
-        let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
-        let image = CGImage(
-            width: width,
-            height: height,
-            bitsPerComponent: bitsPerComponent,
-            bitsPerPixel: bitsPerPixel,
-            bytesPerRow: bytesPerRow,
-            space: colorSpace,
-            bitmapInfo: bitmapInfo,
-            provider: CGDataProvider(data: data as CFData)!,
-            decode: nil,
-            shouldInterpolate: false,
-            intent: CGColorRenderingIntent.defaultIntent
-        )
-        return image
+        return fitsFile.cgImage
+//        guard let data = try? Data(contentsOf: rawDataURL) else { return nil }
+//        let width = Int(width)
+//        let height = Int(height)
+//        let bitsPerComponent = 32
+//        let bitsPerPixel = 32
+//        let bytesPerRow = width * (bitsPerPixel / 8)
+//        let colorSpace = CGColorSpaceCreateDeviceGray()
+//        let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGBitmapInfo.floatComponents.rawValue)
+//        let image = CGImage(
+//            width: width,
+//            height: height,
+//            bitsPerComponent: bitsPerComponent,
+//            bitsPerPixel: bitsPerPixel,
+//            bytesPerRow: bytesPerRow,
+//            space: colorSpace,
+//            bitmapInfo: bitmapInfo,
+//            provider: CGDataProvider(data: data as CFData)!,
+//            decode: nil,
+//            shouldInterpolate: false,
+//            intent: CGColorRenderingIntent.defaultIntent
+//        )
+//        return image
     }
 
     func unsortedPixels() -> [Float]? {

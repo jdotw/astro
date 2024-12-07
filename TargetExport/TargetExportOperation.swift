@@ -147,36 +147,37 @@ class TargetExportOperation: Operation, ObservableObject {
     }
     
     private func exportFiles(_ files: [TargetExportRequestFile], forRequest request: TargetExportRequest, context: NSManagedObjectContext) throws {
-        // Step 1. Export the Dark and Bias calibration sessions
-        try exportCalibrationMasters(ofType: .dark)
-        try exportCalibrationMasters(ofType: .bias)
-        
-        // Step 2. Calibrate the Light frames
-        try calibrateLightFrames()
-
-        // -- LEGACY CODE BELOW
-        let batches = files.batches
-        print("BATCHES: ", batches)
-        for batch in batches {
-            guard let batchPath = batch.path else {
-                print("FAILED TO GET PATH FOR: ", batch)
-                continue
-            }
-            let batchURL = request.url!.disambigutedURL(addingPath: batchPath)
-            try FileManager.default.createDirectory(at: batchURL, withIntermediateDirectories: false)
-            try exportFiles(inBatch: batch, to: batchURL)
-            try calibrateFiles(inBatch: batch, at: batchURL, context: context)
-        }
-        let calibratedFiles = self.files.filter {
-            $0.type == .light && $0.status == .calibrated
-        }
-        guard let reference = request.reference ?? calibratedFiles.first?.source else {
-            throw TargetExportRequestError.noReferenceFile
-        }
-        let registeredFilesByFilter = try register(files: calibratedFiles,
-                                                   usingReference: reference,
-                                                   at: request.url!, context: context)
-        try integrate(filesByFilter: registeredFilesByFilter, at: request.url!)
+        // JW: Simple
+//        // Step 1. Export the Dark and Bias calibration sessions
+//        try exportCalibrationMasters(ofType: .dark)
+//        try exportCalibrationMasters(ofType: .bias)
+//        
+//        // Step 2. Calibrate the Light frames
+//        try calibrateLightFrames()
+//
+//        // -- LEGACY CODE BELOW
+//        let batches = files.batches
+//        print("BATCHES: ", batches)
+//        for batch in batches {
+//            guard let batchPath = batch.path else {
+//                print("FAILED TO GET PATH FOR: ", batch)
+//                continue
+//            }
+//            let batchURL = request.url!.disambigutedURL(addingPath: batchPath)
+//            try FileManager.default.createDirectory(at: batchURL, withIntermediateDirectories: false)
+//            try exportFiles(inBatch: batch, to: batchURL)
+//            try calibrateFiles(inBatch: batch, at: batchURL, context: context)
+//        }
+//        let calibratedFiles = self.files.filter {
+//            $0.type == .light && $0.status == .calibrated
+//        }
+//        guard let reference = request.reference ?? calibratedFiles.first?.source else {
+//            throw TargetExportRequestError.noReferenceFile
+//        }
+//        let registeredFilesByFilter = try register(files: calibratedFiles,
+//                                                   usingReference: reference,
+//                                                   at: request.url!, context: context)
+//        try integrate(filesByFilter: registeredFilesByFilter, at: request.url!)
     }
     
     // MARK: Export
@@ -194,30 +195,31 @@ class TargetExportOperation: Operation, ObservableObject {
     }
     
     private func exportFiles(inBatch batch: TargetExportFileBatch, to url: URL) throws {
-        try batch.uniqueFilters.forEach { filter in
-            // Create URL for Filter
-            let filterURL = url.appending(path: filter.name.localizedCapitalized)
-            try FileManager.default.createDirectory(at: filterURL, withIntermediateDirectories: false)
-            
-            // Export Lights for this Filter
-            let lightsURL = filterURL.appending(path: "Light")
-            try FileManager.default.createDirectory(at: lightsURL, withIntermediateDirectories: false)
-            try batch.lightFilesByFilter[filter]?.forEach { file in
-                guard let source = file.source else { return }
-                try FileManager.default.copyItem(at: source.fitsURL,
-                                                 to: lightsURL.appending(path: source.name))
-            }
-            
-            // Export Flats for this Filter
-            let flatsURL = filterURL.appending(path: "Flat")
-            try FileManager.default.createDirectory(at: flatsURL, withIntermediateDirectories: false)
-            let flatFiles = (batch.calibrationSession.files?.allObjects as? [File])?.filter {
-                $0.filter == filter && $0.type == .flat
-            }
-            try flatFiles?.forEach { flat in
-                try FileManager.default.copyItem(at: flat.fitsURL, to: flatsURL.appending(path: flat.name))
-            }
-        }
+        // JW: Simple
+//        try batch.uniqueFilters.forEach { filter in
+//            // Create URL for Filter
+//            let filterURL = url.appending(path: filter.name.localizedCapitalized)
+//            try FileManager.default.createDirectory(at: filterURL, withIntermediateDirectories: false)
+//            
+//            // Export Lights for this Filter
+//            let lightsURL = filterURL.appending(path: "Light")
+//            try FileManager.default.createDirectory(at: lightsURL, withIntermediateDirectories: false)
+//            try batch.lightFilesByFilter[filter]?.forEach { file in
+//                guard let source = file.source else { return }
+//                try FileManager.default.copyItem(at: source.fitsURL,
+//                                                 to: lightsURL.appending(path: source.name))
+//            }
+//            
+//            // Export Flats for this Filter
+//            let flatsURL = filterURL.appending(path: "Flat")
+//            try FileManager.default.createDirectory(at: flatsURL, withIntermediateDirectories: false)
+//            let flatFiles = (batch.calibrationSession.files?.allObjects as? [File])?.filter {
+//                $0.filter == filter && $0.type == .flat
+//            }
+//            try flatFiles?.forEach { flat in
+//                try FileManager.default.copyItem(at: flat.fitsURL, to: flatsURL.appending(path: flat.name))
+//            }
+//        }
     }
     
     // MARK: Calibration of Light Frames
@@ -238,171 +240,175 @@ class TargetExportOperation: Operation, ObservableObject {
         //
         // Therefore we obtain and iterate over the unique filters
         // present in the array of files to be exported
-        try files.uniqueFilters.forEach { filter in
-            let calibrationOp = CalibrateAndExportLightFramesOperation
+        
+        // JW Simple
+//        try files.uniqueFilters.forEach { filter in
+//            let calibrationOp = CalibrateAndExportLightFramesOperation
         }
     }
     
     func calibrateFiles(inBatch batch: TargetExportFileBatch, at url: URL, context: NSManagedObjectContext) throws {
-        try batch.uniqueFilters.forEach { filter in
-            let filterURL = url.appending(path: filter.name.localizedCapitalized)
-            let flatsURL = filterURL.appending(path: "Flat")
-            
-            //  - Integrated calibration frames
-            guard let flatsFiles = batch.flatFilesByFilter[filter] else { return }
-            let integrationOp = PixInsightIntegrationOperation(files: flatsFiles, type: .flat)
-            print("INTEGRATING FLATS for \(filter.name) in batch \(String(describing: batch.path)) using \(flatsFiles.count) flat files")
-            integrationOp.main()
-            guard let integratedFileObjectID = integrationOp.outputFileObjectID else { return }
-            let masterFlat = context.object(with: integratedFileObjectID) as! File
-            let masterFlatURL = flatsURL.appending(component: "master.xisf")
-            try FileManager.default.copyItem(at: masterFlat.fitsURL, to: masterFlatURL)
-            
-            // - Create record of the master flat
-            let masterFlatFile = TargetExportRequestFile(source: nil,
-                                                         type: .flat,
-                                                         status: .master,
-                                                         url: masterFlatURL)
-            DispatchQueue.main.sync {
-                self.files.append(masterFlatFile)
-                masterFlatFile.progress = .exported
-            }
-            
-            //  - Calibrate light frames
-            guard let lightFileRequests = batch.lightFilesByFilter[filter]
-            else { return }
-            let lightFiles = lightFileRequests.compactMap { $0.source }
-            let calOp = PixInsightCalibrationOperation(files: lightFiles,
-                                                       masterFlat: masterFlat)
-            calOp.main()
-            let calibratedURL = filterURL.appending(path: "Calibrated")
-            try FileManager.default.createDirectory(at: calibratedURL, withIntermediateDirectories: false)
-            for outputFileObjectID in calOp.outputFileObjectIDs {
-                guard let file = context.object(with: outputFileObjectID) as? File,
-                      let derivedFromLight = file.derivedLightFile
-                else { continue }
-                let source = file.fitsURL
-                let destination = calibratedURL.appending(path: derivedFromLight.name)
-                    .deletingPathExtension()
-                    .appendingPathExtension("xisf")
-                try FileManager.default.copyItem(at: source, to: destination)
-                
-                // Create record of the file
-                let calFile = TargetExportRequestFile(source: file,
-                                                      type: .light,
-                                                      status: .calibrated,
-                                                      url: destination)
-                DispatchQueue.main.sync {
-                    self.files.append(calFile)
-                    calFile.progress = .exported
-                }
-            }
-        }
+        // JW: Simple
+//        try batch.uniqueFilters.forEach { filter in
+//            let filterURL = url.appending(path: filter.name.localizedCapitalized)
+//            let flatsURL = filterURL.appending(path: "Flat")
+//            
+//            //  - Integrated calibration frames
+//            guard let flatsFiles = batch.flatFilesByFilter[filter] else { return }
+//            let integrationOp = PixInsightIntegrationOperation(files: flatsFiles, type: .flat)
+//            print("INTEGRATING FLATS for \(filter.name) in batch \(String(describing: batch.path)) using \(flatsFiles.count) flat files")
+//            integrationOp.main()
+//            guard let integratedFileObjectID = integrationOp.outputFileObjectID else { return }
+//            let masterFlat = context.object(with: integratedFileObjectID) as! File
+//            let masterFlatURL = flatsURL.appending(component: "master.xisf")
+//            try FileManager.default.copyItem(at: masterFlat.fitsURL, to: masterFlatURL)
+//            
+//            // - Create record of the master flat
+//            let masterFlatFile = TargetExportRequestFile(source: nil,
+//                                                         type: .flat,
+//                                                         status: .master,
+//                                                         url: masterFlatURL)
+//            DispatchQueue.main.sync {
+//                self.files.append(masterFlatFile)
+//                masterFlatFile.progress = .exported
+//            }
+//            
+//            //  - Calibrate light frames
+//            guard let lightFileRequests = batch.lightFilesByFilter[filter]
+//            else { return }
+//            let lightFiles = lightFileRequests.compactMap { $0.source }
+//            let calOp = PixInsightCalibrationOperation(files: lightFiles,
+//                                                       masterFlat: masterFlat)
+//            calOp.main()
+//            let calibratedURL = filterURL.appending(path: "Calibrated")
+//            try FileManager.default.createDirectory(at: calibratedURL, withIntermediateDirectories: false)
+//            for outputFileObjectID in calOp.outputFileObjectIDs {
+//                guard let file = context.object(with: outputFileObjectID) as? File,
+//                      let derivedFromLight = file.derivedLightFile
+//                else { continue }
+//                let source = file.fitsURL
+//                let destination = calibratedURL.appending(path: derivedFromLight.name)
+//                    .deletingPathExtension()
+//                    .appendingPathExtension("xisf")
+//                try FileManager.default.copyItem(at: source, to: destination)
+//                
+//                // Create record of the file
+//                let calFile = TargetExportRequestFile(source: file,
+//                                                      type: .light,
+//                                                      status: .calibrated,
+//                                                      url: destination)
+//                DispatchQueue.main.sync {
+//                    self.files.append(calFile)
+//                    calFile.progress = .exported
+//                }
+//            }
+//        }
     }
     
     // MARK: Registration
     
-    func register(files: [TargetExportRequestFile], usingReference reference: File, at url: URL, context: NSManagedObjectContext) throws -> [Filter: [TargetExportRequestFile]] {
-        guard let calibratedReference = files.first(where: { $0.source?.isDerived(from: reference) ?? false })?.source
-        else { return [:] }
-        let op = PixInsightRegistrationOperation(files: files.compactMap { $0.source },
-                                                 referenceFile: calibratedReference)
-        
-        op.main()
-        let registeredDestination = url.appending(path: "Registered")
-        if !FileManager.default.fileExists(atPath: registeredDestination.path(percentEncoded: false)) {
-            try FileManager.default.createDirectory(at: registeredDestination, withIntermediateDirectories: false)
-        }
-        
-        var registeredFilesByFilter = [Filter: [TargetExportRequestFile]]()
-        
-        let outputFiles = op.outputFileObjectIDs.compactMap { context.object(with: $0) as? File }
-        for file in outputFiles {
-            let filterDestinationURL = registeredDestination.appending(path: file.filter.name.localizedCapitalized)
-            
-            if !FileManager.default.fileExists(atPath: filterDestinationURL.path(percentEncoded: false)) {
-                do {
-                    try FileManager.default.createDirectory(at: filterDestinationURL, withIntermediateDirectories: false)
-                } catch {
-                    print("Faield to create directory: ", filterDestinationURL)
-                }
-            }
-            let destinationURL = filterDestinationURL.appending(path: file.name)
-            
-            if FileManager.default.fileExists(atPath: file.fitsURL.path(percentEncoded: false)) {
-                do {
-                    try FileManager.default.copyItem(at: file.fitsURL, to: destinationURL)
-                } catch {
-                    print("Failed to move item from \(file.fitsURL) to \(destinationURL)")
-                }
-                
-                // Create record of file
-                let registeredFile = TargetExportRequestFile(source: file,
-                                                             type: .light,
-                                                             status: .registered,
-                                                             url: destinationURL)
-                DispatchQueue.main.sync {
-                    self.files.append(registeredFile)
-                    registeredFile.progress = .exported
-                }
-                registeredFilesByFilter[file.filter, default: []].append(registeredFile)
-            } else {
-                // File failed to be registered
-                // It was in the original data set, but was not
-                // found in the output of the registration op
-            }
-        }
-        
-        return registeredFilesByFilter
-    }
+// JW: Simple
+//    func register(files: [TargetExportRequestFile], usingReference reference: File, at url: URL, context: NSManagedObjectContext) throws -> [Filter: [TargetExportRequestFile]] {
+//        guard let calibratedReference = files.first(where: { $0.source?.isDerived(from: reference) ?? false })?.source
+//        else { return [:] }
+//        let op = PixInsightRegistrationOperation(files: files.compactMap { $0.source },
+//                                                 referenceFile: calibratedReference)
+//        
+//        op.main()
+//        let registeredDestination = url.appending(path: "Registered")
+//        if !FileManager.default.fileExists(atPath: registeredDestination.path(percentEncoded: false)) {
+//            try FileManager.default.createDirectory(at: registeredDestination, withIntermediateDirectories: false)
+//        }
+//        
+//        var registeredFilesByFilter = [Filter: [TargetExportRequestFile]]()
+//        
+//        let outputFiles = op.outputFileObjectIDs.compactMap { context.object(with: $0) as? File }
+//        for file in outputFiles {
+//            let filterDestinationURL = registeredDestination.appending(path: file.filter.name.localizedCapitalized)
+//            
+//            if !FileManager.default.fileExists(atPath: filterDestinationURL.path(percentEncoded: false)) {
+//                do {
+//                    try FileManager.default.createDirectory(at: filterDestinationURL, withIntermediateDirectories: false)
+//                } catch {
+//                    print("Faield to create directory: ", filterDestinationURL)
+//                }
+//            }
+//            let destinationURL = filterDestinationURL.appending(path: file.name)
+//            
+//            if FileManager.default.fileExists(atPath: file.fitsURL.path(percentEncoded: false)) {
+//                do {
+//                    try FileManager.default.copyItem(at: file.fitsURL, to: destinationURL)
+//                } catch {
+//                    print("Failed to move item from \(file.fitsURL) to \(destinationURL)")
+//                }
+//                
+//                // Create record of file
+//                let registeredFile = TargetExportRequestFile(source: file,
+//                                                             type: .light,
+//                                                             status: .registered,
+//                                                             url: destinationURL)
+//                DispatchQueue.main.sync {
+//                    self.files.append(registeredFile)
+//                    registeredFile.progress = .exported
+//                }
+//                registeredFilesByFilter[file.filter, default: []].append(registeredFile)
+//            } else {
+//                // File failed to be registered
+//                // It was in the original data set, but was not
+//                // found in the output of the registration op
+//            }
+//        }
+//        
+//        return registeredFilesByFilter
+//    }
     
     // MARK: - Integration
-    
-    static func fileNameTimestamp(forDate date: Date?) -> String {
-        return date?.fileNameTimestamp ?? "unknown"
-    }
-    
-    static func integratedFileName(forFiles files: [TargetExportRequestFile], filter: Filter) -> String {
-        let sortedFiles = files.sorted { a, b in
-            a.source?.timestamp ?? Date() < b.source?.timestamp ?? Date()
-        }
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd"
-        dateFormatter.timeStyle = .none
-        let earliestDate = sortedFiles.first?.source?.timestamp
-        let latestDate = sortedFiles.last?.source?.timestamp
-        let earliestDateString = TargetExportOperation.fileNameTimestamp(forDate: earliestDate)
-        let latestDateString = TargetExportOperation.fileNameTimestamp(forDate: latestDate)
-        let locFilterName = filter.name.localizedCapitalized.trimmingCharacters(in: .whitespacesAndNewlines)
-        let fileName = "\(locFilterName)-Integrated-\(files.count)files-\(earliestDateString)-\(latestDateString)"
-        return fileName
-    }
-    
-    func integrate(filesByFilter: [Filter: [TargetExportRequestFile]], at url: URL) throws {
-        let integratedURL = url.appending(path: "Integrated")
-        if !FileManager.default.fileExists(atPath: integratedURL.path(percentEncoded: false)) {
-            try FileManager.default.createDirectory(at: integratedURL, withIntermediateDirectories: false)
-        }
-        filesByFilter.forEach { (filter: Filter, files: [TargetExportRequestFile]) in
-            let sourceFiles = files.compactMap { $0.source }
-            let op = PixInsightIntegrationOperation(files: sourceFiles, type: .light)
-            op.main()
-            let fileName = TargetExportOperation.integratedFileName(forFiles: files, filter: filter)
-            if let outputFileObjectID = op.outputFileObjectID {
-                let waitSema = DispatchSemaphore(value: 0)
-                PersistenceController.shared.container.performBackgroundTask { context in
-                    if let outputFile = try? context.existingObject(with: outputFileObjectID) as? File {
-                        try? FileManager.default.copyItem(at: outputFile.fitsURL,
-                                                          to: integratedURL.appending(path: "\(fileName).xisf"))
-                    }
-                    waitSema.signal()
-                }
-                waitSema.wait()
-            }
-        }
-    }
-}
 
+    // JW: Simple
+//    static func fileNameTimestamp(forDate date: Date?) -> String {
+//        return date?.fileNameTimestamp ?? "unknown"
+//    }
+//    
+//    static func integratedFileName(forFiles files: [TargetExportRequestFile], filter: Filter) -> String {
+//        let sortedFiles = files.sorted { a, b in
+//            a.source?.timestamp ?? Date() < b.source?.timestamp ?? Date()
+//        }
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyyMMdd"
+//        dateFormatter.timeStyle = .none
+//        let earliestDate = sortedFiles.first?.source?.timestamp
+//        let latestDate = sortedFiles.last?.source?.timestamp
+//        let earliestDateString = TargetExportOperation.fileNameTimestamp(forDate: earliestDate)
+//        let latestDateString = TargetExportOperation.fileNameTimestamp(forDate: latestDate)
+//        let locFilterName = filter.name.localizedCapitalized.trimmingCharacters(in: .whitespacesAndNewlines)
+//        let fileName = "\(locFilterName)-Integrated-\(files.count)files-\(earliestDateString)-\(latestDateString)"
+//        return fileName
+//    }
+//    
+//    func integrate(filesByFilter: [Filter: [TargetExportRequestFile]], at url: URL) throws {
+//        let integratedURL = url.appending(path: "Integrated")
+//        if !FileManager.default.fileExists(atPath: integratedURL.path(percentEncoded: false)) {
+//            try FileManager.default.createDirectory(at: integratedURL, withIntermediateDirectories: false)
+//        }
+//        filesByFilter.forEach { (filter: Filter, files: [TargetExportRequestFile]) in
+//            let sourceFiles = files.compactMap { $0.source }
+//            let op = PixInsightIntegrationOperation(files: sourceFiles, type: .light)
+//            op.main()
+//            let fileName = TargetExportOperation.integratedFileName(forFiles: files, filter: filter)
+//            if let outputFileObjectID = op.outputFileObjectID {
+//                let waitSema = DispatchSemaphore(value: 0)
+//                PersistenceController.shared.container.performBackgroundTask { context in
+//                    if let outputFile = try? context.existingObject(with: outputFileObjectID) as? File {
+//                        try? FileManager.default.copyItem(at: outputFile.fitsURL,
+//                                                          to: integratedURL.appending(path: "\(fileName).xisf"))
+//                    }
+//                    waitSema.signal()
+//                }
+//                waitSema.wait()
+//            }
+//        }
+//    }
+//
 struct TargetExportFileBatch {
     // A Batch is a group of files that all use the
     // same flat, dark and bias calibration session.
@@ -461,24 +467,24 @@ struct TargetExportFileBatch {
 }
 
 extension [TargetExportRequestFile] {
-    var batches: [TargetExportFileBatch] {
-        var batchesByCalHash = [String: TargetExportFileBatch]()
-        forEach { file in
-            guard let file = file.source else { return }
-            guard let flatSession = file.resolvedCalibrationSession(type: .flat),
-                  let darkSession = file.resolvedCalibrationSession(type: .dark),
-                  let biasSession = file.resolvedCalibrationSession(type: .bias)
-            else { return }
-            let calHash = TargetExportFileBatch.hash(forFlatSession: flatSession,
-                                                     darkSession: darkSession,
-                                                     biasSession: biasSession)
-            if batchesByCalHash[calHash] == nil {
-                batchesByCalHash[calHash] = TargetExportFileBatch(filter: file.filter, flatCalibrationSession: flatSession, darkCalibrationSession: darkSession, biasCalibrationSession: biasSession, files: [])
-            }
-            batchesByCalHash[calHash]?.files.append(file)
-        }
-        return [TargetExportFileBatch](batchesByCalHash.values)
-    }
+//    var batches: [TargetExportFileBatch] {
+//        var batchesByCalHash = [String: TargetExportFileBatch]()
+//        forEach { file in
+//            guard let file = file.source else { return }
+//            guard let flatSession = file.resolvedCalibrationSession(type: .flat),
+//                  let darkSession = file.resolvedCalibrationSession(type: .dark),
+//                  let biasSession = file.resolvedCalibrationSession(type: .bias)
+//            else { return }
+//            let calHash = TargetExportFileBatch.hash(forFlatSession: flatSession,
+//                                                     darkSession: darkSession,
+//                                                     biasSession: biasSession)
+//            if batchesByCalHash[calHash] == nil {
+//                batchesByCalHash[calHash] = TargetExportFileBatch(filter: file.filter, flatCalibrationSession: flatSession, darkCalibrationSession: darkSession, biasCalibrationSession: biasSession, files: [])
+//            }
+//            batchesByCalHash[calHash]?.files.append(file)
+//        }
+//        return [TargetExportFileBatch](batchesByCalHash.values)
+//    }
 }
 
 extension URL {

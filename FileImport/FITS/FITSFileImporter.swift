@@ -103,8 +103,8 @@ class FITSFileImporter: FileImporter {
         }
 
         // Save a FP32 representation (raw data)
-        let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
-        try data.write(to: fp32URL, options: [.atomic])
+//        let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
+//        try data.write(to: fp32URL, options: [.atomic])
 
         // Save a copy of the original FITS file
         let fitsURL = docsURL.appendingPathComponent("\(fileID.uuidString).fits")
@@ -120,7 +120,7 @@ class FITSFileImporter: FileImporter {
         file.url = url
         file.bookmark = bookmarkData
         file.fitsURL = fitsURL
-        file.rawDataURL = fp32URL
+//        file.rawDataURL = fp32URL
         file.width = width
         file.height = height
         file.status = .original

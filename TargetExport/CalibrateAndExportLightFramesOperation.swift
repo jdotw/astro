@@ -17,6 +17,6 @@ class CalibrateAndExportLightFramesOperation: Operation {
     }
 
     override func main() {
-        let sessions = 
+//        let sessions = 
     }
 }

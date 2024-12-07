@@ -100,7 +100,7 @@ class XISFFileImporter: FileImporter {
         }
 
         // Get Data for First Image
-        let data = try firstImage.getImageData()
+//        let data = try firstImage.getImageData()
 
         // Create UUID for this file
         let fileID = UUID()
@@ -114,8 +114,8 @@ class XISFFileImporter: FileImporter {
         }
 
         // Save a FP32 representation (raw data)
-        let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
-        try data.write(to: fp32URL, options: [.atomic])
+//        let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
+//        try data.write(to: fp32URL, options: [.atomic])
 
         // Save a copy of the original XISF file
         let xisfURL = docsURL.appendingPathComponent("\(fileID.uuidString).xisf")
@@ -131,7 +131,7 @@ class XISFFileImporter: FileImporter {
         file.url = url
         file.bookmark = bookmarkData
         file.fitsURL = xisfURL
-        file.rawDataURL = fp32URL
+//        file.rawDataURL = fp32URL
         file.width = Int32(width)
         file.height = Int32(height)
 
