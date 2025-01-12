@@ -19,6 +19,7 @@ struct ContentView: View {
     @AppStorage("selectedTarget") private var selectedTargetID: URL?
     @AppStorage("selectedFile") private var selectedFileID: URL?
     @AppStorage("fileBrowserViewMode") private var fileBrowserViewMode: FileBrowserViewMode = .table
+    @AppStorage("selectedFlatCalibrationSession") private var selectedFlatCalibrationSessionID: URL?
 
     @State private var navStackPath = [File]()
 
@@ -38,6 +39,10 @@ struct ContentView: View {
                     FileList(selectedFileID: $selectedFileID)
                 case .calibration:
                     CalibrationSessionList(selectedSessionID: $selectedCalibrationSessionID)
+                case .calFlats:
+                    CalibrationFlatsList(selectedSessionID: $selectedFlatCalibrationSessionID)
+                default:
+                    EmptyView()
                 }
             }
         } detail: {
@@ -71,6 +76,15 @@ struct ContentView: View {
                                 Text("No session selected")
                             }
                         }
+                    case .calFlats:
+                        if let selectedFlatCalibrationSession = session(for: selectedFlatCalibrationSessionID) {
+                            CalibrationSessionContentView(session: selectedFlatCalibrationSession, fileType: .flat, navStackPath: $navStackPath)
+                        } else {
+                            Text("No session selected")
+                        }
+                    default:
+                        EmptyView()
+
                     }
                 }
                 .navigationDestination(for: File.self) { file in
@@ -146,6 +160,15 @@ extension ContentView {
         return selectedCalibrationSessionID.flatMap { id in
             guard let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) else { return nil }
             return try? viewContext.existingObject(with: objectID) as? Session
+        }
+    }
+    
+    func session(for id: URL?) -> Session? {
+        guard let id else { return nil }
+        if let objectID = viewContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: id) {
+            return try? viewContext.existingObject(with: objectID) as? Session
+        } else {
+            return nil
         }
     }
 }

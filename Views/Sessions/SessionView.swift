@@ -22,12 +22,3 @@ struct SessionView: View {
     }
 }
 
-extension SessionView {
-    var files: [File] {
-        guard let files = session.files as? Set<File>
-        else {
-            return []
-        }
-        return Array(files)
-    }
-}

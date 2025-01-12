@@ -20,6 +20,7 @@ enum FileBrowserSource {
     case target(Target)
     case selection([NSManagedObjectID])
     case all
+    case calibrationSession(Session, FileType)
 }
 
 struct FileBrowser: View {
@@ -64,6 +65,8 @@ extension FileBrowserSource {
         case .selection(let selectedIDs):
             print("IDS: ", selectedIDs)
             predicate = NSPredicate(format: "self IN %@", selectedIDs)
+        case .calibrationSession(let session, let fileType):
+            predicate = NSPredicate(format: "session == %@ AND rejected = false AND typeRawValue == %@", session, fileType.rawValue)
         }
         let sortDescriptors = [NSSortDescriptor(keyPath: \File.timestamp, ascending: true)]
         return FetchRequest<File>(entity: File.entity(),
