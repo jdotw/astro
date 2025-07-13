@@ -34,10 +34,10 @@ class PixInsightRegistrationOperation: Operation {
         var script = String()
         script.append("var P = new StarAlignment;\n")
         script.append("P.outputDirectory = \"\(outputURL.path(percentEncoded: false))\";\n")
-        script.append("P.referenceImage = \"\(referenceFile.fitsURL.path(percentEncoded: false))\";\n")
+        script.append("P.referenceImage = \"\(referenceFile.url.path(percentEncoded: false))\";\n")
         script.append("P.targets = [ // enabled, isFile, image\n")
         files.forEach { file in
-            script.append("    [true, true, \"\(file.fitsURL.path(percentEncoded: false))\"],\n")
+            script.append("    [true, true, \"\(file.url.path(percentEncoded: false))\"],\n")
         }
         script.append("];\n")
         script.append(template)
@@ -86,7 +86,7 @@ class PixInsightRegistrationOperation: Operation {
                         if outputFile.pathExtension != "xisf" {
                             continue
                         }
-                        guard let originalFile = self.files.first(where: { $0.fitsURL.lastPathComponent == outputFile.lastPathComponent }) else {
+                        guard let originalFile = self.files.first(where: { $0.url.lastPathComponent == outputFile.lastPathComponent }) else {
                             print("CANT FIND ORIGINAL FOR: ", outputFile)
                             continue
                         }
@@ -100,7 +100,7 @@ class PixInsightRegistrationOperation: Operation {
                                 file.name = importedFileName
                                 file.timestamp = Date()
                                 file.status = .registered
-                                if let calibratedFileObjectID = self.files.first(where: { $0.fitsURL.lastPathComponent == outputFile.lastPathComponent })?.objectID,
+                                if let calibratedFileObjectID = self.files.first(where: { $0.url.lastPathComponent == outputFile.lastPathComponent })?.objectID,
                                    let calibratedFile = context.object(with: calibratedFileObjectID) as? File
                                 {
                                     let derivation = FileDerivation(context: context)

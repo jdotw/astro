@@ -52,7 +52,6 @@ public extension File {
     @NSManaged var typeRawValue: String
     @NSManaged var statusRawValue: String
     @NSManaged var url: URL // Original Source URL
-    @NSManaged var fitsURL: URL // The FITS file as-imported
     @NSManaged var previewURL: URL? // Downsized and stretched PNG
     @NSManaged var session: Session?
     @NSManaged var target: Target?
@@ -132,7 +131,7 @@ extension File {
 
 extension File {
     var fitsFile: FITSFile {
-        return FITSFile(url: fitsURL)
+        return FITSFile(url: url)
     }
 }
 

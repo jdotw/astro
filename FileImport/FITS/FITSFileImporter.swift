@@ -86,11 +86,6 @@ class FITSFileImporter: FileImporter {
             throw FITSFileImportError.noDimensions
         }
 
-        // Get Data and Image
-        guard let data = fitsFile.getImageData(fromOffset: dataStartOffset, headers: headers) else {
-            throw FITSFileImportError.dataReadFailed
-        }
-
         // Create UUID for this file]
         let fileID = UUID()
 
@@ -102,14 +97,6 @@ class FITSFileImporter: FileImporter {
             try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
         }
 
-        // Save a FP32 representation (raw data)
-//        let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
-//        try data.write(to: fp32URL, options: [.atomic])
-
-        // Save a copy of the original FITS file
-        let fitsURL = docsURL.appendingPathComponent("\(fileID.uuidString).fits")
-        try FileManager.default.copyItem(at: url, to: fitsURL)
-
         // Create the File record (we have already de-duped)
         let file = File(context: context)
         file.uuid = fileID
@@ -119,8 +106,6 @@ class FITSFileImporter: FileImporter {
         file.type = file.type(forHeaderValue: typeString)
         file.url = url
         file.bookmark = bookmarkData
-        file.fitsURL = fitsURL
-//        file.rawDataURL = fp32URL
         file.width = width
         file.height = height
         file.status = .original

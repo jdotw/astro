@@ -43,7 +43,7 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
         script.append("var P = new ImageIntegration;\n")
         script.append("P.images = [ // enabled, path, drizzlePath, localNormalizationDataPath\n")
         files.forEach { file in
-            script.append("    [true, \"\(file.fitsURL.path(percentEncoded: false))\", \"\", \"\"],\n")
+            script.append("    [true, \"\(file.url.path(percentEncoded: false))\", \"\", \"\"],\n")
         }
         script.append("];\n")
         script.append(template)
@@ -70,7 +70,7 @@ class PixInsightIntegrationOperation: Operation, ExternalProcessingOperation {
             PersistenceController.shared.container.performBackgroundTask { context in
                 if let result = try? context.fetch(artefactRequest).first {
                     print("FOUND CACHED: ", result)
-                    self.outputURL = result.fitsURL
+                    self.outputURL = result.url
                     self.outputFileObjectID = result.objectID
                     didFindCachedCandidate = true
                 } else {

@@ -35,12 +35,12 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
         script.append("var P = new ImageCalibration;\n")
         script.append("P.targetFrames = [ // enabled, path\n")
         files.forEach { file in
-            script.append("    [true, \"\(file.fitsURL.path(percentEncoded: false))\"],\n")
+            script.append("    [true, \"\(file.url.path(percentEncoded: false))\"],\n")
         }
         script.append("];\n")
         script.append(template)
 
-        script.append("P.masterFlatPath = \"\(masterFlat.fitsURL.path(percentEncoded: false))\";\n")
+        script.append("P.masterFlatPath = \"\(masterFlat.url.path(percentEncoded: false))\";\n")
         script.append("P.outputDirectory = \"\(outputURL.path(percentEncoded: false))\";\n")
 
         script.append("P.executeGlobal();\n")
@@ -108,7 +108,7 @@ class PixInsightCalibrationOperation: Operation, ExternalProcessingOperation {
                 let waitSema = DispatchSemaphore(value: 0)
                 PersistenceController.shared.container.performBackgroundTask { context in
                     self.files.forEach { inputFile in
-                        let sourceURL = outputURL.appending(path: inputFile.fitsURL.lastPathComponent)
+                        let sourceURL = outputURL.appending(path: inputFile.url.lastPathComponent)
                             .deletingPathExtension()
                             .appendingPathExtension("xisf")
 

@@ -45,7 +45,7 @@ class CalibrationMasterExportOperation: Operation, ObservableObject {
         // Copy raw files
         let files = session.files?.allObjects as! [File]
         try files.forEach { file in
-            try FileManager.default.copyItem(at: file.fitsURL,
+            try FileManager.default.copyItem(at: file.url,
                                              to: sessionURL.appending(path: file.name))
         }
             

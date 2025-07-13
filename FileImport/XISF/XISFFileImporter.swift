@@ -113,14 +113,6 @@ class XISFFileImporter: FileImporter {
             try FileManager.default.createDirectory(at: docsURL, withIntermediateDirectories: true)
         }
 
-        // Save a FP32 representation (raw data)
-//        let fp32URL = docsURL.appendingPathComponent("\(fileID.uuidString).fp32")
-//        try data.write(to: fp32URL, options: [.atomic])
-
-        // Save a copy of the original XISF file
-        let xisfURL = docsURL.appendingPathComponent("\(fileID.uuidString).xisf")
-        try FileManager.default.copyItem(at: url, to: xisfURL)
-
         // Create the File record (we have already de-duped)
         let file = File(context: context)
         file.uuid = fileID
@@ -130,8 +122,6 @@ class XISFFileImporter: FileImporter {
         file.type = type
         file.url = url
         file.bookmark = bookmarkData
-        file.fitsURL = xisfURL
-//        file.rawDataURL = fp32URL
         file.width = Int32(width)
         file.height = Int32(height)
 
